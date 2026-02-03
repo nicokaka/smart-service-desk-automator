@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Service Desk Automator</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts for Premium Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>⚡ SmartDesk</h2>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="queue">
+                    <span class="icon">📋</span> Fila de Chamados
+                </button>
+                <button class="nav-item" data-tab="manager">
+                    <span class="icon">🔍</span> Gerenciar Abertos
+                    <span class="badge new-feature">Novo</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <span class="icon">⚙️</span> Credenciais
+                </button>
+                <button class="nav-item" data-tab="logs">
+                    <span class="icon">📜</span> Logs
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <p>v1.0.0</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content-area">
+            
+            <!-- Tab: Ticket Queue -->
+            <div id="queue" class="tab-content active">
+                <header class="tab-header">
+                    <h1>Fila de Processamento</h1>
+                    <div class="actions">
+                        <button id="btn-add-row" class="btn secondary">+ Adicionar Linha</button>
+                        <button id="btn-generate-ai" class="btn secondary-color">✨ Gerar com IA</button>
+                        <button id="btn-start-bot" class="btn primary">▶ Iniciar Bot</button>
+                    </div>
+                </header>
+
+                <div class="table-container">
+                    <table class="ticket-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="select-all"></th>
+                                <th>Cliente</th>
+                                <th>Departamento</th>
+                                <th>Resumo (O que aconteceu?)</th>
+                                <th>Mensagem Gerada (IA)</th>
+                                <th>Opções</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticket-queue-body">
+                            <!-- Rows will be added here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab: Ticket Manager (Fetch) -->
+            <div id="manager" class="tab-content">
+                <header class="tab-header">
+                    <h1>Gerenciar Chamados Abertos</h1>
+                    <div class="actions">
+                        <button id="btn-fetch-tickets" class="btn secondary">🔄 Buscar Meus Chamados</button>
+                    </div>
+                </header>
+                <div class="empty-state">
+                    <p>Clique em "Buscar" para listar seus chamados do TomTicket.</p>
+                </div>
+                <div class="table-container hidden" id="manager-table-container">
+                    <table class="ticket-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox"></th>
+                                <th>ID</th>
+                                <th>Assunto</th>
+                                <th>Cliente</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manager-queue-body"></tbody>
+                    </table>
+                    <div class="bulk-actions">
+                        <button id="btn-close-selected" class="btn danger">Fechar Selecionados</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Settings -->
+            <div id="settings" class="tab-content">
+                <header class="tab-header">
+                    <h1>Configurações de Acesso</h1>
+                </header>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label>URL do Sistema</label>
+                        <input type="text" value="https://console.tomticket.com" disabled class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label>Email de Acesso</label>
+                        <input type="email" id="settings-email" placeholder="seu.email@empresa.com" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="settings-password" placeholder="********" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label>Navegador</label>
+                        <select id="settings-browser" class="input-field">
+                            <option value="chromium">Google Chrome</option>
+                            <option value="firefox">Firefox</option>
+                        </select>
+                    </div>
+                    <button id="btn-save-settings" class="btn primary">Salvar Credenciais</button>
+                </div>
+            </div>
+
+            <!-- Tab: Logs -->
+            <div id="logs" class="tab-content">
+                <header class="tab-header">
+                    <h1>Logs de Execução</h1>
+                    <button id="btn-clear-logs" class="btn secondary">Limpar</button>
+                </header>
+                <div class="logs-container" id="logs-output">
+                    <div class="log-entry info">[System] App iniciado. Aguardando comandos.</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

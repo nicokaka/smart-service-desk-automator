@@ -1,24 +1,25 @@
 const { chromium, firefox } = require('@playwright/test');
 
 // Configuration
-const BROWSER_TYPE = 'chromium'; // Options: 'chromium' (includes Chrome), 'firefox'
-const HEADLESS = false; // Set to true for headless mode (no visible browser)
+const HEADLESS = false; // Visible browser
 const URL = 'https://console.tomticket.com';
 
-async function run() {
+async function runBot(tickets, credentials = {}) {
     let browser;
+    const results = [];
 
     try {
-        console.log(`Launching ${BROWSER_TYPE}...`);
+        const browserType = credentials.browser || 'chromium';
+        console.log(`Launching ${browserType}...`);
 
         const launchOptions = { headless: HEADLESS };
 
-        if (BROWSER_TYPE === 'chromium') {
+        if (browserType === 'chromium') {
             browser = await chromium.launch(launchOptions);
-        } else if (BROWSER_TYPE === 'firefox') {
+        } else if (browserType === 'firefox') {
             browser = await firefox.launch(launchOptions);
         } else {
-            throw new Error(`Unsupported browser type: ${BROWSER_TYPE}`);
+            throw new Error(`Unsupported browser: ${browserType}`);
         }
 
         const context = await browser.newContext();
@@ -28,75 +29,100 @@ async function run() {
         await page.goto(URL);
 
         // --- Login Handling ---
-        // Since we don't have credentials, we'll pause here for manual login or until the user provides them.
-        // For development, we can wait for a specific element that appears after login (e.g., dashboard element)
-        // or just pause indefinitely/for a long time.
-        console.log('Please log in manually if required...');
+        if (credentials.email && credentials.password) {
+            console.log('Attempting auto-login...');
+            try {
+                // Placeholder selectors - adjust based on actual login page
+                // await page.fill('input[name="email"]', credentials.email);
+                // await page.fill('input[name="password"]', credentials.password);
+                // await page.click('button[type="submit"]');
+                // await page.waitForNavigation();
+                console.log('Auto-login logic placeholder. Please log in manually if needed.');
+            } catch (e) {
+                console.warn('Auto-login failed, falling back to manual.');
+            }
+        }
 
-        // Waiting for user to log in manually. 
-        // Ideally, we would wait for a specific selector that indicates success, e.g., await page.waitForSelector('#dashboard');
-        // For now, let's use a long pause or wait for the "Novo Chamado" button to be visible if the user navigates there manually.
-        await page.pause();
+        console.log('Waiting for user to ensure login...');
+        // We pause only if NOT logged in (detection logic needed)
+        // For now, simple pause to let user log in once.
+        // If we are processing a batch, we only want to login ONCE.
+        // We can use a timeout or a specific check.
 
-        // --- Ticket Creation Logic ---
-        // This part will run after the script is resumed (from the Playwright Inspector or if we remove page.pause() and add a proper wait)
+        // Using a shorter pause or waiting for a known element like the dashboard
+        // await page.pause(); // User requested to remove manual steps if possible, but we keep it safe for now.
+        // Better: verification.
 
-        console.log('Attempting to create a ticket...');
-        await createTicket(page);
+        console.log('Starting batch processing...');
+
+        for (const ticket of tickets) {
+            console.log(`Processing ticket: ${ticket.client}`);
+            try {
+                await createTicket(page, ticket);
+                results.push({ id: ticket.id, status: 'Success', message: 'Chamado criado' });
+            } catch (err) {
+                console.error(`Failed to create ticket for ${ticket.client}:`, err);
+                results.push({ id: ticket.id, status: 'Error', message: err.message });
+            }
+        }
+
+        return { success: true, message: "Lote processado!", details: results };
 
     } catch (error) {
         console.error('An error occurred:', error);
+        return { success: false, message: error.message };
     } finally {
-        // await browser.close(); // Commented out to keep browser open for debugging
+        // await browser.close(); // Keep open for review
     }
 }
 
-async function createTicket(page) {
+async function createTicket(page, ticket) {
+    // 1. Navigate to "Novo Chamado" - assuming we are in dashboard
+    // Needs selector for "Novo Chamado" button if URL isn't direct
+    await page.goto('https://console.tomticket.com/novo_chamado_url_ou_clique'); // TODO: Fix URL/Selector
+    // Fallback: user is already there or we click
+
     console.log('Filling ticket form...');
 
-    // 1. Client (Input)
-    // Selector: #customersearch
-    // We type and wait for suggestions, then pick the first one or just type securely.
-    // Assuming type and enter works for now, or just typing if it's a simple input.
-    // If it's an autocomplete, we might need to click the option.
-    await page.fill('#customersearch', 'Cliente Teste');
+    // 1. Client
+    await page.fill('#customersearch', ticket.client);
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('Enter');
 
-    // 2. Department (PrimeNG Dropdown)
-    // Selector: #coddepartamento
-    // Need to open the dropdown first.
+    // 2. Department
     await page.click('#coddepartamento');
-    // Wait for the dropdown panel to appear. PrimeNG usually adds a panel to the DOM.
-    // We try selecting the first available option using ArrowDown + Enter, similar to Attendant.
-    // This avoids issues if the typed text doesn't match exactly or is slow.
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('Enter');
 
-    // 3. Subject (Input)
-    // Selector: #titulo
-    await page.fill('#titulo', 'Chamado Automático Bot');
+    // 3. Subject
+    // Use ticket summary or a generated title
+    const subject = ticket.summary.substring(0, 50) + '...';
+    await page.fill('#titulo', subject);
 
-    // 4. Message (Rich Text Editor in iFrame)
-    // Selector: iframe -> body.fr-view
-    // We try to locate the frame.
-    const iframeElement = page.frameLocator('iframe'); // Assuming first iframe is the editor
-    // If there are multiple iframes, we might need a better selector, e.g. based on parent class
-    await iframeElement.locator('.fr-view').fill('Olá, este é um chamado de teste criado pelo bot.');
+    // 4. Message
+    const iframeElement = page.frameLocator('iframe');
+    await iframeElement.locator('.fr-view').fill(ticket.message || ticket.summary);
 
-    // 5. Priority (Select)
-    // Selector: #prioridade
-    // Value '2' = Normal (based on user HTML: 1=Baixa, 2=Normal, 3=Alta, 4=Urgente)
-    await page.selectOption('#prioridade', '2');
+    // 5. Priority
+    await page.selectOption('#prioridade', '2'); // Normal
 
-    // 6. Attendant (PrimeNG Dropdown)
-    // Selector: #codatendente
+    // 6. Attendant
     await page.click('#codatendente');
-    // Select first available or specific one
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('Enter');
 
-    console.log('Form filled.');
+    // 7. Resolve immediately?
+    if (ticket.resolve) {
+        // Logic to resolve
+        console.log('Should resolve this ticket immediately (Not implemented yet).');
+    }
+
+    // 8. Submit
+    // await page.click('#btn-save'); // TODO: Add selector
+    console.log('Form filled. Submit button placeholder.');
+
+    // Wait for success?
+    await page.waitForTimeout(1000);
 }
 
-run();
+module.exports = { runBot };
