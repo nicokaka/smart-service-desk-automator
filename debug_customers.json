@@ -1,0 +1,4524 @@
+[
+  {
+    "id": null,
+    "name": " THAIS LIDIANE DA SILVA MARQUES ",
+    "email": "thais.lidiane@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Adalberto Marques",
+    "email": "adalberto.marques@hebron.com.br",
+    "phone": "62 981241794",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Alessadnra Furlaneto",
+    "email": "alessadnra@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-19",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Allan Emanoel",
+    "email": "allan.emanoel@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-09-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Allan Max",
+    "email": "allan.max@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-09-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Carla Barbosa Souza",
+    "email": "ana.carla@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-08-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Carolina Chaves",
+    "email": "ana.carolina@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-07-18",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Laura Guimarães Norte",
+    "email": "ana.laura@hebron.com.br",
+    "phone": "31997587517",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-08-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Luiza",
+    "email": "ana.luiza@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "3dbb6c9319ca8ce0ec4b8513eff8461c",
+      "name": "QUESALON - ALHANDRA"
+    },
+    "creation_date": "2025-06-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Maria",
+    "email": "anamaria@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Paula Pereira Galdino Vitorino",
+    "email": "anavitorino@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Raquel Guedes de Freitas ",
+    "email": "ana.raquel@hebron.com.br",
+    "phone": "83 998012880 ",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-09-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Rebeca",
+    "email": "ana.rebeca@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ana Virginia Morais",
+    "email": "anamorais@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Andre Luiz Albuquerque",
+    "email": "andre.luiz@hebron.com.br",
+    "phone": "61982773105",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Andreia /Jovem",
+    "email": "treinamento@hebron.com.br",
+    "phone": "",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-05-22",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Andreia Teixeira ",
+    "email": "andreia.nelsa@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Andreza Cristina",
+    "email": "andreza.cristina@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-05-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "André Matos",
+    "email": "andre.matos@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2025-01-14",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ane Tributino",
+    "email": "contasapagar@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Angelo Quaresma",
+    "email": "expedicao@hebron.com.brr",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Angélica",
+    "email": "ssma@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-03-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Anna Carolina",
+    "email": "anna.carolina@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Anthony",
+    "email": "anthony@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Arnaldo J. Mesquita Jr.",
+    "email": "arnaldo.mesquita@hebron.com.br",
+    "phone": "11991534046",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Arthur Soares",
+    "email": "arthur.luiz@hebron.com.br",
+    "phone": "21980235283",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Avaniel Marinho da Silva",
+    "email": "avaniel@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2023-02-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Beatriz Lopes",
+    "email": "beatriz.paula@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Bernardo Nunes",
+    "email": "bernardo.nunes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-11-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Bianca Sena",
+    "email": "bianca.sena@hebron.com.br",
+    "phone": "92999713748",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Bruno de Carvalho Gouvêa ",
+    "email": "bruno.carvalho@hebron.com.br",
+    "phone": "35984226528",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Bruno de Matos Henrique",
+    "email": "bruno@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-02-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "CRISTINA JARZYNSKI",
+    "email": "cristina.arnt@hebron.com.br",
+    "phone": "51997258090",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Caio Vitor Ribeiro",
+    "email": "caio.vitor@hebron.com.br",
+    "phone": "37999776255",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Camilla Sieba",
+    "email": "camila.sieba@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Carla Winter",
+    "email": "carla.winter@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-04-22",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Carlos Alberto",
+    "email": "csamarques.consultor@hebron.com.brq",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-03-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Carlos Eduardo Pinto",
+    "email": "carlos.medeiros@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Cezar Augusto Martins Pereira",
+    "email": "cezar.augusto@hebron.com.br",
+    "phone": "19994394920",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-02-02",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Charles Lopes",
+    "email": "charles.lopes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-01",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Claudio Cloppa",
+    "email": "claudio.coppla@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-10-04",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Cleidiane Melo Garcia Marques",
+    "email": "cleidiane.melo@hebron.com.br",
+    "phone": "98981843163",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2025-10-22",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Cleiton Adriano Damião",
+    "email": "cleiton.adriano@hebron.com.br",
+    "phone": "19983071206",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Cristhiane Peres",
+    "email": "cristhiane.peres@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-09-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Cristiane Carvalho Pereira",
+    "email": "cristiane.carvalho@hebron.com.br",
+    "phone": "21994021666",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-12-14",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Cristina Dall’Agnol Schlotefeldt",
+    "email": "cristina.dallagnol@hebron.com.br",
+    "phone": "54996851090",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-02-07",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "DANIELLE ANNE MARQUES PEDRAS",
+    "email": "danielle.anne@hebron.com.br",
+    "phone": "21969718741",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Daiane Karine",
+    "email": "assistentealmoxarifado@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Daniel Amaral Ferreira",
+    "email": "daniel.ferreira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-03-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Danilo de Lima",
+    "email": "danilo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Diogo Orimar",
+    "email": "diogo.orimar@farmaciastradicao.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-01-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Dr. Severino Santos",
+    "email": "santosdr@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2023-07-04",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "EDSON MAURO TEIXEIRA ROCHA ",
+    "email": "edson.mauro@hebron.com.br",
+    "phone": "031988881080",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2024-04-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "ERIVELTON MAIA",
+    "email": "erivelton.maia@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-12-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "EUZAMAR VIANA MACEDO JUNIOR ",
+    "email": "euzamar.viana@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Edna De Sobral",
+    "email": "edna.sobral@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-14",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Eduardo Dantas Leite",
+    "email": "edantasleite@gmail.com",
+    "phone": "22999184968",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-10",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Eduardo Soares Dantas ",
+    "email": "eduardo.soares@hebron.com.br",
+    "phone": "83996780836",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-09-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Elaine de Souza Fernandes",
+    "email": "elaine.souza@hebron.com.br",
+    "phone": "31991334342",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2025-03-10",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Elba Cunha",
+    "email": "elba@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Elder",
+    "email": "elder.machado@hebron.com.br",
+    "phone": "24 98818-6839",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-12-07",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Eliane Dutra",
+    "email": "eliane@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Elimar Antonio",
+    "email": "elimar.antonio@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-11-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Elisa Vega",
+    "email": "elisa.caroline@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-10-03",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Elisabete Vieira de Souza",
+    "email": "elisabete.vieira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-09-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Erickson Costa",
+    "email": "erickson.alexandre@hebron.com.br",
+    "phone": "41991195060",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ericlécia Alves",
+    "email": "contasareceber@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Erivan Rodrigues",
+    "email": "erivan.rodrigues@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Erivonaldo José",
+    "email": "erivonaldo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Esdras Anselmo",
+    "email": "anselmo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Evilásio",
+    "email": "evilasio@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Expedição Paraiba",
+    "email": "experdicao.pb@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "3dbb6c9319ca8ce0ec4b8513eff8461c",
+      "name": "QUESALON - ALHANDRA"
+    },
+    "creation_date": "2025-06-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "FABIO",
+    "email": "fabio.soares@hebron.com.br",
+    "phone": "11 987128958",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "FLUVIO CESAR SILVA DE LUNA",
+    "email": "fluvio.cesar@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-01-22",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "FRANCISCO AGUIAR GURGEL JUNIOR",
+    "email": "gurgel@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-05-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Fabianne",
+    "email": "fabianne.karina@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-08-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Fabio Alves",
+    "email": "fabio@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Felipe Salvi",
+    "email": "felipe.salvi@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-09-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Felipe Stallone",
+    "email": "felipe.stallone@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-09-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Fernanda Albano Venancio Gonçalves ",
+    "email": "fernanda.albano@hebron.com.br",
+    "phone": "32 988286412",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Fernanda Gonçales Guimarães ",
+    "email": "Fernanda.guimaraes@hebron.com.br",
+    "phone": "31997997491",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2024-03-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Fernanda Henrique",
+    "email": "fernanda@hebron.com.br",
+    "phone": "(81) 993105876",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-09-14",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Fernando Stutz",
+    "email": "fernando.vieira@hebron.com.br",
+    "phone": "21979739457",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-23",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Filipe Honório",
+    "email": "filipe.honorio@hebron.com.br",
+    "phone": "(81)996796370",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "825b0ff76b14a92e61d3bfca24cd6ba9",
+      "name": "ASEEC"
+    },
+    "creation_date": "2023-01-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Flávia Roberta Perez",
+    "email": "flavia.roberta@hebron.com.br",
+    "phone": "19999471105",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-02-03",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Fábio Vandré Cristino",
+    "email": "fabio.vandre@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-10-23",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Gabriela De Biase",
+    "email": "gabriela.biase@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Gabriele Barboza Ferreira",
+    "email": "gabriele.barboza@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Geicy Roseane",
+    "email": "geicy.roseane@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-08-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Geraldo Neves Martins Junior",
+    "email": "geraldo.junior@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-03-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Gessivaldo Gomes",
+    "email": "",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-09-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Gilberto alves de sousa",
+    "email": "gilberto.alves@hebron.com.br",
+    "phone": "61994554848",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Gilmar Henrique",
+    "email": "gilmar.henrique@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2026-01-19",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Giovani Nunes e Silva",
+    "email": "giovani.nunes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-06-06",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Giseli de Oliveira Pessanha",
+    "email": "giseli.oliveira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-10-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Giuliane da Cunha gomes",
+    "email": "giuliane.cunha@hebron.com.br",
+    "phone": "69992241293",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Glauber Barbosa",
+    "email": "glauber.barbosa@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Glécia Lopes de Sá",
+    "email": "glecia@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "3dbb6c9319ca8ce0ec4b8513eff8461c",
+      "name": "QUESALON - ALHANDRA"
+    },
+    "creation_date": "2025-06-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Greby Rojas Soto",
+    "email": "greby.rojas@hebron.com.br",
+    "phone": "11951485486",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Gregory Emidio",
+    "email": "gregory@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-03-31",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Guilherme Pires",
+    "email": "guilherme@hebron.com.br",
+    "phone": "81992442122",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-09-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Haliny Silva",
+    "email": "haliny@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Haroldo.gomes@hebron.com.br",
+    "email": "haroldo.gomes@hebron.com.br",
+    "phone": "51991559125",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-02-07",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Henrique Alves Junior",
+    "email": "henrique.alves@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-09-10",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Henrique Neto",
+    "email": "henrique@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Hugo Antônio de Senna Machado",
+    "email": "hugo.antonio@hebron.com.br",
+    "phone": "31987137701",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-09-22",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ilana Cristine",
+    "email": "ilana@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Inaldo Chaves Filho",
+    "email": "inaldo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Isabelle Rossi",
+    "email": "isabelle.rossi@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ismaile",
+    "email": "ismaile.gazetta@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Itamara Juliana",
+    "email": "itamara.juliana@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-10-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ivanaldo João",
+    "email": "ivanaldo.joao@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "JEAN PAUL DE ARAUJO VERAS",
+    "email": "jean.paul@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-10-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jader",
+    "email": "jader.danilo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-07-18",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jakciella Maria",
+    "email": "jakciella.maria@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-19",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Janaina Regina",
+    "email": "janaina.regina@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-03-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Janaina Virtuoso",
+    "email": "janaina.virtuoso@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jaqueline Silva Amorim",
+    "email": "jaqueline.amorim@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jean Ricardo",
+    "email": "Jean.ricardo@hebron.com.br",
+    "phone": "15988052471",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-02-03",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jessica Kaline",
+    "email": "jessica.kaline@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-14",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Joana Simplicio",
+    "email": "joana@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jonatas Rafael",
+    "email": "jonatas.rafael@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jose Carmelio Nunes de Lucena Costa",
+    "email": "jose.carmelio@hebron.com.br",
+    "phone": "83999125352",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jose eduardo",
+    "email": "jose.eduardo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2025-02-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Josias",
+    "email": "",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-02-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Josimar Henrique Jr",
+    "email": "josimarjunior@hebron.com.br",
+    "phone": "+5581993106703",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-09-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "José Jailson",
+    "email": "jailson@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-08",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jovem Administrativo",
+    "email": "jovem.adm@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-01-19",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jovem Aprendiz Faturamento",
+    "email": "jovem.faturamento@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jovem Aprendiz Jurídico",
+    "email": "jovem.juridico@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jovem Aprendiz Marketing",
+    "email": "jovem.mkt@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jovem aprendiz contabilidade",
+    "email": "docs.contabil@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Joás Henrique",
+    "email": "joas@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-10-02",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "João Batista de Carvalho",
+    "email": "joao.batista@hebron.com.br",
+    "phone": "62984938617",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Jucimara Pereira",
+    "email": "jucimara.pereira@hebron.com.br",
+    "phone": "35991673424",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "9bd4adb1e4afffd4a896c97f331b0aba",
+      "name": "QUESALON - EXTREMA"
+    },
+    "creation_date": "2022-11-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Julia Dachewsky",
+    "email": "julia.dachewsky@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Julia Lopes",
+    "email": "julia@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Julia Teresa Rolim de Moura Camilo ",
+    "email": "julia.teresa@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Juliana Lira",
+    "email": "juliana.lira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Juliana Pereira",
+    "email": "juliana.pereira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "KAUANE KAREN MARTINS",
+    "email": "kauane.karen@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-03-31",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Karolyne Silva",
+    "email": "karolyne.silva@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-07-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Karyne Queiroz",
+    "email": "karyne.queiroz@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-09-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Kelly Carvalho",
+    "email": "kelly@hebron.com.br",
+    "phone": "81991093071",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-04-05",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Kenia Campos",
+    "email": "kenia.campos@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-10-01",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Larissa Sierra",
+    "email": "larissa.sierra@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-10-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Laís Silva",
+    "email": "lais.silva@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Leonardo Goncalves Frota",
+    "email": "leonardo.goncalves@hebron.com.br",
+    "phone": "95981150029",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-04-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Leticia Paula Oliveira Rodrigues Marques",
+    "email": "leticia.paula@hebron.com.br",
+    "phone": "31 991893091",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-07-18",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Letícia Clementino",
+    "email": "leticia.silva@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lorena",
+    "email": "lorena.teixeira@hebron.com.br",
+    "phone": "62985288684",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-01",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lorena Tavares",
+    "email": "lorena.tavares@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-03-31",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Luana ",
+    "email": "luana.nunes@hebron.com.br",
+    "phone": "61991614070",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-04-18",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lucas Carvalho",
+    "email": "lcarvalho@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-10-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lucas de Lima dos Santos ",
+    "email": "lucas.santos@hebron.com.br",
+    "phone": "21969386392",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2025-04-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Luciana Oliveira",
+    "email": "luciana.oliveira@hebron.com.br",
+    "phone": "81988752344",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-05-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lucienne Campos Cantarelli ",
+    "email": "lucienne.campos@hebron.com.br",
+    "phone": "81997941973",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lucimar Angelo",
+    "email": "lucimar.angelo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-06-06",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lucineide Ribeiro de Souza",
+    "email": "lucineide@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Luiz Felipe Rebelo",
+    "email": "luiz.felipe@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Luiz Gustavo Rangel",
+    "email": "luiz.gustavo@hebron.com.br",
+    "phone": "81 999440338",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Lusia NutriHouse",
+    "email": "",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-10-14",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Luís Daniel da Silva",
+    "email": "luis.daniel@hebron.com.br",
+    "phone": "51 992979183",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-03-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "MARCO ANTONIO ROMANO QUINTAO JUNIOR",
+    "email": "marco.antonio@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-10-31",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Magdiel Lopes",
+    "email": "magdiel@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2026-01-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Manoel",
+    "email": "manoel.henrique@hebron.com.br",
+    "phone": "62991878091",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Marcelo Franco Litrico",
+    "email": "marcelo.litrico@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-06-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Marcelo Lopes de Menezes",
+    "email": "marcelo.lopes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-08-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Marcelo Nascimento Silva",
+    "email": "marcelo.nascimento@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-01-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Marcelo Pereira dos Santos",
+    "email": "marcelo@hebron.com.br",
+    "phone": "81994331448",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Marcia Maria",
+    "email": "analsitas.cq@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Maria Eduarda",
+    "email": "mariaeduarda@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Maria Ernestina",
+    "email": "",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Maria Fernanda Van Der Neut",
+    "email": "maria.fernanda@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-11-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Maria Gabriella Oliveira ",
+    "email": "maria.gabriella@hebron.com.br",
+    "phone": "16996424668",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2025-03-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Mariana Lopes Dutra",
+    "email": "mariana.lopes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-07-22",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Marilia ",
+    "email": "marilia.vieira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-05-26",
+    "custom_fields": []
+  },
+  {
+    "id": "FO-171-215-753",
+    "name": "Marlon Cronin",
+    "email": "benjamin.christiansen@example.com",
+    "phone": "862-934-3671",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2025-10-01",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Mathusael",
+    "email": "mathusael.costa@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-09-19",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Maury de Souza Paiva",
+    "email": "maury.souza@hebron.com.br",
+    "phone": "31983123055",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-10",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Maximério Alves",
+    "email": "",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Mayara Dal",
+    "email": "mayara.dal@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-04",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Mayra Viana",
+    "email": "mayra.viana@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Mayrton Lima",
+    "email": "mayrton.lima@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Maísa Clarice Albuquerque de Melo",
+    "email": "maisa.clarice@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-10-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Melissa Leite",
+    "email": "melissa@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Michele Alves",
+    "email": "michele.alves@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "3dbb6c9319ca8ce0ec4b8513eff8461c",
+      "name": "QUESALON - ALHANDRA"
+    },
+    "creation_date": "2025-06-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Monica D'Angelo",
+    "email": "monica.dangelo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "MÁRBIA CAROLINA DA SILVA TEIXEIRA DE ASSUNÇÃO",
+    "email": "marbia.carolina@hebron.com.br",
+    "phone": "91982166032",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Nadja Lucena",
+    "email": "nadja.lucena@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-03-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Natalia Pereira",
+    "email": "natalia.pereira@hebron.com.br",
+    "phone": "35991186580",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "9bd4adb1e4afffd4a896c97f331b0aba",
+      "name": "QUESALON - EXTREMA"
+    },
+    "creation_date": "2022-11-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Natália Coimbra",
+    "email": "natalia.queiroz@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-30",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Nayara Souto Maior",
+    "email": "nayara@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-18",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Nelson Olimpio",
+    "email": "analistas.cq@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-01",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Neuciney Almeida Costa",
+    "email": "neuciney.almeida@hebron.com.br",
+    "phone": "67999515831",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-07",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Nubia Nafaiete",
+    "email": "almoxarifado@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Nícolas Oliveira de Araújo",
+    "email": "nicolas.oliveira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-12-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "OSMAN MELO",
+    "email": "osman.soares@hebron.com.br",
+    "phone": "81995253616",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ohanna Fernandes",
+    "email": "ohanna.fernandes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ozias",
+    "email": "ozias@hebron.com.br",
+    "phone": "83998344980",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "3dbb6c9319ca8ce0ec4b8513eff8461c",
+      "name": "QUESALON - ALHANDRA"
+    },
+    "creation_date": "2022-11-22",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "PAULO RICARDO DE OLIVEIRA GUENA",
+    "email": "paulo.ricardo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-03-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "PEDRO CREPALDI NETO",
+    "email": "pedro.crepaldi@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-03-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Paloma Henrique",
+    "email": "paloma@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2023-03-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Patricia Vieira",
+    "email": "patricia.vieira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-08-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Paula Aparecida",
+    "email": "paula@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-14",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Paulo José",
+    "email": "paulo.santos@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-08-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Pedro ",
+    "email": "pedro.henrique@hebron.com.br",
+    "phone": "11991631201",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-04-06",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Pedro Romero",
+    "email": "manutencao@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Pollianna Martins",
+    "email": "pollianna@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Priscilla Regina",
+    "email": "priscila@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "RH",
+    "email": "rh@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-12-13",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Rafael Gullo",
+    "email": "rafael.gullo@hebron.com.br",
+    "phone": "21997177968",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Rafael Pereira",
+    "email": "rafael.pereira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-10-03",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Rafaella Ribeiro",
+    "email": "rafaella.rosa@hebron.com.br",
+    "phone": "62993962596",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Raiane Viana",
+    "email": "raiane.viana@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-26",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Raphael",
+    "email": "karlison.raphael@hebron.com.br",
+    "phone": "82999720130",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Raquel Damarys",
+    "email": "raquel.damarys@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-08-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Raquel Lucena",
+    "email": "raquel@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Raysa Carla",
+    "email": "raysa.carla@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Recepção Hebron",
+    "email": "recepcao@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2024-06-10",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Renato Torres da silva",
+    "email": "renato.torres@hebron.com.br",
+    "phone": "11980332110",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-05-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Rinara",
+    "email": "rinara.sodre@hebron.com.br",
+    "phone": "31996790632",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-08-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Roberta Oliveira",
+    "email": "roberta.oliveira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-20",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Robespierre Araujo",
+    "email": "pierre.araujo@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-09-04",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Robson Wellington Dias ",
+    "email": "robson.wellington@hebron.com.br",
+    "phone": "034988785069",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-01-31",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Rodrigo",
+    "email": "rodrigo.vargas@hebron.com.br",
+    "phone": "55996418133",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-18",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Romero Pedro",
+    "email": "romero@hebron.com.br",
+    "phone": "83991075568",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-04-05",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Rozineide De Lima",
+    "email": "controlequalidade@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-04",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "SERGIO SOARES",
+    "email": "sergio.xavier@hebron.com.br",
+    "phone": "31988779996",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-08",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Sabrina Vilela",
+    "email": "sabrina.neves@hebron.com.br",
+    "phone": "33988239954",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Samara Priscila",
+    "email": "samara.priscila@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-04-29",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Samuel Teixeira da Costa",
+    "email": "samuel.teixeira@hebron.com.br",
+    "phone": "69992566336",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Sergio Ricardo",
+    "email": "sergio@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-01",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Sergio Vagner",
+    "email": "segurancadotrabalho@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-08-04",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Shirleany Galdino",
+    "email": "shirleany@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-20",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Silvana Carla Siqueira Sanguinetti",
+    "email": "silvana@hebron.com.br",
+    "phone": "81992121380",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Stivie Roger do Nascimento Lioça Pereira",
+    "email": "stivie.roger@hebron.com.br",
+    "phone": "92984023665",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Suzana",
+    "email": "suzana.assuncao@hebron.com.br",
+    "phone": "21984012027",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-03-05",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "TARCIANA REBEKA FELIX DE OLIVEIRA",
+    "email": "tarciana@hebron.com.br",
+    "phone": "81989921812",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-09",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Tamara",
+    "email": "tamara.oliveira@hebron.com.br",
+    "phone": "67999456252",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Tatiana Mirela - INFAN",
+    "email": "tatiana@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-06-17",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Tatyana Ingrid VET",
+    "email": "tatyanna.ingrid@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-11-07",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Tercio Henrique",
+    "email": "tercio@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-09-08",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Thamyres Samara",
+    "email": "thamyres@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-09-02",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Thayama",
+    "email": "thayama.lima@hebron.com.br",
+    "phone": "(92)992888615",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-10-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Thiago Souza",
+    "email": "thiago@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-09-24",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Tiago Ceretta Haupenthal",
+    "email": "tiago.ceretta@hebron.com.br",
+    "phone": "55991396873",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-02-23",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Tiago Luiz",
+    "email": "material.embalagem@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-31",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Ulisses Matheus Gonçalves",
+    "email": "ulisses.matheus@hebron.com.br",
+    "phone": "17996775833",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-02-06",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vanessa Gomes",
+    "email": "vanessa.gomes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-08-03",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vanessa Lais",
+    "email": "vanessa.lais@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-09-03",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vanessa Lopes Santana",
+    "email": "vanessacaligrafia@hotmail.com",
+    "phone": "37 999572964",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-08-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vanessa Lopes Santana",
+    "email": "vanessa.lopes@hebron.com.br",
+    "phone": "37999572964",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-01-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vanessa Maria Reich",
+    "email": "vanessa.maria@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2025-10-31",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vinicius Falcao",
+    "email": "vfalcao@hebronamerica.com",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-08-01",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vitor Moraes",
+    "email": "vitor.moraes@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-12-08",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Viviane Malagueta ",
+    "email": "viviane.malagueta@hebron.com",
+    "phone": "19983404054",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2022-11-10",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Vivianne Santos",
+    "email": "viviannesantos@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-15",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "WESLEY PEREIRA GUIMARAES FELIX",
+    "email": "wesley.pereira@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2023-08-21",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Wedja Henrique",
+    "email": "wedja@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2024-03-25",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Wendel Fernandes",
+    "email": "wendel.nascimento@hebron.com.br",
+    "phone": "81999030918",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2025-06-11",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Werika Torres",
+    "email": "werika@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2025-07-28",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Williane Santos",
+    "email": "williane@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Yuri Lenen Bernando dos Santos",
+    "email": "yuri@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "4d7e0f5d23a59a199baf2cb933489db0",
+      "name": "NPD"
+    },
+    "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "carlos.cesar@hebron.com.br",
+    "email": "carlos.cesar@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2023-01-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "teste",
+    "email": "teste@teste.com",
+    "phone": "993943949349",
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": null,
+      "name": null
+    },
+    "creation_date": "2022-11-01",
+    "custom_fields": []
+  }
+]
