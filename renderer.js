@@ -1,4 +1,4 @@
-// DOM Elements
+// Elementos do DOM
 const tabs = document.querySelectorAll('.nav-item');
 const tabContents = document.querySelectorAll('.tab-content');
 const btnAddRow = document.getElementById('btn-add-row');
@@ -25,7 +25,7 @@ const logsOutput = document.getElementById('logs-output');
 // State
 let rowCount = 0;
 
-// Tab Switching Logic
+// Lógica de Troca de Abas
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
         // Remove active class from all
@@ -39,7 +39,7 @@ tabs.forEach(tab => {
     });
 });
 
-// Helper: Log message
+// Auxiliar: Mensagem de Log
 function log(msg) {
     const div = document.createElement('div');
     div.classList.add('log-entry');
@@ -48,25 +48,25 @@ function log(msg) {
     logsOutput.scrollTop = logsOutput.scrollHeight;
 }
 
-// Departments List (Will be overwritten by API)
+// Lista de Departamentos (Será sobrescrita pela API)
 let DEPARTMENTS = [
     "Administrativo", "Comercial", "TI" // Minimal fallback
 ];
 
-// Categories List (Will be overwritten by API)
+// Lista de Categorias (Será sobrescrita pela API)
 let CATEGORIES = [
     "Outros" // Minimal fallback
 ];
 
-// Grid: Add Row
+// Grade: Adicionar Linha
 function addRow() {
     rowCount++;
     const tr = document.createElement('tr');
     tr.dataset.id = rowCount;
 
-    // Create Department Options
+    // Criar Opções de Departamento
     const deptOptions = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
-    // Create Category Options
+    // Criar Opções de Categoria
     const catOptions = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
 
     tr.innerHTML = `
@@ -96,7 +96,7 @@ function addRow() {
     tableBody.appendChild(tr);
 }
 
-// Grid: Remove Row
+// Grade: Remover Linha
 window.removeRow = function (btn) {
     const tr = btn.closest('tr');
     tr.remove();
@@ -104,10 +104,10 @@ window.removeRow = function (btn) {
 
 btnAddRow.addEventListener('click', addRow);
 
-// Add initial row
+// Adicionar linha inicial
 addRow();
 
-// Generate AI Logic
+// Lógica de Geração de IA
 btnGenerateAI.addEventListener('click', async () => {
     log('Solicitando geração de texto para linhas selecionadas...');
     const rows = document.querySelectorAll('#ticket-queue-body tr');
@@ -121,7 +121,7 @@ btnGenerateAI.addEventListener('click', async () => {
             if (summary) {
                 messageInput.value = "Gerando...";
                 try {
-                    // Call Electron API (Main Process)
+                    // Chamar API Electron (Processo Principal)
                     const aiText = await window.electronAPI.generateAI(summary);
                     messageInput.value = aiText;
                     log(`IA gerou texto para linha ${tr.dataset.id}`);
@@ -134,7 +134,7 @@ btnGenerateAI.addEventListener('click', async () => {
     }
 });
 
-// Start Bot Logic
+// Lógica de Início do Bot
 btnStartBot.addEventListener('click', async () => {
     log('Iniciando processamento do Bot...');
     const dataToProcess = [];
@@ -164,7 +164,7 @@ btnStartBot.addEventListener('click', async () => {
 
     log(`Enviando ${dataToProcess.length} tickets para o bot.`);
 
-    // Call Electron API
+    // Chamar API Electron
     const credentials = {
         account: document.getElementById('settings-account').value,
         email: document.getElementById('settings-email').value,
@@ -177,14 +177,14 @@ btnStartBot.addEventListener('click', async () => {
     log(`Resultado: ${result.message}`);
 });
 
-// --- Sync Data ---
+// --- Sincronizar Dados ---
 async function syncData() {
     const token = localStorage.getItem('tomticketToken');
     if (!token) return;
 
     log('Sincronizando Departamentos e Categorias...');
 
-    // Departments
+    // Departamentos
     const depResult = await window.electronAPI.tomticketApi(token, 'departments');
     if (depResult.success && depResult.data) {
         DEPARTMENTS = depResult.data.map(d => d.name).sort();
@@ -197,19 +197,19 @@ async function syncData() {
         log(`Departamentos atualizados: ${DEPARTMENTS.length}`);
     }
 
-    // 2. Categories (Sequential Fetch to avoid 429 Errors)
+    // 2. Categorias (Busca Sequencial para evitar Erros 429)
     if (window.fullDepartments) {
         let allCats = new Set();
         let count = 0;
         const total = window.fullDepartments.length;
 
-        // Fetch sequentially
+        // Buscar sequencialmente
         for (const dep of window.fullDepartments) {
             count++;
-            // Update button status to show progress with spinner
-            const btnSync = document.getElementById('btn-sync-data');
-            if (btnSync) {
-                btnSync.innerHTML = `<span class="spinner"></span> Sincronizando... (${count}/${total})`;
+            // Atualizar status do botão para mostrar progresso com spinner
+            const btnSave = document.getElementById('btn-save-settings');
+            if (btnSave) {
+                btnSave.innerHTML = `<span class="spinner"></span> Sincronizando... (${count}/${total})`;
             }
 
             try {
@@ -217,7 +217,7 @@ async function syncData() {
                 if (catResult.success && catResult.data) {
                     catResult.data.forEach(c => allCats.add(c.name));
                 }
-                // Small delay to be nice to the API
+                // Pequeno atraso para ser gentil com a API
                 await new Promise(r => setTimeout(r, 200));
             } catch (err) {
                 console.error(`Falha ao buscar categorias do depto ${dep.id}`, err);
@@ -229,6 +229,7 @@ async function syncData() {
         log(`Categorias atualizadas: ${CATEGORIES.length}`);
     }
 
+    // 4. Atualizar UI imediatamente (Linhas Existentes)
     updateDropdownsInExistingRows();
 }
 
@@ -253,14 +254,14 @@ function updateDropdownsInExistingRows() {
     });
 }
 
-// Load Cached Data
+// Carregar Dados em Cache
 const cachedDeps = localStorage.getItem('cachedDepartments');
 const cachedCats = localStorage.getItem('cachedCategories');
 if (cachedDeps) DEPARTMENTS = JSON.parse(cachedDeps);
 if (cachedCats) CATEGORIES = JSON.parse(cachedCats);
 
 
-// Settings Save
+// Salvar Configurações
 btnSaveSettings.addEventListener('click', async () => {
     const email = document.getElementById('settings-email').value;
     const account = document.getElementById('settings-account').value;
@@ -268,52 +269,40 @@ btnSaveSettings.addEventListener('click', async () => {
 
     if (token) {
         localStorage.setItem('tomticketToken', token);
-        await syncData(); // Sync on save
+
+        // Iniciar Sync com Feedback no Botão Salvar
+        const originalText = btnSaveSettings.innerText;
+        btnSaveSettings.disabled = true;
+        btnSaveSettings.innerHTML = '<span class="spinner"></span> Sincronizando...';
+
+        await syncData(); // A função syncData vai atualizar o texto deste botão
+
+        // Restaurar botão
+        btnSaveSettings.disabled = false;
+        btnSaveSettings.innerText = "Salvo! ✅";
+        btnSaveSettings.style.backgroundColor = "var(--success-color)";
+        btnSaveSettings.style.color = "#1e1e2e";
+
+        setTimeout(() => {
+            btnSaveSettings.innerText = "Salvar Credenciais"; // Restaurar texto original fixo
+            btnSaveSettings.style.backgroundColor = "";
+            btnSaveSettings.style.color = "";
+        }, 3000);
+    } else {
+        // Apenas feedback visual se não tiver token para sync
+        const originalText = btnSaveSettings.innerText;
+        btnSaveSettings.innerText = "Salvo (Sem Token)!";
+        setTimeout(() => btnSaveSettings.innerText = originalText, 2000);
     }
-    // ... existing code ...
 
-    // Feedback without blocking alert
-    const originalText = btnSaveSettings.innerText;
-    btnSaveSettings.innerText = "Salvo! ✅";
-    btnSaveSettings.style.backgroundColor = "var(--success-color)";
-    btnSaveSettings.style.color = "#1e1e2e";
-
-    setTimeout(() => {
-        btnSaveSettings.innerText = originalText;
-        btnSaveSettings.style.backgroundColor = ""; // Reset
-        btnSaveSettings.style.color = "";
-    }, 2000);
+    localStorage.setItem('tomticketEmail', email);
+    localStorage.setItem('tomticketAccount', account);
+    localStorage.setItem('tomticketBrowser', document.getElementById('settings-browser').value);
 
     log(`Credenciais atualizadas: Conta [${account}] / Email [${email}] / Token [${token ? 'Definido' : 'Vazio'}]`);
 });
 
-// Manual Sync Button
-const btnSyncData = document.getElementById('btn-sync-data');
-if (btnSyncData) {
-    btnSyncData.addEventListener('click', async () => {
-        const token = localStorage.getItem('tomticketToken');
-        if (!token) {
-            log('❌ Erro: Salve o Token nas configurações primeiro!');
-            return;
-        }
-
-        btnSyncData.disabled = true;
-        btnSyncData.innerHTML = '<span class="spinner"></span> Sincronizando...';
-
-        await syncData();
-
-        btnSyncData.disabled = false;
-        btnSyncData.innerText = '🔄 Sincronizar Dados';
-
-        // Non-blocking feedback
-        log('✅ Sincronização concluída! Departamentos, Categorias e Clientes atualizados.');
-        const originalBg = btnSyncData.style.backgroundColor;
-        btnSyncData.style.backgroundColor = 'var(--success-color)';
-        setTimeout(() => btnSyncData.style.backgroundColor = originalBg, 2000);
-    });
-}
-
-// --- API Integration Logic ---
+// --- Lógica de Integração da API ---
 const btnLoadApiTickets = document.getElementById('btnLoadApiTickets');
 const apiStatus = document.getElementById('apiStatus');
 const operatorFilter = document.getElementById('operatorFilter');
@@ -332,7 +321,7 @@ btnLoadApiTickets.addEventListener('click', async () => {
     btnLoadApiTickets.innerText = 'Carregando...';
     apiStatus.innerText = 'Buscando chamados...';
 
-    // Hide empty state if exists
+    // Ocultar estado vazio se existir
     const emptyState = document.querySelector('.empty-state');
     if (emptyState) emptyState.style.display = 'none';
 
@@ -345,7 +334,7 @@ btnLoadApiTickets.addEventListener('click', async () => {
         allTickets = result.data;
         apiStatus.innerText = `${allTickets.length} chamados.`;
 
-        // Show table container
+        // Mostrar container da tabela
         document.getElementById('manager-table-container').classList.remove('hidden');
 
         populateOperatorFilter(allTickets);
@@ -454,7 +443,7 @@ window.setupBotFromTicket = (ticketId) => {
 
     if (ticket.subject) lastRow.querySelector('.input-summary').value = ticket.subject;
 
-    // Visual feedback (Flash effect)
+    // Feedback visual (Efeito Flash)
     lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
     lastRow.style.transition = 'background-color 0.5s';
     lastRow.style.backgroundColor = '#d1e7dd'; // Green-ish highlight

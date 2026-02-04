@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Service Desk Automator</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Google Fonts for Premium Look -->
+    <!-- Google Fonts para Visual Premium -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Barra Lateral -->
         <aside class="sidebar">
             <div class="logo">
                 <h2>⚡ SmartDesk</h2>
@@ -38,10 +38,10 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Conteúdo Principal -->
         <main class="content-area">
 
-            <!-- Tab: Ticket Queue -->
+            <!-- Aba: Fila de Chamados -->
             <div id="queue" class="tab-content active">
                 <header class="tab-header">
                     <h1>Fila de Processamento</h1>
@@ -68,14 +68,14 @@
                             </tr>
                         </thead>
                         <tbody id="ticket-queue-body">
-                            <!-- Rows will be added here by JS -->
+                            <!-- Linhas serão adicionadas aqui pelo JS -->
                         </tbody>
                     </table>
                     <datalist id="clients-list"></datalist>
                 </div>
             </div>
 
-            <!-- Tab: Ticket Manager (Fetch) -->
+            <!-- Aba: Gerenciador de Chamados (Busca) -->
             <div id="manager" class="tab-content">
                 <header class="tab-header">
                     <h1>Gerenciar Chamados Abertos</h1>
@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            <!-- Tab: Settings -->
+            <!-- Aba: Configurações -->
             <div id="settings" class="tab-content">
                 <header class="tab-header">
                     <h1>Configurações de Acesso</h1>
@@ -143,14 +143,12 @@
                         <input type="password" id="apiToken" placeholder="Cole seu Token aqui..." class="input-field">
                         <small style="color: #aaa;">Salvo localmente no seu computador.</small>
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button id="btn-save-settings" class="btn primary">Salvar Credenciais</button>
-                        <button id="btn-sync-data" class="btn secondary">🔄 Sincronizar Dados</button>
-                    </div>
+                    <button id="btn-save-settings" class="btn primary">Salvar Credenciais</button>
                 </div>
             </div>
 
-            <!-- Tab: Logs -->
+
+            <!-- Aba: Logs -->
             <div id="logs" class="tab-content">
                 <header class="tab-header">
                     <h1>Logs de Execução</h1>

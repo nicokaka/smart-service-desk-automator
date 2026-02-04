@@ -1,7 +1,7 @@
 const { chromium, firefox } = require('@playwright/test');
 
-// Configuration
-const HEADLESS = false; // Visible browser
+// Configuração
+const HEADLESS = false; // Navegador visível
 const URL = 'https://console.tomticket.com';
 
 async function runBot(tickets, credentials = {}) {
@@ -28,26 +28,26 @@ async function runBot(tickets, credentials = {}) {
         console.log(`Navigating to ${URL}...`);
         await page.goto(URL);
 
-        // --- Login Handling ---
+        // --- Tratamento de Login ---
         if (credentials.email && credentials.password) {
             console.log('Attempting auto-login...');
             try {
-                // 1. Account (Company)
+                // 1. Conta (Empresa)
                 if (credentials.account) {
                     await page.fill('#conta', credentials.account);
                     console.log(`Filled Account: ${credentials.account}`);
                 }
 
-                // 2. Email & Password
+                // 2. Email e Senha
                 await page.fill('#email', credentials.email);
                 await page.fill('#senha', credentials.password);
 
-                // 3. Submit
-                // Trying common variations based on screenshot (Orange Button)
-                // If it fails, we catch it.
+                // 3. Enviar
+                // Tentando variações comuns baseadas na captura de tela (Botão Laranja)
+                // Se falhar, nós capturamos o erro.
                 await page.click('button[type="submit"], button:has-text("Sign In"), button:has-text("Entrar")');
 
-                // Wait for navigation to Dashboard
+                // Aguardar navegação para o Dashboard
                 await page.waitForNavigation({ timeout: 10000 });
                 console.log('Login submitted. Waiting for dashboard...');
             } catch (e) {
@@ -55,17 +55,17 @@ async function runBot(tickets, credentials = {}) {
             }
         }
 
-        console.log('Waiting for user to ensure login...');
-        // We pause only if NOT logged in (detection logic needed)
-        // For now, simple pause to let user log in once.
-        // If we are processing a batch, we only want to login ONCE.
-        // We can use a timeout or a specific check.
+        console.log('Aguardando usuário confirmar login...');
+        // Pausamos apenas se NÃO estiver logado (necessária lógica de detecção)
+        // Por enquanto, pausa simples para deixar o usuário logar uma vez.
+        // Se estivermos processando um lote, queremos logar apenas UMA vez.
+        // Podemos usar um timeout ou uma verificação específica.
 
-        // Using a shorter pause or waiting for a known element like the dashboard
+        // Usando uma pausa menor ou aguardando um elemento conhecido como o dashboard
         // await page.pause(); // User requested to remove manual steps if possible, but we keep it safe for now.
-        // Better: verification.
+        // Melhor: verificação.
 
-        console.log('Starting batch processing...');
+        console.log('Iniciando processamento em lote...');
 
         for (const ticket of tickets) {
             console.log(`Processing ticket: ${ticket.client}`);
@@ -91,39 +91,39 @@ async function runBot(tickets, credentials = {}) {
 async function createTicket(page, ticket) {
     console.log('Navigating to Ticket Form...');
 
-    // 1. Navigate to "Novo Chamado"
-    // Strategy: We assume the "Novo Chamado" button is visible (Sidebar)
+    // 1. Navegar para "Novo Chamado"
+    // Estratégia: Assumimos que o botão "Novo Chamado" está visível (Barra lateral)
     try {
-        // Try to click the button by text "Novo Chamado"
-        // Based on image, it's a prominent button, possibly a link or button tag.
+        // Tentar clicar no botão pelo texto "Novo Chamado"
+        // Baseado na imagem, é um botão proeminente, possivelmente um link ou tag button.
         await page.click('text="Novo Chamado"');
 
-        // Wait for the form to be ready - check for a unique field like #customersearch
+        // Aguardar formulário estar pronto - verificar campo único como #customersearch
         await page.waitForSelector('#customersearch', { timeout: 5000 });
     } catch (e) {
-        console.warn('Could not click "Novo Chamado" via text, trying URL fallback or retry...');
-        // Fallback: maybe we are already there? or reload dashboard?
-        // await page.goto('https://console.tomticket.com/panel/chamados/novo'); // Guessing URL
+        console.warn('Não foi possível clicar em "Novo Chamado" via texto, tentando URL de fallback ou nova tentativa...');
+        // Fallback: talvez já estejamos lá? ou recarregar dashboard?
+        // await page.goto('https://console.tomticket.com/panel/chamados/novo'); // Tentando adivinhar URL
     }
 
-    // 1. Client
+    // 1. Cliente
     console.log(`Selecting Client: ${ticket.client}`);
     await page.fill('#customersearch', ticket.client);
-    await page.waitForTimeout(1000); // 1s wait for search results
+    await page.waitForTimeout(1000); // Espera de 1s para resultados de busca
     await page.keyboard.press('ArrowDown');
     await page.waitForTimeout(200);
     await page.keyboard.press('Enter');
 
-    // 2. Department
+    // 2. Departamento
     console.log(`Selecting Department: ${ticket.dept}`);
     await page.click('#coddepartamento');
     await page.waitForTimeout(500);
 
-    // Type to filter
+    // Digitar para filtrar
     await page.keyboard.type(ticket.dept);
     await page.waitForTimeout(500);
 
-    // Select Exact Match
+    // Selecionar Correspondência Exata
     try {
         await page.getByText(ticket.dept, { exact: true }).filter({ hasText: ticket.dept }).first().click();
     } catch (e) {
@@ -131,24 +131,24 @@ async function createTicket(page, ticket) {
         await page.keyboard.press('Enter');
     }
 
-    // Wait for the Department selection to trigger Category load
+    // Aguardar seleção de Departamento para carregar Categoria
     console.log('Waiting for Category dropdown to activate...');
-    await page.waitForTimeout(1000); // Reduced to 1s based on user feedback
+    await page.waitForTimeout(1000); // Reduzido para 1s baseado em feedback do usuário
 
-    // 2.5. Category (Tab Navigation Strategy)
+    // 2.5. Categoria (Estratégia de Navegação via Tab)
     if (ticket.category) {
         console.log(`Selecting Category: ${ticket.category}`);
         try {
-            // User suggests: Tab from Department lands on Category
+            // Usuário sugere: Tab do Departamento cai na Categoria
             console.log('Pressing Tab to focus Category...');
             await page.keyboard.press('Tab');
             await page.waitForTimeout(500);
 
-            // Type to filter
+            // Digitar para filtrar
             await page.keyboard.type(ticket.category);
-            await page.waitForTimeout(1000); // Wait for search results
+            await page.waitForTimeout(1000); // Aguardar resultados da pesquisa
 
-            // Select First Result
+            // Selecionar Primeiro Resultado
             console.log('Selecting first result...');
             await page.keyboard.press('ArrowDown');
             await page.waitForTimeout(200);
@@ -162,41 +162,41 @@ async function createTicket(page, ticket) {
 
 
 
-    // 3. Subject (Assunto) - Fill immediately after Category
+    // 3. Assunto - Preencher imediatamente após Categoria
     console.log('Filling Subject...');
-    // User provided ID: #titulo
+    // ID fornecido pelo usuário: #titulo
     const subjectSelector = '#titulo';
     await page.waitForSelector(subjectSelector, { state: 'visible', timeout: 5000 });
     await page.fill(subjectSelector, ticket.summary.substring(0, 50));
 
-    // 4. Message (Mensagem)
+    // 4. Mensagem
     console.log('Filling Message...');
     try {
-        // Froala/RichText editor handling
-        // Usually inside an iframe or a specific div contenteditable
-        // Previous logic used frameLocator which is robust for iframes.
+        // Tratamento do editor Froala/RichText
+        // Geralmente dentro de um iframe ou uma div contenteditable específica
+        // Lógica anterior usava frameLocator que é robusto para iframes.
         const frame = page.frameLocator('iframe.fr-iframe'); // Adjust selector if needed
         const editor = frame.locator('.fr-view')
-            .or(page.locator('.fr-view')) // Fallback if not in iframe
-            .or(page.locator('div[contenteditable="true"]')); // Generic fallback
+            .or(page.locator('.fr-view')) // Fallback se não estiver no iframe
+            .or(page.locator('div[contenteditable="true"]')); // Fallback genérico
 
         await editor.first().fill(ticket.message || ticket.summary);
     } catch (msgError) {
         console.warn('Message fill failed, trying simple input fallback:', msgError.message);
-        // Fallback for simple textarea
+        // Fallback para textarea simples
         await page.fill('textarea[name="mensagem"]', ticket.message || ticket.summary).catch(() => { });
     }
 
-    // 5. Priority (Prioridade)
+    // 5. Prioridade
     console.log('Setting Priority: Normal');
     try {
-        // Updated: Use selectOption for native select
+        // Atualizado: Usar selectOption para select nativo
         await page.selectOption('#prioridade', '2'); // 2 = Normal
     } catch (e) {
         console.warn('Priority selection failed:', e.message);
     }
 
-    // 6. Attendant (Atendente) - Disabled per user request
+    // 6. Atendente - Desativado a pedido do usuário
     /*
     console.log('Selecting Attendant...');
     try {
@@ -213,17 +213,17 @@ async function createTicket(page, ticket) {
     */
 
 
-    // 7. Resolve immediately?
+    // 7. Resolver imediatamente?
     if (ticket.resolve) {
-        // Logic to resolve
-        console.log('Should resolve this ticket immediately (Not implemented yet).');
+        // Lógica para resolver
+        console.log('Deve resolver este chamado imediatamente (Não implementado ainda).');
     }
 
-    // 8. Submit
-    // await page.click('#btn-save'); // TODO: Add selector
-    console.log('Form filled. Submit button placeholder.');
+    // 8. Enviar
+    // await page.click('#btn-save'); // TODO: Adicionar seletor
+    console.log('Formulário preenchido. Placeholder do botão de envio.');
 
-    // Wait for success?
+    // Aguardar sucesso?
     await page.waitForTimeout(1000);
 }
 

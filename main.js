@@ -33,14 +33,14 @@ app.on('window-all-closed', () => {
     }
 });
 
-// --- IPC Handlers ---
+// --- Manipuladores IPC ---
 
-// Handler for "Start Cloud/Bot"
+// Manipulador para "Iniciar Nuvem/Bot"
 ipcMain.handle('start-bot', async (event, tickets, credentials) => {
     console.log('Received tickets to process:', tickets);
     console.log('Received credentials:', { ...credentials, password: '***' });
 
-    // Simulation of processing
+    // Simulação de processamento
     try {
         const result = await runBot(tickets, credentials);
         return result;
@@ -49,16 +49,16 @@ ipcMain.handle('start-bot', async (event, tickets, credentials) => {
     }
 });
 
-// Handler for "Generate AI Message" (Mock)
+// Manipulador para "Gerar Mensagem com IA" (Mock)
 const { generateTicketMessage } = require('./ai_service');
 const { getTickets } = require('./tomticket_api');
 
-// Handler for "Generate AI Message"
+// Manipulador para "Gerar Mensagem com IA"
 ipcMain.handle('generate-ai', async (event, summary) => {
     return await generateTicketMessage(summary);
 });
 
-// Handler for TomTicket API
+// Manipulador para API do TomTicket
 ipcMain.handle('tomticket-api-call', async (event, token, type, params) => {
     try {
         const { getDepartments, getCategories } = require('./tomticket_api');
@@ -75,7 +75,7 @@ ipcMain.handle('tomticket-api-call', async (event, token, type, params) => {
             return { success: true, data };
         }
 
-        // Default: List Tickets
+        // Padrão: Listar Chamados
         console.log('Fetching tickets via API...');
         const response = await getTickets(token);
         return { success: true, data: response.data || response };
