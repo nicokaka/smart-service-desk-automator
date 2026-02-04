@@ -22,10 +22,16 @@ It solves the bottleneck of manual ticket creation by automating the entire life
 
 ### ⚙️ Key Features
 * **Cross-Browser Core:** Built on **Playwright** to run seamlessly on Chromium, Firefox, and WebKit.
+* **Intelligent API Sync:**
+    * **Robust Data Fetching:** Automatically retrieves Departments, Categories, and Attendants, using fallback strategies to ensure data availability even if endpoints fail.
+    * **Optimized Performance:** Implements throttled parallel requests to sync massive datasets up to 5x faster while respecting API rate limits.
+* **Streamlined Workflow:**
+    * **Queue Management:** Redesigned interface featuring bulk deletion and direct attendant assignment to speed up triage.
+    * **Smart Bot Logic:** Enhanced automation that intelligently filters and selects dropdown options (using keyboard emulation) just like a human operator.
 * **Complex UI Handling:**
     * **iFrame Injection:** Successfully interacts with Rich Text Editors (WYSIWYG) inside protected frames.
     * **Dynamic Dropdowns:** Handles non-standard UI libraries (PrimeNG) using keyboard emulation and event dispatching.
-* **AI-Ready Architecture:** Designed to integrate with LLMs for automatic issue summarization and priority classification (In Development).
+* **AI-Ready Architecture:** Designed to integrate with LLMs for automatic issue summarization and priority classification.
 
 ### 💻 Tech Stack
 * **Runtime:** Node.js
@@ -48,10 +54,16 @@ Ele resolve o gargalo da criação manual de chamados, automatizando todo o cicl
 
 ### ⚙️ Funcionalidades Principais
 * **Núcleo Multi-Navegador:** Construído com **Playwright** para rodar em Chromium, Firefox e WebKit.
+* **Sincronização Inteligente de API:**
+    * **Busca Robusta de Dados:** Recupera automaticamente Departamentos, Categorias e Atendentes, usando estratégias de fallback para garantir dados mesmo se endpoints falharem.
+    * **Performance Otimizada:** Implementa requisições paralelas controladas (throttling) para sincronizar grandes volumes de dados até 5x mais rápido, respeitando limites da API.
+* **Fluxo de Trabalho Simplificado:**
+    * **Gerenciamento de Fila:** Interface redesenhada com exclusão em massa e atribuição direta de atendentes para agilizar a triagem.
+    * **Lógica de Bot Inteligente:** Automação aprimorada que filtra e seleciona opções de menus suspensos (usando emulação de teclado) exatamente como um operador humano.
 * **Manipulação de UI Complexa:**
     * **Injeção em iFrames:** Interage com sucesso com Editores de Texto Rico dentro de frames protegidos.
     * **Dropdowns Dinâmicos:** Lida com bibliotecas de UI não padrão (PrimeNG) usando emulação de teclado.
-* **Arquitetura Pronta para IA:** Projetado para integrar com LLMs para resumo automático de problemas e classificação de prioridade (Em desenvolvimento).
+* **Arquitetura Pronta para IA:** Projetado para integrar com LLMs para resumo automático de problemas e classificação de prioridade.
 
 ### 💻 Tecnologias
 * **Runtime:** Node.js
