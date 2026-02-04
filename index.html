@@ -47,6 +47,8 @@
                     <h1>Fila de Processamento</h1>
                     <div class="actions">
                         <button id="btn-add-row" class="btn secondary">+ Adicionar Linha</button>
+                        <button id="btn-remove-selected" class="btn danger" style="display: none;">Excluir
+                            Selecionados</button>
                         <button id="btn-generate-ai" class="btn secondary-color">✨ Gerar com IA</button>
                         <button id="btn-start-bot" class="btn primary">▶ Iniciar Bot</button>
                     </div>
@@ -60,11 +62,10 @@
                                 <th>Cliente</th>
                                 <th>Departamento</th>
                                 <th>Categoria</th>
+                                <th>Atendente</th>
                                 <th>Resumo (O que aconteceu?)</th>
                                 <th>Mensagem Gerada (IA)</th>
-                                <th>Opções</th>
-                                <th>Status</th>
-                                <th></th>
+                                <th>Resolver?</th>
                             </tr>
                         </thead>
                         <tbody id="ticket-queue-body">

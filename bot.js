@@ -196,21 +196,23 @@ async function createTicket(page, ticket) {
         console.warn('Priority selection failed:', e.message);
     }
 
-    // 6. Atendente - Desativado a pedido do usuário
-    /*
-    console.log('Selecting Attendant...');
-    try {
-        const attendantDropdown = await page.$('text="Escolher atendente..."') || await page.$('#codatendente');
-        if (attendantDropdown) {
-            await attendantDropdown.click();
+    // 6. Atendente
+    if (ticket.attendant) {
+        console.log(`Selecting Attendant: ${ticket.attendant}`);
+        try {
+            await page.click('#codatendente'); // Click dropdown
             await page.waitForTimeout(300);
-            await page.keyboard.press('ArrowDown');
+
+            // Filter and select
+            await page.keyboard.type(ticket.attendant);
+            await page.waitForTimeout(500);
+            await page.keyboard.press('ArrowDown'); // Ensure first item is highlighted
+            await page.waitForTimeout(100);
             await page.keyboard.press('Enter');
+        } catch (e) {
+            console.warn('Attendant selection failed:', e.message);
         }
-    } catch (e) {
-        console.warn('Attendant selection failed.');
     }
-    */
 
 
     // 7. Resolver imediatamente?

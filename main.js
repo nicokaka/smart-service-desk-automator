@@ -61,7 +61,7 @@ ipcMain.handle('generate-ai', async (event, summary) => {
 // Manipulador para API do TomTicket
 ipcMain.handle('tomticket-api-call', async (event, token, type, params) => {
     try {
-        const { getDepartments, getCategories } = require('./tomticket_api');
+        const { getDepartments, getCategories, getCustomers, createTicket } = require('./tomticket_api');
 
         if (type === 'departments') {
             console.log('Fetching Departments...');
@@ -72,6 +72,25 @@ ipcMain.handle('tomticket-api-call', async (event, token, type, params) => {
         if (type === 'categories') {
             console.log(`Fetching Categories for Department ${params.departmentId}...`);
             const data = await getCategories(token, params.departmentId);
+            return { success: true, data };
+        }
+
+        if (type === 'customers') {
+            console.log('Fetching Customers...');
+            const data = await getCustomers(token);
+            return { success: true, data };
+        }
+
+        if (type === 'create_ticket') {
+            console.log('Creating Ticket...', params);
+            const result = await createTicket(token, params);
+            return { success: true, data: result };
+        }
+
+        if (type === 'operators') {
+            console.log('Fetching Operators...');
+            const { getOperators } = require('./tomticket_api');
+            const data = await getOperators(token);
             return { success: true, data };
         }
 

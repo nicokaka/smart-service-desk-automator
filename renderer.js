@@ -58,6 +58,46 @@ let CATEGORIES = [
     "Outros" // Minimal fallback
 ];
 
+let CUSTOMERS = [];
+
+// Lista de Operadores (Será sobrescrita pela API)
+let OPERATORS = [];
+
+const btnRemoveSelected = document.getElementById('btn-remove-selected');
+const selectAllCheckbox = document.getElementById('select-all');
+
+// Checkbox "Selecionar Todos"
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', () => {
+        const checkboxes = document.querySelectorAll('.row-select');
+        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+        toggleRemoveButton();
+    });
+}
+
+// Botão "Excluir Selecionados"
+if (btnRemoveSelected) {
+    btnRemoveSelected.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.row-select:checked');
+        checkboxes.forEach(cb => {
+            const tr = cb.closest('tr');
+            tr.remove();
+        });
+        toggleRemoveButton();
+        if (document.querySelectorAll('#ticket-queue-body tr').length === 0) {
+            rowCount = 0; // Reset counter if empty
+            addRow(); // Always keep at least one row
+        }
+    });
+}
+
+function toggleRemoveButton() {
+    const checked = document.querySelectorAll('.row-select:checked').length;
+    if (btnRemoveSelected) {
+        btnRemoveSelected.style.display = checked > 0 ? 'inline-block' : 'none';
+    }
+}
+
 // Grade: Adicionar Linha
 function addRow() {
     rowCount++;
@@ -65,13 +105,21 @@ function addRow() {
     tr.dataset.id = rowCount;
 
     // Criar Opções de Departamento
-    const deptOptions = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+    const deptOptions = `<option value="">Selecione...</option>` + DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
     // Criar Opções de Categoria
-    const catOptions = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+    const catOptions = `<option value="">Selecione...</option>` + CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+    // Criar Opções de Cliente
+    const clientOptions = `<option value="">Selecione...</option>` + CUSTOMERS.map(c => `<option value="${c}">${c}</option>`).join('');
+    // Criar Opções de Operador
+    const operatorOptions = `<option value="">Selecione...</option>` + OPERATORS.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
 
     tr.innerHTML = `
         <td><input type="checkbox" class="row-select"></td>
-        <td><input type="text" placeholder="Nome do Cliente" class="input-client" list="clients-list"></td>
+        <td>
+            <select class="input-client input-field" style="padding:5px;">
+                ${clientOptions}
+            </select>
+        </td>
         <td>
             <select class="input-dept input-field" style="padding:5px;">
                 ${deptOptions}
@@ -82,25 +130,30 @@ function addRow() {
                 ${catOptions}
             </select>
         </td>
+        <td>
+            <select class="input-attendant input-field" style="padding:5px;">
+                ${operatorOptions}
+            </select>
+        </td>
         <td><input type="text" placeholder="Ex: Internet lenta" class="input-summary"></td>
         <td><input type="text" placeholder="Aguardando IA..." class="input-message" disabled></td>
         <td>
-            <label style="font-size:0.8rem; display:flex; align-items:center; gap:5px;">
-                <input type="checkbox" class="input-resolve"> Resolver?
+            <label style="font-size:0.8rem; display:flex; align-items:center; gap:5px; justify-content:center;">
+                <input type="checkbox" class="input-resolve">
             </label>
         </td>
-        <td><span class="status-badge" style="color: #6c7086;">Pendente</span></td>
-        <td><button class="btn danger" style="padding:2px 8px; font-size:0.8rem;" onclick="removeRow(this)">X</button></td>
     `;
+
+    // Adicionar listener para checkbox da linha
+    const checkbox = tr.querySelector('.row-select');
+    checkbox.addEventListener('change', toggleRemoveButton);
 
     tableBody.appendChild(tr);
 }
 
-// Grade: Remover Linha
-window.removeRow = function (btn) {
-    const tr = btn.closest('tr');
-    tr.remove();
-}
+// Checkbox change listener is now added in addRow
+// window.removeRow removal logic handled by btnRemoveSelected logic now
+
 
 btnAddRow.addEventListener('click', addRow);
 
@@ -144,6 +197,7 @@ btnStartBot.addEventListener('click', async () => {
         const client = tr.querySelector('.input-client').value;
         const dept = tr.querySelector('.input-dept').value;
         const category = tr.querySelector('.input-cat').value;
+        const attendant = tr.querySelector('.input-attendant').value;
         const summary = tr.querySelector('.input-summary').value;
         const message = tr.querySelector('.input-message').value;
         const resolve = tr.querySelector('.input-resolve').checked;
@@ -151,7 +205,7 @@ btnStartBot.addEventListener('click', async () => {
         if (client && summary) {
             dataToProcess.push({
                 id: tr.dataset.id,
-                client, dept, category, summary, message, resolve
+                client, dept, category, attendant, summary, message, resolve
             });
         }
     });
@@ -197,31 +251,52 @@ async function syncData() {
         log(`Departamentos atualizados: ${DEPARTMENTS.length}`);
     }
 
-    // 2. Categorias (Busca Sequencial para evitar Erros 429)
+    // 4. Operadores (Atendentes) - MOVIDO PARA ANTES DAS CATEGORIAS (Prioridade)
+    const btnSaveOp = document.getElementById('btn-save-settings');
+    if (btnSaveOp) btnSaveOp.innerHTML = `<span class="spinner"></span> Sincronizando Atendentes...`;
+
+    try {
+        const opResult = await window.electronAPI.tomticketApi(token, 'operators');
+        if (opResult.success && opResult.data) {
+            OPERATORS = opResult.data.sort((a, b) => a.name.localeCompare(b.name));
+            localStorage.setItem('cachedOperators', JSON.stringify(OPERATORS));
+            log(`Atendentes atualizados: ${OPERATORS.length}`);
+        }
+    } catch (err) {
+        console.error('Falha ao buscar atendentes', err);
+        log('Erro ao buscar atendentes.');
+    }
+
+    // 2. Categorias (Busca Otimizada com Throttling)
     if (window.fullDepartments) {
         let allCats = new Set();
         let count = 0;
         const total = window.fullDepartments.length;
 
-        // Buscar sequencialmente
-        for (const dep of window.fullDepartments) {
-            count++;
-            // Atualizar status do botão para mostrar progresso com spinner
+        // Otimização: Buscar em lotes menores para evitar bloqueio
+        const batchSize = 3; // Reduzido de 5 para 3 para segurança
+        for (let i = 0; i < total; i += batchSize) {
+            const batch = window.fullDepartments.slice(i, i + batchSize);
+
+            await Promise.all(batch.map(async (dep) => {
+                try {
+                    const catResult = await window.electronAPI.tomticketApi(token, 'categories', { departmentId: dep.id });
+                    if (catResult.success && catResult.data) {
+                        catResult.data.forEach(c => allCats.add(c.name));
+                    }
+                } catch (err) {
+                    console.error(`Falha ao buscar categorias do depto ${dep.id}`, err);
+                }
+            }));
+
+            count += batch.length;
+            // Atualizar status do botão
             const btnSave = document.getElementById('btn-save-settings');
             if (btnSave) {
-                btnSave.innerHTML = `<span class="spinner"></span> Sincronizando... (${count}/${total})`;
+                btnSave.innerHTML = `<span class="spinner"></span> Sincronizando... (${Math.min(count, total)}/${total})`;
             }
-
-            try {
-                const catResult = await window.electronAPI.tomticketApi(token, 'categories', { departmentId: dep.id });
-                if (catResult.success && catResult.data) {
-                    catResult.data.forEach(c => allCats.add(c.name));
-                }
-                // Pequeno atraso para ser gentil com a API
-                await new Promise(r => setTimeout(r, 200));
-            } catch (err) {
-                console.error(`Falha ao buscar categorias do depto ${dep.id}`, err);
-            }
+            // Aumentar delay para evitar "429 Too Many Requests" ou bloqueio de IP
+            await new Promise(r => setTimeout(r, 300));
         }
 
         CATEGORIES = Array.from(allCats).sort();
@@ -229,36 +304,87 @@ async function syncData() {
         log(`Categorias atualizadas: ${CATEGORIES.length}`);
     }
 
-    // 4. Atualizar UI imediatamente (Linhas Existentes)
+    // 3. Clientes
+    const btnSave = document.getElementById('btn-save-settings');
+    if (btnSave) btnSave.innerHTML = `<span class="spinner"></span> Sincronizando Clientes (Pode demorar)...`;
+
+    // Pequeno delay
+    await new Promise(r => setTimeout(r, 500));
+
+    try {
+        const clientResult = await window.electronAPI.tomticketApi(token, 'customers');
+        if (clientResult.success && clientResult.data) {
+            // Armazenar objetos completos para lookup de ID depois
+            window.fullCustomers = clientResult.data;
+            CUSTOMERS = clientResult.data.map(c => c.name).sort();
+
+            localStorage.setItem('cachedCustomers', JSON.stringify(CUSTOMERS));
+            localStorage.setItem('cachedFullCustomers', JSON.stringify(clientResult.data));
+
+            log(`Clientes atualizados: ${CUSTOMERS.length}`);
+        }
+    } catch (err) {
+        console.error('Falha ao buscar clientes', err);
+        log('Erro ao buscar clientes.');
+    }
+
+    // 5. Atualizar UI imediatamente (Linhas Existentes)
     updateDropdownsInExistingRows();
 }
 
 function updateDropdownsInExistingRows() {
     const deptRows = document.querySelectorAll('.input-dept');
     const catRows = document.querySelectorAll('.input-cat');
+    const clientRows = document.querySelectorAll('.input-client');
+    const attendantRows = document.querySelectorAll('.input-attendant');
 
-    const deptOptions = DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
-    const catOptions = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+    const deptOptions = `<option value="">Selecione...</option>` + DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+    const catOptions = `<option value="">Selecione...</option>` + CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+    // Ordenar clientes para facilitar busca visual se não for feito na API
+    // CUSTOMERS.sort() // Já deve vir ordenado do cache
+    const clientOptions = `<option value="">Selecione...</option>` + CUSTOMERS.map(c => `<option value="${c}">${c}</option>`).join('');
+    const operatorOptions = `<option value="">Selecione...</option>` + OPERATORS.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
 
-    deptRows.forEach(select => {
-        const currentVal = select.value;
-        select.innerHTML = deptOptions;
-        if (DEPARTMENTS.includes(currentVal)) select.value = currentVal;
-    });
+    // Helper segura para atualizar e manter valor
+    const updateSelect = (select, opts, validList) => {
+        const keptValue = select.value;
+        select.innerHTML = opts;
+        // Se tinha valor e ele ainda existe, mantém. Se não tinha valor (nova linha), fica vazio.
+        if (keptValue && validList.includes(keptValue)) {
+            select.value = keptValue;
+        } else {
+            select.value = ""; // Default to empty
+        }
+    };
 
-    catRows.forEach(select => {
-        const currentVal = select.value;
-        select.innerHTML = catOptions;
-        if (CATEGORIES.includes(currentVal)) select.value = currentVal;
-        else if (CATEGORIES.length > 0) select.value = CATEGORIES[0]; // Default to first if lost
-    });
+    deptRows.forEach(select => updateSelect(select, deptOptions, DEPARTMENTS));
+    catRows.forEach(select => updateSelect(select, catOptions, CATEGORIES));
+    clientRows.forEach(select => updateSelect(select, clientOptions, CUSTOMERS));
+    // ValidList validation for operators is tricky since OPERATORS is objects. For now just map names
+    const operatorNames = OPERATORS.map(o => o.name);
+    attendantRows.forEach(select => updateSelect(select, operatorOptions, operatorNames));
 }
+
+// Fim da configuração
 
 // Carregar Dados em Cache
 const cachedDeps = localStorage.getItem('cachedDepartments');
 const cachedCats = localStorage.getItem('cachedCategories');
+const cachedCust = localStorage.getItem('cachedCustomers');
+const cachedFullCust = localStorage.getItem('cachedFullCustomers');
+const cachedOps = localStorage.getItem('cachedOperators');
+
 if (cachedDeps) DEPARTMENTS = JSON.parse(cachedDeps);
 if (cachedCats) CATEGORIES = JSON.parse(cachedCats);
+if (cachedCust) CUSTOMERS = JSON.parse(cachedCust);
+if (cachedFullCust) window.fullCustomers = JSON.parse(cachedFullCust);
+if (cachedOps) OPERATORS = JSON.parse(cachedOps);
+
+// Inicializar Datalist se houver cache
+if (CUSTOMERS.length > 0) {
+    const datalist = document.getElementById('clients-list');
+    if (datalist) datalist.innerHTML = CUSTOMERS.map(c => `<option value="${c}">`).join('');
+}
 
 
 // Salvar Configurações

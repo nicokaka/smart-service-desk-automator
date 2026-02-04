@@ -6,7 +6,7 @@ async function test() {
     try {
         const response = await getTickets(TOKEN, { page: 1 });
         fs.writeFileSync('api_response.json', JSON.stringify(response, null, 2), 'utf8');
-        console.log('Escrito em api_response.json');
+        console.log('Written to api_response.json');
     } catch (e) {
         console.error(e);
     }
