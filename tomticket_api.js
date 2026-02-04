@@ -3,17 +3,17 @@ const https = require('https');
 const API_BASE_URL = 'https://api.tomticket.com/v2.0';
 
 /**
- * Generic function to make API requests to TomTicket
- * @param {string} endpoint - The API endpoint (e.g., '/ticket/list')
- * @param {string} token - The user's API Token
- * @param {string} method - HTTP method (GET, POST, etc.)
- * @param {object} params - Query parameters or body
+ * Função genérica para fazer requisições à API do TomTicket
+ * @param {string} endpoint - O endpoint da API (ex: '/ticket/list')
+ * @param {string} token - O Token de API do usuário
+ * @param {string} method - Método HTTP (GET, POST, etc.)
+ * @param {object} params - Parâmetros de consulta ou corpo
  */
 function tomticketRequest(endpoint, token, method = 'GET', params = {}) {
     return new Promise((resolve, reject) => {
         let url = `${API_BASE_URL}${endpoint}`;
 
-        // Handle Query Params for GET
+        // Lidar com Parâmetros de Consulta para GET
         if (method === 'GET' && Object.keys(params).length > 0) {
             const query = new URLSearchParams(params).toString();
             url += `?${query}`;
@@ -53,8 +53,8 @@ function tomticketRequest(endpoint, token, method = 'GET', params = {}) {
         });
 
         if (method !== 'GET' && params) {
-            // For form-data, we might need a library if JSON doesn't work.
-            // But for 'ticket/list' (GET), this is fine.
+            // Para form-data, podemos precisar de uma biblioteca se JSON não funcionar.
+            // Mas para 'ticket/list' (GET), isso serve.
             // req.write(JSON.stringify(params)); 
         }
 
@@ -63,13 +63,13 @@ function tomticketRequest(endpoint, token, method = 'GET', params = {}) {
 }
 
 /**
- * Fetch tickets from TomTicket
+ * Buscar chamados do TomTicket
  * @param {string} token - API Token
- * @param {object} filters - Filters like { operator_id: '...', situation: '0,1,2' }
+ * @param {object} filters - Filtros como { operator_id: '...', situation: '0,1,2' }
  */
 async function getTickets(token, filters = {}) {
     try {
-        // Default filters to avoid fetching ancient history
+        // Filtros padrão para evitar buscar histórico antigo
         const defaultFilters = {
             'page': 1,
             'situation': '0,1,2,3,6,7,8,9,10,11' // Open tickets mostly
@@ -88,7 +88,7 @@ async function getTickets(token, filters = {}) {
 }
 
 /**
- * Fetch Departments from TomTicket
+ * Buscar Departamentos do TomTicket
  */
 async function getDepartments(token) {
     try {
@@ -101,11 +101,11 @@ async function getDepartments(token) {
 }
 
 /**
- * Fetch Categories from TomTicket
- * Note: Provide department_id to filter, or fetch all if API allows (usually requires iterating deps)
- * TomTicket API usually requires department_id for categories.
- * We'll try fetching all by looping if needed, or if there is a 'list all' endpoint.
- * Docs say: GET /department/category/list?department_id=...
+ * Buscar Categorias do TomTicket
+ * Nota: Forneça department_id para filtrar, ou busque todos se a API permitir (geralmente requer iterar deptos)
+ * API do TomTicket geralmente requer department_id para categorias.
+ * Vamos tentar buscar tudo fazendo loop se necessário, ou se houver um endpoint 'listar tudo'.
+ * Docs dizem: GET /department/category/list?department_id=...
  */
 async function getCategories(token, departmentId) {
     try {
@@ -118,17 +118,17 @@ async function getCategories(token, departmentId) {
 }
 
 /**
- * Fetch Customers
- * Limit to first 2 pages (approx 200 clients) to avoid freezing if there are thousands.
- * Or fetch specific search if API supports it, but for dropdown we need list.
+ * Buscar Clientes
+ * Limitar às primeiras 2 páginas (aprox 200 clientes) para evitar travamento se houver milhares.
+ * Ou buscar pesquisa específica se a API suportar, mas para o dropdown precisamos da lista.
  */
 async function getCustomers(token) {
     try {
-        // Fetch page 1
+        // Buscar página 1
         const r1 = await tomticketRequest('/customer/list', token, 'GET', { page: 1 });
         let clients = r1.data || [];
 
-        // Optional: Fetch more pages if needed, but keep it light for now
+        // Opcional: Buscar mais páginas se necessário, mas manter leve por enquanto
         // const r2 = await tomticketRequest('/customer/list', token, 'GET', { page: 2 });
         // if(r2.data) clients = clients.concat(r2.data);
 

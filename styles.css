@@ -29,7 +29,7 @@ body {
     height: 100%;
 }
 
-/* Sidebar */
+/* Barra Lateral */
 .sidebar {
     width: 250px;
     background-color: var(--sidebar-bg);
@@ -93,7 +93,7 @@ body {
     color: #6c7086;
 }
 
-/* Content Area */
+/* Área de Conteúdo */
 .content-area {
     flex: 1;
     padding: 30px;
@@ -138,7 +138,7 @@ body {
     gap: 10px;
 }
 
-/* Buttons */
+/* Botões */
 .btn {
     padding: 10px 20px;
     border-radius: 6px;
@@ -173,12 +173,12 @@ body {
     color: #1e1e2e;
 }
 
-/* Table */
+/* Tabela */
 .table-container {
     background-color: var(--card-bg);
     border-radius: 10px;
     overflow-x: auto;
-    /* Allow horizontal scroll */
+    /* Permitir rolagem horizontal */
     border: 1px solid var(--border-color);
 }
 
@@ -186,13 +186,13 @@ body {
     width: 100%;
     border-collapse: collapse;
     min-width: 1200px;
-    /* Force minimum width to prevent squeezing */
+    /* Forçar largura mínima para evitar esmagamento */
 }
 
 .ticket-table th,
 .ticket-table td {
     padding: 10px;
-    /* Reduced padding */
+    /* Padding reduzido */
     text-align: left;
     border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
@@ -203,35 +203,35 @@ body {
     font-weight: 600;
     color: var(--primary-color);
     white-space: nowrap;
-    /* Prevent headers from wrapping weirdly */
+    /* Evitar que cabeçalhos quebrem de forma estranha */
 }
 
-/* Specific column sizing */
+/* Tamanho específico de coluna */
 .ticket-table select {
     max-width: 200px;
-    /* Limit dropdown width */
+    /* Limitar largura do dropdown */
 }
 
 .ticket-table input[type="text"] {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    /* Visible border to help user see text area */
+    /* Borda visível para ajudar usuário a ver área de texto */
     border-radius: 4px;
     color: var(--text-color);
     padding: 8px;
     width: 100%;
     min-width: 150px;
-    /* Ensure input has clickable area */
+    /* Garantir que input tenha área clicável */
 }
 
 .ticket-table input[type="text"]:focus {
     border-color: var(--primary-color);
     background-color: rgba(255, 255, 255, 0.05);
-    /* Highlight on focus */
+    /* Destacar no foco */
     outline: none;
 }
 
-/* Forms */
+/* Formulários */
 .form-container {
     max-width: 500px;
     background-color: var(--card-bg);
@@ -285,7 +285,7 @@ body {
     display: none;
 }
 
-/* Spinner Animation */
+/* Animação de Spinner */
 .spinner {
     display: inline-block;
     width: 14px;
