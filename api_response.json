@@ -1,0 +1,1019 @@
+{
+  "error": false,
+  "message": null,
+  "data": [
+    {
+      "id": "d93ec7b208273d566962caa1e65da342",
+      "protocol": 3901,
+      "subject": "Apontar domínio para o servidor do BI",
+      "message": "<div dir=\"ltr\" style=\"color: rgb(34, 34, 34); font-family: Arial, Helvetica, sans-serif; font-size: small; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\" id=\"isPasted\" fr-original-style=\"color: rgb(34, 34, 34); font-family: Arial, Helvetica, sans-serif; font-size: small; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Em ter., 3 de fev. de 2026 às 13:12, Adriano Rodrigues &lt;adriano.rodrigues@fhdataanalysis.com&gt; escreveu:</div><blockquote style=\"color: rgb(34, 34, 34); font-family: Arial, Helvetica, sans-serif; font-size: small; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; margin: 0px 0px 0px 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;\" fr-original-style=\"color: rgb(34, 34, 34); font-family: Arial, Helvetica, sans-serif; font-size: small; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; margin: 0px 0px 0px 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;\"><div dir=\"ltr\" fr-original-style=\"\">Boa tarde, Anthony.<br>Conforme alinhado hoje em reunião com a equipe da Hebron, gostaria de solicitar a disponibilização do domínio abaixo para a plataforma, bem como a sua respectiva conexão com o IP do servidor:<br>Domínio:&nbsp;<a href=\"http://bi.hebron.com.br/\" target=\"_blank\" style=\"color: rgb(17, 85, 204); user-select: auto;\" fr-original-style=\"color: rgb(17, 85, 204);\">bi.hebron.com.br</a><br>Atenciosamente,<br>Adriano Rodrigues</div></blockquote>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Anthony",
+        "email": "anthony@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "4d7e0f5d23a59a199baf2cb933489db0",
+          "name": "NPD"
+        }
+      },
+      "priority": 3,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 63203,
+      "creation_date": "2026-02-03 14:18:49-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": "2026-02-03 15:48:18-03:00",
+      "end_date": null,
+      "situation": {
+        "id": 2,
+        "apply_date": "2026-02-03 15:48:18-03:00",
+        "description": "Respondido, aguardando resposta do cliente"
+      },
+      "category": {
+        "id": "6e2623abe24f171164c933eb80ab8ca7",
+        "name": "Domínio - Configuração"
+      },
+      "department": {
+        "id": "b84fcb65861bff1ed450a8633e21d21b",
+        "name": "TI"
+      },
+      "operator": {
+        "id": "8dc92eb98ae0c71724237fa057ec5672",
+        "name": "Anthony Ferreira"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "4f14d1f8b38fb6df17fcd048f7facc68",
+      "protocol": 3900,
+      "subject": "Liberar porta lógica no Firewall para o servidor do BI",
+      "message": "<p fr-original-style=\"\">Liberar porta lógica no Firewall para o servidor do BI.</p><p fr-original-style=\"\">Portas: 80 e 443</p><p fr-original-style=\"\"><br></p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Anthony",
+        "email": "anthony@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "4d7e0f5d23a59a199baf2cb933489db0",
+          "name": "NPD"
+        }
+      },
+      "priority": 3,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 63254,
+      "creation_date": "2026-02-03 14:17:58-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": "2026-02-03 15:48:12-03:00",
+      "end_date": null,
+      "situation": {
+        "id": 2,
+        "apply_date": "2026-02-03 15:48:12-03:00",
+        "description": "Respondido, aguardando resposta do cliente"
+      },
+      "category": {
+        "id": "e9f10c5d1b932b168a809517fd22c9f1",
+        "name": "Firewall - Configurações"
+      },
+      "department": {
+        "id": "b84fcb65861bff1ed450a8633e21d21b",
+        "name": "TI"
+      },
+      "operator": {
+        "id": "8dc92eb98ae0c71724237fa057ec5672",
+        "name": "Anthony Ferreira"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "d6dd1616cc59590be8056b3bc08594a2",
+      "protocol": 3897,
+      "subject": "Retirar produto da contabilização",
+      "message": "<p fr-original-style=\"\">Retirar produto da contabilização.</p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Yuri Lenen Bernando dos Santos",
+        "email": "yuri@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "4d7e0f5d23a59a199baf2cb933489db0",
+          "name": "NPD"
+        }
+      },
+      "priority": 2,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 141081,
+      "creation_date": "2026-02-02 16:40:51-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": null,
+      "end_date": null,
+      "situation": {
+        "id": 1,
+        "apply_date": "2026-02-02 16:40:51-03:00",
+        "description": "Aguardando interação do atendente"
+      },
+      "category": {
+        "id": "90b1ebe6f1c5bee8bc48c1af599bcb0a",
+        "name": "Pirâmide - Ajuste no Banco"
+      },
+      "department": {
+        "id": "e7ee9601cf3cc4775358d594973fd296",
+        "name": "Contabilidade"
+      },
+      "operator": {
+        "id": "42b3cdaaf1c8196831cb46383a6defb6",
+        "name": "Luciana"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "51edd3205d82c41fc8013cfa02902e27",
+      "protocol": 3890,
+      "subject": "Alteração no cálculo DD - 2026",
+      "message": "<p fr-original-style=\"\">Realizar as alteração para o cálculo de DD referente ao ano de 2026:</p><p fr-original-style=\"\">1. Inativar segmento Neuro. Apenas haverá o segmento Farma e Hospitalar.</p><p fr-original-style=\"\">2. O cálculo do Ziclague para a Farma coninua da mesma forma. Tendo premiação, porém sem contabilizar no cálculo do DD total.</p><p fr-original-style=\"\">Haverão inclusões de produtos, e mudança de valores de prêmios.</p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 4,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 143630,
+      "creation_date": "2026-02-02 15:58:22-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": null,
+      "end_date": null,
+      "situation": {
+        "id": 1,
+        "apply_date": "2026-02-02 15:58:22-03:00",
+        "description": "Aguardando interação do atendente"
+      },
+      "category": {
+        "id": "7ab3a373422a2802c4cd5d434eef2cbd",
+        "name": "Hebronline - Cálculo DD"
+      },
+      "department": {
+        "id": "fc9bb40c65140856ee602d18d57fe1a8",
+        "name": "Comercial"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "5f51207513f820111d9c98f632703990",
+      "protocol": 3882,
+      "subject": "Lentidão App",
+      "message": "<p fr-original-style=\"\">Lentidão no app para abrir contatos.</p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 2,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 574300,
+      "creation_date": "2026-01-28 16:20:32-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": null,
+      "end_date": null,
+      "situation": {
+        "id": 1,
+        "apply_date": "2026-01-28 16:20:32-03:00",
+        "description": "Aguardando interação do atendente"
+      },
+      "category": {
+        "id": "c03e63332b9c5b8a49ea9b8f977d3b8c",
+        "name": "Hebronline - Erro"
+      },
+      "department": {
+        "id": "fc9bb40c65140856ee602d18d57fe1a8",
+        "name": "Comercial"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": "f3f728f4217f138672677b4bc2356507",
+        "description": "Homologado",
+        "apply_date": "2026-01-28 16:22:53-03:00"
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "e606812188a59c225b67978a56401bb9",
+      "protocol": 3870,
+      "subject": "Validação Software Empower 3.8.0 CQL-152",
+      "message": "<p fr-original-style=\"\">Validação do software Empower &nbsp;da Waters, versão 3.8.0, do equipamento CQL-152.</p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Gregory Emidio",
+        "email": "gregory@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "689337f95390ff77f960ca6050d0c767",
+          "name": "INFAN"
+        }
+      },
+      "priority": 3,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 680730,
+      "creation_date": "2026-01-27 10:46:42-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": "2026-02-02 08:47:15-03:00",
+      "end_date": null,
+      "situation": {
+        "id": 2,
+        "apply_date": "2026-02-02 08:47:15-03:00",
+        "description": "Respondido, aguardando resposta do cliente"
+      },
+      "category": {
+        "id": "1e69a06f54577a5252822f75be76b44f",
+        "name": "Documentos da Qualidade - Criação/Revisão de Documento"
+      },
+      "department": {
+        "id": "b84fcb65861bff1ed450a8633e21d21b",
+        "name": "TI"
+      },
+      "operator": {
+        "id": "4f9bf6df445ff1e4f68ac2ec4a676b1c",
+        "name": "Gregory"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "8b660ecb1f75f90d125cc733adba8d8d",
+      "protocol": 3864,
+      "subject": "Bloqueio de acesso Anselmo Cefas",
+      "message": "Bloquear acessos do colaborador Anselmo Cefas, mediante o desligamento do mesmo.<p fr-original-style=\"\"><br></p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Ilana Cristine",
+        "email": "ilana@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "689337f95390ff77f960ca6050d0c767",
+          "name": "INFAN"
+        }
+      },
+      "priority": 3,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 757219,
+      "creation_date": "2026-01-26 13:31:53-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": "2026-01-26 14:16:17-03:00",
+      "end_date": null,
+      "situation": {
+        "id": 2,
+        "apply_date": "2026-02-02 08:48:24-03:00",
+        "description": "Respondido, aguardando resposta do cliente"
+      },
+      "category": {
+        "id": "9a597adf254e310465e8dabd8ccdae9e",
+        "name": "Software Validado - Outro"
+      },
+      "department": {
+        "id": "6ac815b8b0466529103ae939f4d853a2",
+        "name": "Administrativo"
+      },
+      "operator": {
+        "id": "4f9bf6df445ff1e4f68ac2ec4a676b1c",
+        "name": "Gregory"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "644fa4542348e0ab794fa3902a52efd5",
+      "protocol": 3846,
+      "subject": "Consulta de premiação - DD",
+      "message": "<p fr-original-style=\"\">Bom dia.</p><p fr-original-style=\"\">O filtro da consulta de premiação está sendo feito pelo usuário (setor) que está logado no sistema, porém quando há mudança de setor, o sistema filtra apenas o setor atual e não permite que o usuário consulte a premiação do setor antigo. Precisa ser feita uma alteração para que o sistema identifique quais setores podem ser consultados de acordo com o ano/mês, independente do setor que ele logou. Talvez a opção seja pegar a identificação da pessoa pelo CPF ou e-mail.</p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 2,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 1107173,
+      "creation_date": "2026-01-22 12:19:19-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": null,
+      "end_date": null,
+      "situation": {
+        "id": 1,
+        "apply_date": "2026-01-22 12:19:19-03:00",
+        "description": "Aguardando interação do atendente"
+      },
+      "category": {
+        "id": "c03e63332b9c5b8a49ea9b8f977d3b8c",
+        "name": "Hebronline - Erro"
+      },
+      "department": {
+        "id": "fc9bb40c65140856ee602d18d57fe1a8",
+        "name": "Comercial"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "f850d47bec11dce1210c8948797140dc",
+      "protocol": 3845,
+      "subject": "Corrigir planilha de contatos",
+      "message": "\n\n<p fr-original-style=\"\">Ao baixar a planilha de contatos, o campo especialidades est&aacute; repetindo v&aacute;rias vezes.</p>\n\n",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 2,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 1109153,
+      "creation_date": "2026-01-22 11:46:19-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": null,
+      "end_date": null,
+      "situation": {
+        "id": 1,
+        "apply_date": "2026-01-22 11:46:19-03:00",
+        "description": "Aguardando interação do atendente"
+      },
+      "category": {
+        "id": "c03e63332b9c5b8a49ea9b8f977d3b8c",
+        "name": "Hebronline - Erro"
+      },
+      "department": {
+        "id": "fc9bb40c65140856ee602d18d57fe1a8",
+        "name": "Comercial"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": "f3f728f4217f138672677b4bc2356507",
+        "description": "Homologado",
+        "apply_date": "2026-01-28 16:19:10-03:00"
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "01544ec76864b12ec48aab004c0d3fef",
+      "protocol": 3842,
+      "subject": "Erro nos dados de relatórios",
+      "message": "<p fr-original-style=\"\">O relatório de frequência está trazendo a consulta de médicos baseado no cadastro atual, mesmo consultando o ano de 2025. Devce trazer apenas os médicos de acordo com o ano consultado.</p><p fr-original-style=\"\"><br></p><p fr-original-style=\"\"><img src=\"https://tomticket-anexos.s3.amazonaws.com/inimg/4697b901ed255ad728f6e2a5063f7cd6921bdf9195a94b6e8ad5d6905c97e204a98446dfbc3beba1-8bf5060fb4725bc311dd65f312f3dc77cee1c195f02f6985ef45b9f59bd9ebe71769000276214.png\" style=\"width: 562px; display: block; vertical-align: top; margin: 5px auto; text-align: center; cursor: pointer; padding: 0px 1px; position: relative; max-width: 100%;\" fr-original-style=\"width: 562px; display: block; vertical-align: top; margin: 5px auto; text-align: center;\" fr-original-class=\"fr-draggable\"></p><p fr-original-style=\"\"><br></p><p fr-original-style=\"\">Isso se aplica para todos os relatórios que são consultados por ano ou ciclo. Tem que considerar a situação do momento em relação ao período consultado e não o atual.</p><p fr-original-style=\"\">OBSERVAÇÃO: Todas as consultas que forem feitas pelo distrito ou regional, não deve contabilizar a quantidade dos setores e distritos que estão congelados.</p><p fr-original-style=\"\">Corrigir/conferir estes outros relatórios:</p><p fr-original-style=\"\">Relatório de médicos não visitados</p><p fr-original-style=\"\">Relatório de cidades não visitadas</p><p fr-original-style=\"\">Relatório de médicos não visitados</p><p fr-original-style=\"\">AVM</p><p fr-original-style=\"\">Relatório de Potencial/Especialidades (Está repetindo 2 vezes o distrito e tá duplicando o total no excel)</p><p fr-original-style=\"\">Consumo médio de produtos por hospital</p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 3,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 1201445,
+      "creation_date": "2026-01-21 10:08:07-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": "2026-01-28 16:32:03-03:00",
+      "end_date": null,
+      "situation": {
+        "id": 2,
+        "apply_date": "2026-01-28 16:32:03-03:00",
+        "description": "Respondido, aguardando resposta do cliente"
+      },
+      "category": {
+        "id": "c03e63332b9c5b8a49ea9b8f977d3b8c",
+        "name": "Hebronline - Erro"
+      },
+      "department": {
+        "id": "fc9bb40c65140856ee602d18d57fe1a8",
+        "name": "Comercial"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": "91509d2bfde1483d285bc8592c06497d",
+        "description": "Em atendimento",
+        "apply_date": "2026-01-28 16:30:20-03:00"
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "4877ae3f8ec08ac4b1054b095decf136",
+      "protocol": 3826,
+      "subject": "Erro nos relatórios de acompanhamento de visitas e EVM",
+      "message": "<p fr-original-style=\"\">Bom dia.</p><p fr-original-style=\"\">Os relatórios de acompanhamento de visitas e EVM não estão reconhecendo a estrutura ativa para os ciclos de 2026 e continuam aparecendo a estrutura de 2025.</p><p fr-original-style=\"\">Os setores, distritos e regionais congelados não devem aparecer no resultado da consulta e nem nas opções de filtros.</p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 4,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 1285935,
+      "creation_date": "2026-01-20 10:39:57-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": null,
+      "end_date": null,
+      "situation": {
+        "id": 1,
+        "apply_date": "2026-01-20 10:39:57-03:00",
+        "description": "Aguardando interação do atendente"
+      },
+      "category": {
+        "id": "c03e63332b9c5b8a49ea9b8f977d3b8c",
+        "name": "Hebronline - Erro"
+      },
+      "department": {
+        "id": "fc9bb40c65140856ee602d18d57fe1a8",
+        "name": "Comercial"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": "f3f728f4217f138672677b4bc2356507",
+        "description": "Homologado",
+        "apply_date": "2026-01-28 16:19:39-03:00"
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "f0aa65a6a1fd721facb86adbf5110311",
+      "protocol": 3809,
+      "subject": "Registrar log de acesso a premiação",
+      "message": "<p fr-original-style=\"\">Criar o registro de log de acesso aos relatórios de premiação.</p><p fr-original-style=\"\">Ao criar este log, deve ficar gravado o setor que está acessando e o nome do colaborador que está nesse netor, no momento do registro do log, pois temos que ter o histórico de quem está acessando e como tem movimentação entre setores, não pode ficar armazenado apenas o setor.</p><p fr-original-style=\"\">Deve ser assim para os log que já estão sendo armazenados.</p><p fr-original-style=\"\"><br></p><p fr-original-style=\"\"><br></p>",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 2,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 1954154,
+      "creation_date": "2026-01-12 17:02:58-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": null,
+      "end_date": null,
+      "situation": {
+        "id": 1,
+        "apply_date": "2026-01-12 17:02:58-03:00",
+        "description": "Aguardando interação do atendente"
+      },
+      "category": {
+        "id": "d3f62796575c843e64ce9a290260a4e0",
+        "name": "Hebronline - Melhoria"
+      },
+      "department": {
+        "id": "fc9bb40c65140856ee602d18d57fe1a8",
+        "name": "Comercial"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": null,
+        "description": null,
+        "apply_date": null
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "4d9f910084cd677e6c0fe4c3ed9669ba",
+      "protocol": 3793,
+      "subject": "Armazenar a última segmentação antes da atualização",
+      "message": "\n\n<p fr-original-style=\"\">Armazenar a &uacute;ltima segmenta&ccedil;&atilde;o dos m&eacute;dicos antes de rodar a atualiza&ccedil;&atilde;o de segmenta&ccedil;&atilde;o e disponibilizar no gr&aacute;fico de painel m&eacute;dico esta consulta comparativa.</p>\n\n",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 2,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 2492529,
+      "creation_date": "2026-01-06 11:30:03-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": "2026-01-07 08:35:47-03:00",
+      "end_date": null,
+      "situation": {
+        "id": 2,
+        "apply_date": "2026-01-13 10:21:12-03:00",
+        "description": "Respondido, aguardando resposta do cliente"
+      },
+      "category": {
+        "id": "d3f62796575c843e64ce9a290260a4e0",
+        "name": "Hebronline - Melhoria"
+      },
+      "department": {
+        "id": "9fe8c5ca3e922df4398688fbc10ee5c3",
+        "name": "Marketing"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": "09a7f5cace4dc5765cc1987735e8e2c1",
+        "description": "Aguardando Validação",
+        "apply_date": "2026-01-13 11:52:01-03:00"
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    },
+    {
+      "id": "d36c54999699e2dbfc198a03dede945d",
+      "protocol": 3680,
+      "subject": "Acrescentar consulta de quantidade de registros",
+      "message": "\n\n<p fr-original-style=\"\">Acrescentar possibilidade de consulta na quantidade de registros novos que v&atilde;o ser atualizados antes de iniciar a carga de atualiza&ccedil;&atilde;o da categoriza&ccedil;&atilde;o. Porque hoje s&oacute; colocamos para iniciar a atualiza&ccedil;&atilde;o, mesmo que n&atilde;o tenha nenhum registro para atualizar. Acrescentar um bot&atilde;o de consultar, que vai retornar apenas a quantidade de registros. Dessa forma podemos verificar se todos os registros foram atualizados ou n&atilde;o. A quantidade de registros atualizados, tem que ser de m&eacute;dicos e n&atilde;o de categorias. Acredito que atualmente est&aacute; contabilizando as categorias, at&eacute; pela quantidade que apareceu da &uacute;ltima vez que rodamos.</p><p fr-original-style=\"\"><img src=\"https://tomticket-anexos.s3.amazonaws.com/inimg/4697b901ed255ad728f6e2a5063f7cd6921bdf91c7d70b0f744f8e82af0babe0f4cb8009f970d3b5-862c76242fb70d9614fcfe75fde511c797f937a1cc29ac821348d331911dc0c71763485521424.png\" style=\"width: 493px; display: block; vertical-align: top; margin: 5px auto; text-align: center; cursor: pointer; padding: 0px 1px; position: relative; max-width: 100%;\" fr-original-style=\"width: 493px; display: block; vertical-align: top; margin: 5px auto; text-align: center;\" fr-original-class=\"fr-draggable\" class=\"preview-button-anexo\"></p>\n\n",
+      "mimetype": "text/html",
+      "customer": {
+        "name": "Luciana Oliveira",
+        "email": "luciana.oliveira@hebron.com.br",
+        "internal_id": null,
+        "organization": {
+          "id": "ccc636cacb418ba3baf927453f9f2736",
+          "name": "HEBRON"
+        }
+      },
+      "priority": 2,
+      "ticket_type": "Externo",
+      "work_time": 0,
+      "elapsed_time": 6716704,
+      "creation_date": "2025-11-18 14:07:08-03:00",
+      "sla": {
+        "startup": {
+          "date": null,
+          "accomplished": null
+        },
+        "deadline": {
+          "date": null,
+          "accomplished": null
+        }
+      },
+      "cost": {
+        "hourly": 0,
+        "overtime": 0,
+        "total_final": 0,
+        "total_overtime": 0,
+        "total_gross": 0
+      },
+      "evaluation": {
+        "problem_solved": null,
+        "grade": null,
+        "comment": null
+      },
+      "first_reply_date": "2025-12-02 11:52:16-03:00",
+      "end_date": null,
+      "situation": {
+        "id": 2,
+        "apply_date": "2026-01-13 10:20:59-03:00",
+        "description": "Respondido, aguardando resposta do cliente"
+      },
+      "category": {
+        "id": "d3f62796575c843e64ce9a290260a4e0",
+        "name": "Hebronline - Melhoria"
+      },
+      "department": {
+        "id": "9fe8c5ca3e922df4398688fbc10ee5c3",
+        "name": "Marketing"
+      },
+      "operator": {
+        "id": "662c77707e4c300f0a8782047937cd5b",
+        "name": "Suporte Valorian"
+      },
+      "status": {
+        "id": "f3f728f4217f138672677b4bc2356507",
+        "description": "Homologado",
+        "apply_date": "2026-01-21 10:12:09-03:00"
+      },
+      "parent_ticket_id": null,
+      "schedule_date": null,
+      "active_whatsapp": false,
+      "closed_by_inactivity": false,
+      "reopened": false
+    }
+  ],
+  "success": true,
+  "size": 14,
+  "pages": 1,
+  "next_page": null,
+  "previous_page": null
+}
