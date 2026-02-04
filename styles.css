@@ -111,8 +111,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .tab-header {
@@ -170,41 +177,57 @@ body {
 .table-container {
     background-color: var(--card-bg);
     border-radius: 10px;
-    overflow: hidden;
+    overflow-x: auto;
+    /* Allow horizontal scroll */
     border: 1px solid var(--border-color);
 }
 
 .ticket-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 1200px;
+    /* Force minimum width to prevent squeezing */
 }
 
-.ticket-table th, .ticket-table td {
-    padding: 15px;
+.ticket-table th,
+.ticket-table td {
+    padding: 10px;
+    /* Reduced padding */
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
 }
 
 .ticket-table th {
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     font-weight: 600;
     color: var(--primary-color);
+    white-space: nowrap;
+    /* Prevent headers from wrapping weirdly */
 }
 
-.ticket-table tr:hover {
-    background-color: rgba(255,255,255,0.02);
+/* Specific column sizing */
+.ticket-table select {
+    max-width: 200px;
+    /* Limit dropdown width */
 }
 
 .ticket-table input[type="text"] {
     background: transparent;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Visible border to help user see text area */
+    border-radius: 4px;
     color: var(--text-color);
-    padding: 5px;
+    padding: 8px;
     width: 100%;
+    min-width: 150px;
+    /* Ensure input has clickable area */
 }
 
 .ticket-table input[type="text"]:focus {
-    border-bottom: 1px solid var(--primary-color);
+    border-color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Highlight on focus */
     outline: none;
 }
 
@@ -260,4 +283,23 @@ body {
 
 .hidden {
     display: none;
+}
+
+/* Spinner Animation */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

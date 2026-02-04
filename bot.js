@@ -32,14 +32,26 @@ async function runBot(tickets, credentials = {}) {
         if (credentials.email && credentials.password) {
             console.log('Attempting auto-login...');
             try {
-                // Placeholder selectors - adjust based on actual login page
-                // await page.fill('input[name="email"]', credentials.email);
-                // await page.fill('input[name="password"]', credentials.password);
-                // await page.click('button[type="submit"]');
-                // await page.waitForNavigation();
-                console.log('Auto-login logic placeholder. Please log in manually if needed.');
+                // 1. Account (Company)
+                if (credentials.account) {
+                    await page.fill('#conta', credentials.account);
+                    console.log(`Filled Account: ${credentials.account}`);
+                }
+
+                // 2. Email & Password
+                await page.fill('#email', credentials.email);
+                await page.fill('#senha', credentials.password);
+
+                // 3. Submit
+                // Trying common variations based on screenshot (Orange Button)
+                // If it fails, we catch it.
+                await page.click('button[type="submit"], button:has-text("Sign In"), button:has-text("Entrar")');
+
+                // Wait for navigation to Dashboard
+                await page.waitForNavigation({ timeout: 10000 });
+                console.log('Login submitted. Waiting for dashboard...');
             } catch (e) {
-                console.warn('Auto-login failed, falling back to manual.');
+                console.warn('Auto-login attempt failed (or required captcha/2FA). Please finish manually.', e);
             }
         }
 
@@ -77,39 +89,129 @@ async function runBot(tickets, credentials = {}) {
 }
 
 async function createTicket(page, ticket) {
-    // 1. Navigate to "Novo Chamado" - assuming we are in dashboard
-    // Needs selector for "Novo Chamado" button if URL isn't direct
-    await page.goto('https://console.tomticket.com/novo_chamado_url_ou_clique'); // TODO: Fix URL/Selector
-    // Fallback: user is already there or we click
+    console.log('Navigating to Ticket Form...');
 
-    console.log('Filling ticket form...');
+    // 1. Navigate to "Novo Chamado"
+    // Strategy: We assume the "Novo Chamado" button is visible (Sidebar)
+    try {
+        // Try to click the button by text "Novo Chamado"
+        // Based on image, it's a prominent button, possibly a link or button tag.
+        await page.click('text="Novo Chamado"');
+
+        // Wait for the form to be ready - check for a unique field like #customersearch
+        await page.waitForSelector('#customersearch', { timeout: 5000 });
+    } catch (e) {
+        console.warn('Could not click "Novo Chamado" via text, trying URL fallback or retry...');
+        // Fallback: maybe we are already there? or reload dashboard?
+        // await page.goto('https://console.tomticket.com/panel/chamados/novo'); // Guessing URL
+    }
 
     // 1. Client
+    console.log(`Selecting Client: ${ticket.client}`);
     await page.fill('#customersearch', ticket.client);
+    await page.waitForTimeout(1000); // 1s wait for search results
     await page.keyboard.press('ArrowDown');
+    await page.waitForTimeout(200);
     await page.keyboard.press('Enter');
 
     // 2. Department
+    console.log(`Selecting Department: ${ticket.dept}`);
     await page.click('#coddepartamento');
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Enter');
+    await page.waitForTimeout(500);
 
-    // 3. Subject
-    // Use ticket summary or a generated title
-    const subject = ticket.summary.substring(0, 50) + '...';
-    await page.fill('#titulo', subject);
+    // Type to filter
+    await page.keyboard.type(ticket.dept);
+    await page.waitForTimeout(500);
 
-    // 4. Message
-    const iframeElement = page.frameLocator('iframe');
-    await iframeElement.locator('.fr-view').fill(ticket.message || ticket.summary);
+    // Select Exact Match
+    try {
+        await page.getByText(ticket.dept, { exact: true }).filter({ hasText: ticket.dept }).first().click();
+    } catch (e) {
+        console.warn(`Exact match click failed for ${ticket.dept}, trying Enter fallback...`);
+        await page.keyboard.press('Enter');
+    }
 
-    // 5. Priority
-    await page.selectOption('#prioridade', '2'); // Normal
+    // Wait for the Department selection to trigger Category load
+    console.log('Waiting for Category dropdown to activate...');
+    await page.waitForTimeout(1000); // Reduced to 1s based on user feedback
 
-    // 6. Attendant
-    await page.click('#codatendente');
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Enter');
+    // 2.5. Category (Tab Navigation Strategy)
+    if (ticket.category) {
+        console.log(`Selecting Category: ${ticket.category}`);
+        try {
+            // User suggests: Tab from Department lands on Category
+            console.log('Pressing Tab to focus Category...');
+            await page.keyboard.press('Tab');
+            await page.waitForTimeout(500);
+
+            // Type to filter
+            await page.keyboard.type(ticket.category);
+            await page.waitForTimeout(1000); // Wait for search results
+
+            // Select First Result
+            console.log('Selecting first result...');
+            await page.keyboard.press('ArrowDown');
+            await page.waitForTimeout(200);
+            await page.keyboard.press('Enter');
+
+        } catch (e) {
+            console.warn('Category selection failed:', e.message);
+        }
+    }
+
+
+
+
+    // 3. Subject (Assunto) - Fill immediately after Category
+    console.log('Filling Subject...');
+    // User provided ID: #titulo
+    const subjectSelector = '#titulo';
+    await page.waitForSelector(subjectSelector, { state: 'visible', timeout: 5000 });
+    await page.fill(subjectSelector, ticket.summary.substring(0, 50));
+
+    // 4. Message (Mensagem)
+    console.log('Filling Message...');
+    try {
+        // Froala/RichText editor handling
+        // Usually inside an iframe or a specific div contenteditable
+        // Previous logic used frameLocator which is robust for iframes.
+        const frame = page.frameLocator('iframe.fr-iframe'); // Adjust selector if needed
+        const editor = frame.locator('.fr-view')
+            .or(page.locator('.fr-view')) // Fallback if not in iframe
+            .or(page.locator('div[contenteditable="true"]')); // Generic fallback
+
+        await editor.first().fill(ticket.message || ticket.summary);
+    } catch (msgError) {
+        console.warn('Message fill failed, trying simple input fallback:', msgError.message);
+        // Fallback for simple textarea
+        await page.fill('textarea[name="mensagem"]', ticket.message || ticket.summary).catch(() => { });
+    }
+
+    // 5. Priority (Prioridade)
+    console.log('Setting Priority: Normal');
+    try {
+        // Updated: Use selectOption for native select
+        await page.selectOption('#prioridade', '2'); // 2 = Normal
+    } catch (e) {
+        console.warn('Priority selection failed:', e.message);
+    }
+
+    // 6. Attendant (Atendente) - Disabled per user request
+    /*
+    console.log('Selecting Attendant...');
+    try {
+        const attendantDropdown = await page.$('text="Escolher atendente..."') || await page.$('#codatendente');
+        if (attendantDropdown) {
+            await attendantDropdown.click();
+            await page.waitForTimeout(300);
+            await page.keyboard.press('ArrowDown');
+            await page.keyboard.press('Enter');
+        }
+    } catch (e) {
+        console.warn('Attendant selection failed.');
+    }
+    */
+
 
     // 7. Resolve immediately?
     if (ticket.resolve) {
