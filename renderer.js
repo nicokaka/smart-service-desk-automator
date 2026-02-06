@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedAccount = localStorage.getItem('tomticketAccount');
     const savedEmail = localStorage.getItem('tomticketEmail');
     const savedBrowser = localStorage.getItem('tomticketBrowser');
+    const savedGeminiKey = localStorage.getItem('geminiApiKey');
     const saveCredentialsState = localStorage.getItem('saveCredentialsState') === 'true';
 
     // Restore checkbox state
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedAccount) document.getElementById('settings-account').value = savedAccount;
     if (savedEmail) document.getElementById('settings-email').value = savedEmail;
     if (savedBrowser) document.getElementById('settings-browser').value = savedBrowser;
+    if (savedGeminiKey) document.getElementById('geminiApiKey').value = savedGeminiKey;
 
     // Restore Password ONLY if checkbox was checked
     if (saveCredentialsState) {
@@ -220,10 +222,22 @@ btnGenerateAI.addEventListener('click', async () => {
             if (summary) {
                 messageInput.value = "Gerando...";
                 try {
+                    // Recuperar chave da API da UI/Storage
+                    const apiKey = localStorage.getItem('geminiApiKey') || document.getElementById('geminiApiKey').value;
+
                     // Chamar API Electron (Processo Principal)
-                    const aiText = await window.electronAPI.generateAI(summary);
-                    messageInput.value = aiText;
-                    log(`IA gerou texto para linha ${tr.dataset.id}`);
+                    const aiResponse = await window.electronAPI.generateAI(summary, apiKey);
+
+                    try {
+                        const aiData = JSON.parse(aiResponse);
+                        // Atualizar Assunto e Descrição
+                        if (aiData.assunto) tr.querySelector('.input-summary').value = aiData.assunto;
+                        if (aiData.descricao) messageInput.value = aiData.descricao;
+                        log(`IA gerou texto para linha ${tr.dataset.id} (TomTicket)`);
+                    } catch (parseError) {
+                        console.warn("Falha ao processar JSON da IA, usando texto bruto.", parseError);
+                        messageInput.value = aiResponse; // Fallback
+                    }
                 } catch (error) {
                     messageInput.value = "Erro na IA";
                     console.warn(error);
@@ -446,6 +460,7 @@ btnSaveSettings.addEventListener('click', async () => {
 
     // 2. Save General Settings (Always)
     localStorage.setItem('tomticketBrowser', browser);
+    localStorage.setItem('geminiApiKey', document.getElementById('geminiApiKey').value.trim());
 
     // 3. Handle Token and Sync
     if (token) {

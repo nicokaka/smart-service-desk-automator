@@ -2,52 +2,68 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // Access API Key from environment or secure storage
-// For now using a placeholder or a free key if user provides one.
-// You can replace this with your actual key.
-const API_KEY = process.env.GEMINI_API_KEY || "";
+const ENV_API_KEY = process.env.GEMINI_API_KEY || "";
 
-async function generateTicketMessage(summary) {
-    console.log(`[AI Service] Generating message for summary: "${summary}"`);
+async function generateTicketMessage(summary, userApiKey) {
+    const API_KEY = userApiKey || ENV_API_KEY;
+
+    console.log(`[AI Service] Generating message for summary: "${summary}" (Key provided: ${!!userApiKey})`);
 
     // 1. Fallback Template (If no key or error)
-    // This ensures the user always gets a result even without an API key.
-    const fallbackMessage = `[IA Template]
-Olá, bom dia.
-
-Gostaria de relatar o seguinte problema: ${summary}.
-
-Detalhamento:
-- O problema ocorre intermitentemente.
-- Afeta o trabalho do usuário.
-- Já realizamos testes básicos (reinicialização).
-
-Solicito verificação.
-
-Atenciosamente,
-Bot Automatizado.`;
+    // Return valid JSON string for fallback to maintain contract
+    const fallbackMessage = JSON.stringify({
+        assunto: "Falha Relatada (Sem IA)",
+        descricao: `Olá,\n\nGostaria de relatar o seguinte problema: ${summary}.\n\nSolicito verificação.\n\nAtenciosamente,\nBot Automatizado.`
+    });
 
     if (!API_KEY) {
+        console.warn("No API Key found. Returning fallback.");
         return fallbackMessage;
     }
 
     // 2. Real AI Call
     try {
         const genAI = new GoogleGenerativeAI(API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({
+            model: "gemini-flash-latest",
+            generationConfig: { responseMimeType: "application/json" } // Force JSON if supported, otherwise prompt handles it
+        });
 
         const prompt = `
-        Aja como um técnico de TI experiente. Escreva uma mensagem para abertura de chamado técnico baseada neste resumo: "${summary}".
-        
-        Regras:
-        - Seja formal e polido.
-        - Estruture com: Saudação, Descrição do Problema, Impacto, Tentativas de Solução (básicas), Solicitação.
-        - Não invente dados específicos que não estão no resumo.
-        - Assine como "Colaborador".
+        Você é "TomTicket", um especialista em Service Desk da empresa Hebron.
+        Sua tarefa é transformar solicitações curtas e informais em textos técnicos profissionais para abertura de chamados.
+
+        # REGRAS DE NEGÓCIO
+        1. Cenário Ação (Ex: "Instalar Java"): 
+           - Assunto: Verbo no infinitivo + Objeto.
+           - Mensagem: Solicitação direta. Destaque nomes e ativos em negrito (**texto**).
+        2. Cenário Problema (Ex: "Impressora parou"):
+           - Assunto: Descrição do erro ou sintoma.
+           - Mensagem: Relato técnico do sintoma reportado pelo usuário.
+        3. Formatação:
+           - Use Markdown apenas para negrito (**).
+           - Setores devem estar entre cifrões e negrito (ex: **$10.14.002$**).
+
+        # FORMATO DE SAÍDA (JSON)
+        Responda APENAS um objeto JSON com dois campos:
+        {
+          "assunto": "Um título curto e profissional para a lista de chamados",
+          "descricao": "O texto completo e formatado para o corpo do chamado"
+        }
+
+        Entrada do Usuário: "${summary}"
         `;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        return response.text();
+        const text = response.text();
+
+        // Ensure strictly JSON
+        // Clean markdown code blocks if any (e.g., ```json ... ```)
+        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        return cleanText;
+
     } catch (error) {
         console.error("AI Generation Error:", error);
         return fallbackMessage;
