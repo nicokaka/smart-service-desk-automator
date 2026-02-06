@@ -10,11 +10,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedToken = localStorage.getItem('tomticketToken');
     if (savedToken) {
         document.getElementById('apiToken').value = savedToken;
-        // Optional: Sync in background check
-        if (!localStorage.getItem('cachedDepartments')) {
-            syncData(); // Sync if no cache
-        }
     }
+
+    // --- Load Cached Data (MOVED HERE to ensure availability for first row) ---
+    const cachedDepts = localStorage.getItem('cachedDepartments');
+    const cachedCats = localStorage.getItem('cachedCategories');
+    const cachedCust = localStorage.getItem('cachedCustomers');
+    const cachedFullDepts = localStorage.getItem('cachedFullDepartments');
+    const cachedFullCust = localStorage.getItem('cachedFullCustomers');
+    const cachedOps = localStorage.getItem('cachedOperators');
+
+    if (cachedDepts) DEPARTMENTS = JSON.parse(cachedDepts);
+    if (cachedCats) CATEGORIES = JSON.parse(cachedCats);
+    if (cachedCust) CUSTOMERS = JSON.parse(cachedCust);
+    if (cachedFullDepts) window.fullDepartments = JSON.parse(cachedFullDepts);
+    if (cachedFullCust) window.fullCustomers = JSON.parse(cachedFullCust);
+    if (cachedOps) OPERATORS = JSON.parse(cachedOps);
+
+    // Initialize Datalist from Cache
+    if (CUSTOMERS.length > 0) {
+        const datalist = document.getElementById('clients-list');
+        if (datalist) datalist.innerHTML = CUSTOMERS.map(c => `<option value="${c}">`).join('');
+    }
+
+    // --- Load Saved Credentials ---
+    const savedAccount = localStorage.getItem('tomticketAccount');
+    const savedEmail = localStorage.getItem('tomticketEmail');
+    const savedBrowser = localStorage.getItem('tomticketBrowser');
+    const saveCredentialsState = localStorage.getItem('saveCredentialsState') === 'true';
+
+    // Restore checkbox state
+    const chkSaveCredentials = document.getElementById('chk-save-credentials');
+    if (chkSaveCredentials) {
+        chkSaveCredentials.checked = saveCredentialsState;
+    }
+
+    if (savedAccount) document.getElementById('settings-account').value = savedAccount;
+    if (savedEmail) document.getElementById('settings-email').value = savedEmail;
+    if (savedBrowser) document.getElementById('settings-browser').value = savedBrowser;
+
+    // Restore Password ONLY if checkbox was checked
+    if (saveCredentialsState) {
+        const savedPassword = localStorage.getItem('tomticketPassword');
+        if (savedPassword) document.getElementById('settings-password').value = savedPassword;
+    }
+
+    // Optional: Sync only if really empty (paranoid check)
+    if (!localStorage.getItem('cachedDepartments') && savedToken) {
+        // syncData(); // Disable auto-sync to let user control it via button
+    }
+
+    // Add initial row AFTER cache is loaded
+    addRow();
 });
 
 const startBtn = document.getElementById('startMsgBtn');
@@ -157,8 +204,7 @@ function addRow() {
 
 btnAddRow.addEventListener('click', addRow);
 
-// Adicionar linha inicial
-addRow();
+// Adicionar linha inicial (Moved to DOMContentLoaded)
 
 // Lógica de Geração de IA
 btnGenerateAI.addEventListener('click', async () => {
@@ -368,64 +414,68 @@ function updateDropdownsInExistingRows() {
 // Fim da configuração
 
 // Carregar Dados em Cache
-const cachedDeps = localStorage.getItem('cachedDepartments');
-const cachedCats = localStorage.getItem('cachedCategories');
-const cachedCust = localStorage.getItem('cachedCustomers');
-const cachedFullCust = localStorage.getItem('cachedFullCustomers');
-const cachedOps = localStorage.getItem('cachedOperators');
-
-if (cachedDeps) DEPARTMENTS = JSON.parse(cachedDeps);
-if (cachedCats) CATEGORIES = JSON.parse(cachedCats);
-if (cachedCust) CUSTOMERS = JSON.parse(cachedCust);
-if (cachedFullCust) window.fullCustomers = JSON.parse(cachedFullCust);
-if (cachedOps) OPERATORS = JSON.parse(cachedOps);
-
-// Inicializar Datalist se houver cache
-if (CUSTOMERS.length > 0) {
-    const datalist = document.getElementById('clients-list');
-    if (datalist) datalist.innerHTML = CUSTOMERS.map(c => `<option value="${c}">`).join('');
-}
+// (Cache loading moved to top)
 
 
 // Salvar Configurações
 btnSaveSettings.addEventListener('click', async () => {
     const email = document.getElementById('settings-email').value;
     const account = document.getElementById('settings-account').value;
+    const password = document.getElementById('settings-password').value;
+    const browser = document.getElementById('settings-browser').value;
     const token = document.getElementById('apiToken').value.trim();
+    const chkSave = document.getElementById('chk-save-credentials');
+    const shouldSave = chkSave ? chkSave.checked : false;
 
+    if (!account || !email || !password || !token) {
+        alert('Por favor, preencha todos os campos!');
+        return;
+    }
+
+    // 1. Save critical credentials based on Checkbox
+    if (shouldSave) {
+        localStorage.setItem('tomticketAccount', account);
+        localStorage.setItem('tomticketEmail', email);
+        localStorage.setItem('tomticketPassword', password);
+    } else {
+        localStorage.removeItem('tomticketAccount');
+        localStorage.removeItem('tomticketEmail');
+        localStorage.removeItem('tomticketPassword');
+    }
+    localStorage.setItem('saveCredentialsState', shouldSave);
+
+    // 2. Save General Settings (Always)
+    localStorage.setItem('tomticketBrowser', browser);
+
+    // 3. Handle Token and Sync
     if (token) {
         localStorage.setItem('tomticketToken', token);
 
-        // Iniciar Sync com Feedback no Botão Salvar
+        // UI Feedback
         const originalText = btnSaveSettings.innerText;
         btnSaveSettings.disabled = true;
         btnSaveSettings.innerHTML = '<span class="spinner"></span> Sincronizando...';
 
-        await syncData(); // A função syncData vai atualizar o texto deste botão
+        await syncData();
 
-        // Restaurar botão
+        // Restore UI
         btnSaveSettings.disabled = false;
         btnSaveSettings.innerText = "Salvo! ✅";
         btnSaveSettings.style.backgroundColor = "var(--success-color)";
         btnSaveSettings.style.color = "#1e1e2e";
 
         setTimeout(() => {
-            btnSaveSettings.innerText = "Salvar Credenciais"; // Restaurar texto original fixo
+            btnSaveSettings.innerText = "Sincronizar Dados";
             btnSaveSettings.style.backgroundColor = "";
             btnSaveSettings.style.color = "";
         }, 3000);
     } else {
-        // Apenas feedback visual se não tiver token para sync
-        const originalText = btnSaveSettings.innerText;
-        btnSaveSettings.innerText = "Salvo (Sem Token)!";
-        setTimeout(() => btnSaveSettings.innerText = originalText, 2000);
+        // No token provided
+        localStorage.removeItem('tomticketToken');
+        alert('Configurações salvas, mas sem Token não é possível sincronizar.');
     }
 
-    localStorage.setItem('tomticketEmail', email);
-    localStorage.setItem('tomticketAccount', account);
-    localStorage.setItem('tomticketBrowser', document.getElementById('settings-browser').value);
-
-    log(`Credenciais atualizadas: Conta [${account}] / Email [${email}] / Token [${token ? 'Definido' : 'Vazio'}]`);
+    log(`Credenciais atualizadas: Conta [${account}] / Email [${email}] / Salvar? [${shouldSave ? 'Sim' : 'Não'}]`);
 });
 
 // --- Lógica de Integração da API ---
