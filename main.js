@@ -54,8 +54,8 @@ const { generateTicketMessage } = require('./ai_service');
 const { getTickets } = require('./tomticket_api');
 
 // Manipulador para "Gerar Mensagem com IA"
-ipcMain.handle('generate-ai', async (event, summary) => {
-    return await generateTicketMessage(summary);
+ipcMain.handle('generate-ai', async (event, summary, apiKey) => {
+    return await generateTicketMessage(summary, apiKey);
 });
 
 // Manipulador para API do TomTicket
