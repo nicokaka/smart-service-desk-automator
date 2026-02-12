@@ -65,16 +65,29 @@ async function runBot(tickets, credentials = {}) {
         // await page.pause(); // User requested to remove manual steps if possible, but we keep it safe for now.
         // Melhor: verificação.
 
-        console.log('Iniciando processamento em lote...');
-
-        for (const ticket of tickets) {
-            console.log(`Processing ticket: ${ticket.client}`);
-            try {
-                await createTicket(page, ticket);
-                results.push({ id: ticket.id, status: 'Success', message: 'Chamado criado' });
-            } catch (err) {
-                console.error(`Failed to create ticket for ${ticket.client}:`, err);
-                results.push({ id: ticket.id, status: 'Error', message: err.message });
+        if (credentials.mode === 'close') {
+            console.log('Iniciando fechamento em lote...');
+            for (const ticket of tickets) {
+                console.log(`Closing ticket ID: ${ticket.id}`);
+                try {
+                    await closeTicket(page, ticket);
+                    results.push({ id: ticket.id, status: 'Success', message: 'Chamado finalizado' });
+                } catch (err) {
+                    console.error(`Failed to close ticket ${ticket.id}:`, err);
+                    results.push({ id: ticket.id, status: 'Error', message: err.message });
+                }
+            }
+        } else {
+            console.log('Iniciando processamento de criação em lote...');
+            for (const ticket of tickets) {
+                console.log(`Processing ticket: ${ticket.client}`);
+                try {
+                    await createTicket(page, ticket);
+                    results.push({ id: ticket.id, status: 'Success', message: 'Chamado criado' });
+                } catch (err) {
+                    console.error(`Failed to create ticket for ${ticket.client}:`, err);
+                    results.push({ id: ticket.id, status: 'Error', message: err.message });
+                }
             }
         }
 
@@ -84,8 +97,41 @@ async function runBot(tickets, credentials = {}) {
         console.error('An error occurred:', error);
         return { success: false, message: error.message };
     } finally {
-        // await browser.close(); // Keep open for review
+        // await browser.close(); 
     }
+}
+
+async function closeTicket(page, ticket) {
+    const detailUrl = `${URL}/panel/chamados/detalhes/${ticket.id}`;
+    console.log(`Navigating to Ticket: ${detailUrl}`);
+    await page.goto(detailUrl);
+    await page.waitForTimeout(1000);
+
+    // 1. Clicar em "Finalizar"
+    // Tentar seletores comuns para botão de finalizar
+    console.log('Clicking "Finalizar"...');
+    try {
+        // Tenta botão com texto "Finalizar" ou ícone
+        await page.click('a.btn-success:has-text("Finalizar"), button:has-text("Finalizar"), a:has-text("Finalizar")');
+    } catch (e) {
+        throw new Error('Botão "Finalizar" não encontrado.');
+    }
+
+    // 2. Preencher Solução
+    console.log('Filling Solution...');
+    await page.waitForSelector('textarea', { timeout: 3000 });
+    // Tenta encontrar o textarea visível (provavelmente num modal)
+    await page.fill('textarea:visible', ticket.solution);
+
+    // 3. Confirmar Encerramento
+    console.log('Confirming Closure...');
+    await page.waitForTimeout(500);
+    // Clicar em "Confirmar", "Encerrar", "Salvar" dentro do contexto do modal se possível
+    // Assume-se que o botão de ação final é verde ou primário
+    await page.click('button.btn-success:visible, button:has-text("Confirmar"), button:has-text("Encerrar")');
+
+    await page.waitForTimeout(2000);
+    console.log('Ticket Closed!');
 }
 
 async function createTicket(page, ticket) {
@@ -215,18 +261,47 @@ async function createTicket(page, ticket) {
     }
 
 
-    // 7. Resolver imediatamente?
-    if (ticket.resolve) {
-        // Lógica para resolver
-        console.log('Deve resolver este chamado imediatamente (Não implementado ainda).');
-    }
+
 
     // 8. Enviar
-    // await page.click('#btn-save'); // TODO: Adicionar seletor
-    console.log('Formulário preenchido. Placeholder do botão de envio.');
+    console.log('Clicking "Criar Chamado"...');
+    try {
+        // Scroll to bottom to ensure button is in view
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await page.waitForTimeout(500);
 
-    // Aguardar sucesso?
-    await page.waitForTimeout(1000);
+        // Try 1: Playwright Role Locator (Most robust)
+        const submitBtn = page.getByRole('button', { name: 'Criar Chamado', exact: false });
+
+        if (await submitBtn.isVisible()) {
+            await submitBtn.click();
+        } else {
+            // Try 2: Generic text locator
+            console.log('Role locator failed/invisible, trying text locator...');
+            await page.click('button:has-text("Criar Chamado")');
+        }
+
+        console.log('Ticket Submitted!');
+
+        // Aguardar sucesso (modal, redirecionamento ou mensagem)
+        await page.waitForTimeout(3000);
+
+    } catch (e) {
+        console.error('Failed to click submit button:', e.message);
+        // Try 3: JS Click (Force)
+        try {
+            console.log('Trying JS Force Click...');
+            await page.evaluate(() => {
+                const btns = Array.from(document.querySelectorAll('button'));
+                const target = btns.find(b => b.textContent.includes('Criar Chamado'));
+                if (target) target.click();
+            });
+            await page.waitForTimeout(3000);
+        } catch (jsErr) {
+            console.error('JS Click also failed:', jsErr.message);
+            throw e;
+        }
+    }
 }
 
 module.exports = { runBot };
