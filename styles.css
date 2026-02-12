@@ -212,7 +212,8 @@ body {
     /* Limitar largura do dropdown */
 }
 
-.ticket-table input[type="text"] {
+.ticket-table input[type="text"],
+.ticket-table textarea {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
     /* Borda visível para ajudar usuário a ver área de texto */
@@ -222,9 +223,13 @@ body {
     width: 100%;
     min-width: 150px;
     /* Garantir que input tenha área clicável */
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    /* Allow vertical resize for textareas */
 }
 
-.ticket-table input[type="text"]:focus {
+.ticket-table input[type="text"]:focus,
+.ticket-table textarea:focus {
     border-color: var(--primary-color);
     background-color: rgba(255, 255, 255, 0.05);
     /* Destacar no foco */

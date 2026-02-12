@@ -54,8 +54,44 @@ const { generateTicketMessage } = require('./ai_service');
 const { getTickets } = require('./tomticket_api');
 
 // Manipulador para "Gerar Mensagem com IA"
-ipcMain.handle('generate-ai', async (event, summary, apiKey) => {
-    return await generateTicketMessage(summary, apiKey);
+ipcMain.handle('generate-ai', async (event, summary, clientName, apiKey) => {
+    return await generateTicketMessage(summary, clientName, apiKey);
+});
+
+// Manipulador para "Gerar Solução com IA"
+ipcMain.handle('generate-solution-ai', async (event, title, description, clientName, apiKey) => {
+    const { generateSolutionMessage } = require('./ai_service');
+    return await generateSolutionMessage(title, description, clientName, apiKey);
+});
+
+// Manipulador para "Fechar Chamados"
+// Manipulador para "Fechar Chamados" (Via API Direta)
+ipcMain.handle('close-tickets', async (event, tickets, credentials) => {
+    const { finalizeTicket } = require('./tomticket_api');
+    const token = credentials.token;
+
+    if (!token) {
+        return { success: false, message: "Token de API não fornecido para fechamento." };
+    }
+
+    const results = [];
+    console.log(`Iniciando fechamento de ${tickets.length} chamados via API...`);
+
+    for (const ticket of tickets) {
+        try {
+            console.log(`Finalizing ticket ${ticket.id} via API...`);
+            await finalizeTicket(token, ticket.id, ticket.solution);
+            results.push({ id: ticket.id, status: 'Success', message: 'Chamado finalizado via API' });
+        } catch (err) {
+            console.error(`Failed to close ticket ${ticket.id}:`, err);
+            const errorMsg = err.response && err.response.data && err.response.data.message ? err.response.data.message : err.message;
+            results.push({ id: ticket.id, status: 'Error', message: errorMsg });
+        }
+        // Small delay to avoid rate limits
+        await new Promise(r => setTimeout(r, 500));
+    }
+
+    return { success: true, message: "Processamento concluído com API!", details: results };
 });
 
 // Manipulador para API do TomTicket

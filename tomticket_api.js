@@ -202,4 +202,18 @@ async function createTicket(token, ticketData) {
     }
 }
 
-module.exports = { getTickets, getDepartments, getCategories, getCustomers, getOperators, createTicket };
+async function finalizeTicket(token, ticketId, message) {
+    try {
+        const params = {
+            ticket_id: ticketId,
+            message: message
+        };
+        const response = await tomticketRequest('/ticket/finish', token, 'POST', params);
+        return response;
+    } catch (error) {
+        console.error(`API Error (Finalize Ticket ${ticketId}):`, error);
+        throw error;
+    }
+}
+
+module.exports = { getTickets, getDepartments, getCategories, getCustomers, getOperators, createTicket, finalizeTicket };

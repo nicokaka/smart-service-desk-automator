@@ -65,7 +65,6 @@
                                 <th>Atendente</th>
                                 <th>Resumo (O que aconteceu?)</th>
                                 <th>Mensagem Gerada (IA)</th>
-                                <th>Resolver?</th>
                             </tr>
                         </thead>
                         <tbody id="ticket-queue-body">
@@ -95,17 +94,20 @@
                     <table class="ticket-table">
                         <thead>
                             <tr>
-                                <th><input type="checkbox"></th>
+                                <th style="width: 30px;"><input type="checkbox" id="select-all-manager"></th>
                                 <th>ID</th>
                                 <th>Assunto</th>
                                 <th>Cliente</th>
-                                <th>Ação</th>
+                                <th>Solução (IA)</th>
                             </tr>
                         </thead>
                         <tbody id="manager-queue-body"></tbody>
                     </table>
-                    <div class="bulk-actions">
-                        <button id="btn-close-selected" class="btn danger">Fechar Selecionados</button>
+                    <div class="bulk-actions" style="margin-top: 15px; display:flex; gap:10px;">
+                        <button id="btnCloseSelected" class="btn danger">Fechar Selecionados</button>
+                        <button id="btnGenerateSolutionAI" class="btn primary"
+                            style="background: linear-gradient(45deg, #FF0080, #7928CA); border: none;">✨ Gerar Solução
+                            com IA</button>
                     </div>
                 </div>
             </div>

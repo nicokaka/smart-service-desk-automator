@@ -186,11 +186,6 @@ function addRow() {
         </td>
         <td><input type="text" placeholder="Ex: Internet lenta" class="input-summary"></td>
         <td><input type="text" placeholder="Aguardando IA..." class="input-message" disabled></td>
-        <td>
-            <label style="font-size:0.8rem; display:flex; align-items:center; gap:5px; justify-content:center;">
-                <input type="checkbox" class="input-resolve">
-            </label>
-        </td>
     `;
 
     // Adicionar listener para checkbox da linha
@@ -210,38 +205,51 @@ btnAddRow.addEventListener('click', addRow);
 
 // Lógica de Geração de IA
 btnGenerateAI.addEventListener('click', async () => {
-    log('Solicitando geração de texto para linhas selecionadas...');
-    const rows = document.querySelectorAll('#ticket-queue-body tr');
+    log('Solicitando geração de texto...');
+    let rows = Array.from(document.querySelectorAll('#ticket-queue-body tr'));
 
-    for (const tr of rows) {
-        const checkbox = tr.querySelector('.row-select');
-        if (checkbox.checked || rows.length === 1) { // If checked or only one row
-            const summary = tr.querySelector('.input-summary').value;
-            const messageInput = tr.querySelector('.input-message');
+    // Check if any row is selected
+    const anySelected = rows.some(tr => tr.querySelector('.row-select').checked);
 
-            if (summary) {
-                messageInput.value = "Gerando...";
+    // Filter rows: If any selected, use those. Otherwise, use ALL rows.
+    const rowsToProcess = anySelected
+        ? rows.filter(tr => tr.querySelector('.row-select').checked)
+        : rows;
+
+    if (rowsToProcess.length === 0) {
+        log('Nenhuma linha para processar.');
+        return;
+    }
+
+    log(`Processando ${rowsToProcess.length} linhas com IA...`);
+
+    for (const tr of rowsToProcess) {
+        const summary = tr.querySelector('.input-summary').value;
+        const messageInput = tr.querySelector('.input-message');
+
+        if (summary) {
+            messageInput.value = "Gerando...";
+            try {
+                // Recuperar chave da API da UI/Storage
+                const apiKey = localStorage.getItem('geminiApiKey') || document.getElementById('geminiApiKey').value;
+                const clientName = tr.querySelector('.input-client').value || "Cliente";
+
+                // Chamar API Electron (Processo Principal)
+                const aiResponse = await window.electronAPI.generateAI(summary, clientName, apiKey);
+
                 try {
-                    // Recuperar chave da API da UI/Storage
-                    const apiKey = localStorage.getItem('geminiApiKey') || document.getElementById('geminiApiKey').value;
-
-                    // Chamar API Electron (Processo Principal)
-                    const aiResponse = await window.electronAPI.generateAI(summary, apiKey);
-
-                    try {
-                        const aiData = JSON.parse(aiResponse);
-                        // Atualizar Assunto e Descrição
-                        if (aiData.assunto) tr.querySelector('.input-summary').value = aiData.assunto;
-                        if (aiData.descricao) messageInput.value = aiData.descricao;
-                        log(`IA gerou texto para linha ${tr.dataset.id} (TomTicket)`);
-                    } catch (parseError) {
-                        console.warn("Falha ao processar JSON da IA, usando texto bruto.", parseError);
-                        messageInput.value = aiResponse; // Fallback
-                    }
-                } catch (error) {
-                    messageInput.value = "Erro na IA";
-                    console.warn(error);
+                    const aiData = JSON.parse(aiResponse);
+                    // Atualizar Assunto e Descrição
+                    if (aiData.descricao) messageInput.value = aiData.descricao;
+                    // Removed title update logic as per user request (AI only generates description)
+                    log(`IA gerou texto para linha ${tr.dataset.id} (TomTicket)`);
+                } catch (parseError) {
+                    console.warn("Falha ao processar JSON da IA, usando texto bruto.", parseError);
+                    messageInput.value = aiResponse; // Fallback
                 }
+            } catch (error) {
+                messageInput.value = "Erro na IA";
+                console.warn(error);
             }
         }
     }
@@ -260,12 +268,11 @@ btnStartBot.addEventListener('click', async () => {
         const attendant = tr.querySelector('.input-attendant').value;
         const summary = tr.querySelector('.input-summary').value;
         const message = tr.querySelector('.input-message').value;
-        const resolve = tr.querySelector('.input-resolve').checked;
 
         if (client && summary) {
             dataToProcess.push({
                 id: tr.dataset.id,
-                client, dept, category, attendant, summary, message, resolve
+                client, dept, category, attendant, summary, message
             });
         }
     });
@@ -288,7 +295,38 @@ btnStartBot.addEventListener('click', async () => {
 
     // Validate credentials if needed, but for now we pass them
     const result = await window.electronAPI.startBot(dataToProcess, credentials);
-    log(`Resultado: ${result.message}`);
+
+    // Resultado Processamento
+    log(`Resultado Geral: ${result.message}`);
+
+    if (result.details && Array.isArray(result.details)) {
+        result.details.forEach(item => {
+            const tr = document.querySelector(`tr[data-id="${item.id}"]`);
+            if (tr) {
+                if (item.status === 'Success') {
+                    // Visual Green Success
+                    tr.style.backgroundColor = '#d1e7dd';
+                    const msgInput = tr.querySelector('.input-message');
+                    if (msgInput) msgInput.value += " ✅ [CRIADO]";
+
+                    // Disable inputs and fix contrast (Dark text on light green)
+                    const inputs = tr.querySelectorAll('input, select');
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.style.color = '#000000'; // Black text for readability
+                        input.style.fontWeight = '500';
+                    });
+                } else {
+                    // Visual Red Error
+                    tr.style.backgroundColor = '#f8d7da';
+                    // Error text allows white/default usually, but let's ensure readability if needed
+                    // For now, red bg usually pairs with dark text in Bootstrap danges
+                    tr.style.color = '#721c24';
+                    log(`❌ Erro na linha ${item.id}: ${item.message}`);
+                }
+            }
+        });
+    }
 });
 
 // --- Sincronizar Dados ---
@@ -319,6 +357,15 @@ async function syncData() {
         const opResult = await window.electronAPI.tomticketApi(token, 'operators');
         if (opResult.success && opResult.data) {
             OPERATORS = opResult.data.sort((a, b) => a.name.localeCompare(b.name));
+
+            // Ensure "Nicolas" is present if not already
+            const nicolasExists = OPERATORS.some(op => op.name.toLowerCase().includes('nicolas'));
+            if (!nicolasExists) {
+                // Add dummy object for Nicolas if not in API
+                OPERATORS.push({ id: 'custom-nicolas', name: 'Nicolas' });
+                OPERATORS.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
             localStorage.setItem('cachedOperators', JSON.stringify(OPERATORS));
             log(`Atendentes atualizados: ${OPERATORS.length}`);
         }
@@ -568,75 +615,141 @@ function renderTickets(tickets) {
     const tbody = document.getElementById('manager-queue-body');
     tbody.innerHTML = '';
 
+    if (tickets.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum chamado encontrado.</td></tr>';
+        return;
+    }
+
     tickets.forEach(ticket => {
         const tr = document.createElement('tr');
+        tr.dataset.id = ticket.id;
+        tr.dataset.title = ticket.subject;
+        tr.dataset.description = ticket.description || ticket.subject;
+        tr.dataset.client = ticket.customer ? ticket.customer.name : 'Cliente';
 
         const protocol = ticket.protocol || ticket.id;
         const subject = ticket.subject || 'Sem Assunto';
         const client = ticket.customer ? ticket.customer.name : 'Desconhecido';
-        // const situation = ticket.situation ? ticket.situation.description : 'N/A';
-        // const operator = ticket.operator ? ticket.operator.name : 'Ninguém';
 
         tr.innerHTML = `
-            <td><input type="checkbox"></td>
+            <td><input type="checkbox" class="manager-check"></td>
             <td>${protocol}</td>
             <td>${subject}</td>
             <td>${client}</td>
             <td>
-                <button class="btn secondary" style="padding: 2px 5px;" onclick="setupBotFromTicket('${ticket.id}')">Usar</button>
+                <textarea class="input-solution" rows="1" placeholder="Mensagem de encerramento..."></textarea>
             </td>
         `;
         tbody.appendChild(tr);
     });
+
+    // Select All Logic
+    const selectAllInfo = document.getElementById('select-all-manager');
+    if (selectAllInfo) {
+        selectAllInfo.addEventListener('change', (e) => {
+            document.querySelectorAll('.manager-check').forEach(chk => chk.checked = e.target.checked);
+        });
+    }
 }
 
-window.setupBotFromTicket = (ticketId) => {
-    const ticket = allTickets.find(t => t.id === ticketId);
-    if (!ticket) return;
+// Botão: Gerar Solução com IA
+const btnGenerateSolutionAI = document.getElementById('btnGenerateSolutionAI');
+if (btnGenerateSolutionAI) {
+    btnGenerateSolutionAI.addEventListener('click', async () => {
+        const rows = document.querySelectorAll('#manager-queue-body tr');
+        let selectedRows = Array.from(rows).filter(tr => tr.querySelector('.manager-check').checked);
 
-    // Switch to Queue Tab
-    // Use try-catch for DOM manipulation safety
-    try {
-        const queueTab = document.querySelector('[data-tab="queue"]');
-        if (queueTab) queueTab.click();
-    } catch (e) { console.error(e); }
+        // Se ninguem selecionado, faz em todos (Smart Bulk)
+        if (selectedRows.length === 0 && rows.length > 0) {
+            selectedRows = Array.from(rows);
+        }
 
-    // Add Row
-    addRow();
+        if (selectedRows.length === 0) return;
 
-    // Fill Last Row
-    const rows = document.querySelectorAll('#ticket-queue-body tr');
-    const lastRow = rows[rows.length - 1];
+        log(`Gerando solução para ${selectedRows.length} chamados...`);
+        const apiKey = localStorage.getItem('geminiApiKey') || document.getElementById('geminiApiKey').value;
 
-    if (ticket.customer) lastRow.querySelector('.input-client').value = ticket.customer.name;
+        for (const tr of selectedRows) {
+            const solutionInput = tr.querySelector('.input-solution');
+            if (solutionInput) {
+                solutionInput.value = "Gerando...";
+                try {
+                    const title = tr.dataset.title;
+                    const desc = tr.dataset.description;
+                    const client = tr.dataset.client;
 
-    if (ticket.department) {
-        const deptSelect = lastRow.querySelector('.input-dept');
-        // Try to match exact text
-        for (let i = 0; i < deptSelect.options.length; i++) {
-            if (deptSelect.options[i].text === ticket.department.name) {
-                deptSelect.selectedIndex = i;
-                break;
+                    const aiResponse = await window.electronAPI.generateSolutionAI(title, desc, client, apiKey);
+
+                    try {
+                        const json = JSON.parse(aiResponse);
+                        if (json.solucao) solutionInput.value = json.solucao;
+                    } catch (e) {
+                        solutionInput.value = aiResponse;
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    solutionInput.value = "Erro na IA.";
+                }
             }
         }
-    }
+    });
+}
 
-    if (ticket.category) {
-        const catSelect = lastRow.querySelector('.input-cat');
-        // Try to match exact text
-        for (let i = 0; i < catSelect.options.length; i++) {
-            if (catSelect.options[i].text === ticket.category.name) {
-                catSelect.selectedIndex = i;
-                break;
-            }
+// Botão: Fechar Selecionados
+const btnCloseSelected = document.getElementById('btnCloseSelected');
+if (btnCloseSelected) {
+    btnCloseSelected.addEventListener('click', async () => {
+        const rows = document.querySelectorAll('#manager-queue-body tr');
+        const selectedRows = Array.from(rows).filter(tr => tr.querySelector('.manager-check').checked);
+
+        if (selectedRows.length === 0) {
+            alert('Selecione pelo menos um chamado para fechar.');
+            return;
         }
-    }
 
-    if (ticket.subject) lastRow.querySelector('.input-summary').value = ticket.subject;
+        const ticketsToClose = selectedRows.map(tr => ({
+            id: tr.dataset.id,
+            solution: tr.querySelector('.input-solution').value
+        }));
 
-    // Feedback visual (Efeito Flash)
-    lastRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    lastRow.style.transition = 'background-color 0.5s';
-    lastRow.style.backgroundColor = '#d1e7dd'; // Green-ish highlight
-    setTimeout(() => lastRow.style.backgroundColor = '', 1500);
-};
+        // Validate solutions
+        if (ticketsToClose.some(t => !t.solution || t.solution === 'Gerando...' || t.solution === 'Erro na IA.')) {
+            if (!confirm('Alguns chamados estão sem solução definida. Deseja continuar mesmo assim?')) return;
+        }
+
+        log(`Iniciando fechamento de ${ticketsToClose.length} chamados...`);
+
+        const credentials = {
+            account: localStorage.getItem('tomticketAccount'),
+            email: localStorage.getItem('tomticketEmail'),
+            password: localStorage.getItem('tomticketPassword'),
+            browser: localStorage.getItem('tomticketBrowser'),
+            token: localStorage.getItem('tomticketToken') // ADDING TOKEN FOR API usage
+        };
+
+        const result = await window.electronAPI.closeTickets(ticketsToClose, credentials);
+        log(`Resultado Fechamento: ${result.message}`);
+
+        // Visual Feedback
+        if (result.details && Array.isArray(result.details)) {
+            result.details.forEach(item => {
+                const tr = document.querySelector(`tr[data-id="${item.id}"]`);
+                if (tr) {
+                    if (item.status === 'Success') {
+                        tr.style.backgroundColor = '#d1e7dd'; // Green
+                        const inputs = tr.querySelectorAll('input, textarea');
+                        inputs.forEach(input => {
+                            input.disabled = true;
+                            input.style.color = '#000000';
+                            input.style.fontWeight = 'bold';
+                        });
+                    } else {
+                        tr.style.backgroundColor = '#f8d7da'; // Red
+                        tr.style.color = '#721c24';
+                    }
+                }
+            });
+        }
+    });
+}
