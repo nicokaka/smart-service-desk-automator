@@ -27,6 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cachedFullCust) window.fullCustomers = JSON.parse(cachedFullCust);
     if (cachedOps) OPERATORS = JSON.parse(cachedOps);
 
+    // Safety check for fullCategories
+    const cachedFullCats = localStorage.getItem('cachedFullCategories');
+    if (cachedFullCats) window.fullCategories = JSON.parse(cachedFullCats);
+
     // Initialize Datalist from Cache
     if (CUSTOMERS.length > 0) {
         const datalist = document.getElementById('clients-list');
@@ -51,10 +55,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedBrowser) document.getElementById('settings-browser').value = savedBrowser;
     if (savedGeminiKey) document.getElementById('geminiApiKey').value = savedGeminiKey;
 
-    // Restore Password ONLY if checkbox was checked
+    // Maintain previous logic...
     if (saveCredentialsState) {
         const savedPassword = localStorage.getItem('tomticketPassword');
         if (savedPassword) document.getElementById('settings-password').value = savedPassword;
+    }
+
+    // Restore Turbo Mode state
+    const savedTurboMode = localStorage.getItem('turboMode') === 'true';
+    const chkTurbo = document.getElementById('chk-turbo-mode');
+    if (chkTurbo) {
+        chkTurbo.checked = savedTurboMode;
     }
 
     // Optional: Sync only if really empty (paranoid check)
@@ -62,8 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // syncData(); // Disable auto-sync to let user control it via button
     }
 
-    // Add initial row AFTER cache is loaded
-    addRow();
+    // Restore Queue State (Persistence)
+    restoreQueueState();
 });
 
 const startBtn = document.getElementById('startMsgBtn');
@@ -148,60 +159,368 @@ function toggleRemoveButton() {
 }
 
 // Grade: Adicionar Linha
-function addRow() {
-    rowCount++;
-    const tr = document.createElement('tr');
-    tr.dataset.id = rowCount;
+function addRow(data = null) {
+    try {
+        console.log("addRow() called", data ? "with data" : "empty");
+        rowCount++;
+        const tr = document.createElement('tr');
+        tr.dataset.id = rowCount;
 
-    // Criar Opções de Departamento
-    const deptOptions = `<option value="">Selecione...</option>` + DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
-    // Criar Opções de Categoria
-    const catOptions = `<option value="">Selecione...</option>` + CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
-    // Criar Opções de Cliente
-    const clientOptions = `<option value="">Selecione...</option>` + CUSTOMERS.map(c => `<option value="${c}">${c}</option>`).join('');
-    // Criar Opções de Operador
-    const operatorOptions = `<option value="">Selecione...</option>` + OPERATORS.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
+        // Ensure globals are at least empty arrays to prevent map errors
+        const depts = window.fullDepartments || [];
+        const cats = CATEGORIES || [];
+        const custs = CUSTOMERS || [];
+        const ops = OPERATORS || [];
 
-    tr.innerHTML = `
-        <td><input type="checkbox" class="row-select"></td>
-        <td>
-            <select class="input-client input-field" style="padding:5px;">
-                ${clientOptions}
-            </select>
-        </td>
-        <td>
-            <select class="input-dept input-field" style="padding:5px;">
-                ${deptOptions}
-            </select>
-        </td>
-        <td>
-            <select class="input-cat input-field" style="padding:5px;">
-                ${catOptions}
-            </select>
-        </td>
-        <td>
-            <select class="input-attendant input-field" style="padding:5px;">
-                ${operatorOptions}
-            </select>
-        </td>
-        <td><input type="text" placeholder="Ex: Internet lenta" class="input-summary"></td>
-        <td><input type="text" placeholder="Aguardando IA..." class="input-message" disabled></td>
-    `;
+        // Helper to create options with selected value
+        const createOptions = (list, selectedValue, isObj = false) => {
+            return `<option value="">Selecione...</option>` + list.map(item => {
+                const val = isObj ? item.id : item; // ID if obj, self if string
+                const label = isObj ? item.name : item;
+                const availableVal = isObj ? item.id : item;
+                // loose comparison for ID strings vs numbers
+                const selected = String(availableVal) === String(selectedValue || '') ? 'selected' : '';
+                return `<option value="${val}" ${selected}>${label}</option>`;
+            }).join('');
+        };
 
-    // Adicionar listener para checkbox da linha
-    const checkbox = tr.querySelector('.row-select');
-    checkbox.addEventListener('change', toggleRemoveButton);
+        const deptOptions = createOptions(depts, data?.deptId, true);
+        const catOptions = createOptions(cats, data?.catName, false);
+        const clientOptions = createOptions(custs, data?.clientName, false);
+        const operatorOptions = createOptions(ops, data?.attendantId, true);
 
-    tableBody.appendChild(tr);
+        tr.innerHTML = `
+            <td><input type="checkbox" class="row-select" ${data?.selected ? 'checked' : ''}></td>
+            <td>
+                <select class="input-client input-field" style="padding:5px;">
+                    ${clientOptions}
+                </select>
+            </td>
+            <td>
+                <select class="input-dept input-field" style="padding:5px;">
+                    ${deptOptions}
+                </select>
+            </td>
+            <td>
+                <select class="input-cat input-field" style="padding:5px;">
+                    ${catOptions}
+                </select>
+            </td>
+            <td>
+                <select class="input-attendant input-field" style="padding:5px;">
+                    ${operatorOptions}
+                </select>
+            </td>
+            <td><input type="text" placeholder="Ex: Internet lenta" class="input-summary" value="${data?.subject || ''}"></td>
+            <td><input type="text" placeholder="Aguardando IA..." class="input-message" disabled value="${data?.message || ''}"></td>
+        `;
+
+        const checkbox = tr.querySelector('.row-select');
+        checkbox.addEventListener('change', toggleRemoveButton);
+
+        // Auto-save listeners (Persistence)
+        const inputs = tr.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', saveQueueState);
+            input.addEventListener('input', saveQueueState);
+        });
+
+        tableBody.appendChild(tr);
+        if (!data) saveQueueState(); // Save new empty row
+
+    } catch (e) {
+        console.error("Error in addRow:", e);
+        alert("Erro ao adicionar linha: " + e.message);
+    }
 }
 
-// Checkbox change listener is now added in addRow
-// window.removeRow removal logic handled by btnRemoveSelected logic now
+// Persistência da Fila
+function saveQueueState() {
+    const rows = [];
+    document.querySelectorAll('#ticket-queue-body tr').forEach(tr => {
+        rows.push({
+            clientName: tr.querySelector('.input-client').value,
+            deptId: tr.querySelector('.input-dept').value,
+            catName: tr.querySelector('.input-cat').value,
+            attendantId: tr.querySelector('.input-attendant').value,
+            subject: tr.querySelector('.input-summary').value,
+            message: tr.querySelector('.input-message').value,
+            selected: tr.querySelector('.row-select').checked
+        });
+    });
+    localStorage.setItem('ticketQueueState', JSON.stringify(rows));
+}
 
+function restoreQueueState() {
+    const saved = localStorage.getItem('ticketQueueState');
+    if (saved) {
+        try {
+            const rows = JSON.parse(saved);
+            if (Array.isArray(rows) && rows.length > 0) {
+                console.log('Restoring queue:', rows.length);
+                tableBody.innerHTML = '';
+                rowCount = 0;
+                rows.forEach(rowData => addRow(rowData));
+                return;
+            }
+        } catch (e) {
+            console.error('Failed to restore queue:', e);
+        }
+    }
+    // Default if no save found
+    addRow();
+}
 
-btnAddRow.addEventListener('click', addRow);
+// Event Listener para adicionar linha
+if (btnAddRow) {
+    btnAddRow.addEventListener('click', addRow);
+}
 
-// Adicionar linha inicial (Moved to DOMContentLoaded)
+// Lógica de Execução do Bot (Create Tickets)
+// const btnStartBot = document.getElementById('btn-start-bot'); // Already declared at top
+btnStartBot.addEventListener('click', async () => {
+    let rows = Array.from(document.querySelectorAll('#ticket-queue-body tr'));
+    const anySelected = rows.some(tr => tr.querySelector('.row-select').checked);
+    const rowsToProcess = anySelected ? rows.filter(tr => tr.querySelector('.row-select').checked) : rows;
+
+    if (rowsToProcess.length === 0) {
+        log('Nenhuma linha para processar.');
+        return;
+    }
+
+    const token = localStorage.getItem('tomticketToken');
+
+    // --- MODO API (Preferencial) ---
+    if (token) {
+        log(`Iniciando criação via API (${rowsToProcess.length} chamados)...`);
+
+        let i = 0;
+        for (const tr of rowsToProcess) {
+            i++;
+            try {
+                // 1. Coletar Dados
+                const clientName = tr.querySelector('.input-client').value;
+                const deptId = tr.querySelector('.input-dept').value; // Value is ID now
+                const catName = tr.querySelector('.input-cat').value; // Value is Name
+                const attendantId = tr.querySelector('.input-attendant').value; // Value is ID now
+                const subject = tr.querySelector('.input-summary').value;
+                const message = tr.querySelector('.input-message').value || subject;
+
+                if (!clientName || !deptId || !subject) {
+                    let missing = [];
+                    if (!clientName) missing.push("Cliente");
+                    if (!deptId) missing.push("Departamento");
+                    if (!subject) missing.push("Resumo");
+                    log(`ERRO: Linha ${tr.dataset.id} - Dados incompletos. Faltando: ${missing.join(', ')}`);
+                    tr.style.backgroundColor = '#f8d7da';
+                    continue;
+                }
+
+                // 2. Mapear IDs (Cliente e Categoria)
+                // Cliente ID
+                // Ensure fullCustomers is loaded
+                if (!window.fullCustomers || window.fullCustomers.length === 0) {
+                    log(`❌ ERRO CRÍTICO: Lista de Clientes (fullCustomers) está vazia. Tente Sincronizar novamente.`);
+                    tr.style.backgroundColor = '#f8d7da';
+                    continue;
+                }
+
+                // Helper to find ID
+                const getSafeId = (obj) => {
+                    if (!obj) return null;
+                    return obj.id || obj.Id || obj.customer_id || obj.key || obj._id;
+                };
+
+                // Debug matching
+                if (i === 1) {
+                    log(`🔍 DEBUG (Linha ${tr.dataset.id}): Buscando Cliente "${clientName}"...`);
+                    log(`📊 Total Clientes Carregados: ${window.fullCustomers ? window.fullCustomers.length : 'ZERO/NULL'}`);
+                    if (window.fullCustomers && window.fullCustomers.length > 0) {
+                        const sample = window.fullCustomers[0];
+                        // console.log("Amostra Cliente:", sample); 
+                        log(`📝 Chaves do Cliente: ${Object.keys(sample).join(', ')}`);
+                    }
+                }
+
+                const searchName = clientName.trim().toLowerCase();
+                const customerObj = (window.fullCustomers || []).find(c => {
+                    return c.name && c.name.trim().toLowerCase() === searchName;
+                });
+
+                let foundId = null;
+                if (customerObj) {
+                    foundId = getSafeId(customerObj);
+                    if (!foundId) {
+                        log(`⚠️ Cliente ENCONTRADO mas ID é NULO.`);
+                    } else {
+                        log(`✅ Cliente ENCONTRADO: "${customerObj.name}" -> ID: ${foundId}`);
+                    }
+                } else {
+                    log(`❌ Cliente NÃO ENCONTRADO na lista interna. Comparado com tag: "${searchName}"`);
+                }
+
+                if (!customerObj) {
+                    log(`❌ ERRO: Cliente "${clientName}" não encontrado (ID não mapeado).`);
+                    tr.style.backgroundColor = '#f8d7da';
+                    continue;
+                }
+
+                // Categoria ID
+                const categoryObj = (window.fullCategories || []).find(c => c.name === catName && c.department_id == deptId);
+                const finalCatObj = categoryObj || (window.fullCategories || []).find(c => c.name === catName);
+
+                if (!finalCatObj) {
+                    log(`AVISO: Categoria "${catName}" não encontrada. Enviando sem categoria.`);
+                }
+                const catId = finalCatObj ? finalCatObj.id : null;
+
+                // 3. Montar Payload
+                // Fix Priority: User reported '2' as Low. Let's try '1' for Normal or just remove if default is Normal.
+                // Documentation says: 1=Low, 2=Normal, 3=High.
+                // But user says '2' resulted in Low. Maybe mapped differently?
+                // Let's try '2' again but explicitly log it or try '1' if user insists.
+                // Wait, if 2 is low, maybe 1 is urgent?
+                // Let's look at standard mappings. Usually 0 or 1 is low.
+                // Let's try sending '1' and see.
+                // Also Attendant ID: Ensure it's not empty string.
+
+                const ticketData = {
+                    department_id: deptId,
+                    category_id: catId,
+                    subject: subject,
+                    message: message,
+                    priority: '2' // 1=Low, 2=Normal, 3=High. Correct param name is 'priority' NOT 'priority_id'
+                };
+
+                // Remove attendant_id from creation payload as it is not supported there
+
+                // Estratégia de Identificação Corrigida via Documentação
+                // Se usar Email no customer_id, PRECISA mandar customer_id_type = 'E'
+                if (foundId) {
+                    ticketData.customer_id = foundId;
+                    // Default type is I
+                } else if (customerObj.email) {
+                    log(`ℹ️ ID Nulo. Usando EMAIL como ID: ${customerObj.email} (Type: E)`);
+                    ticketData.customer_id = customerObj.email;
+                    ticketData.customer_id_type = 'E'; // CRITICAL: 'E' for Email
+                } else {
+                    throw new Error("Cliente sem ID e sem Email. Não é possível criar o chamado.");
+                }
+
+                // 4. Enviar API (Criar Chamado)
+                const result = await window.electronAPI.tomticketApi(token, 'create_ticket', ticketData);
+
+                if (result.success) {
+                    // Extract ID from correct field based on user log: "ticket_id"
+                    let newTicketId = result.data.ticket_id || result.data.id;
+
+                    if (!newTicketId && result.data.data && result.data.data.id) {
+                        newTicketId = result.data.data.id;
+                    }
+
+                    if (!newTicketId) {
+                        // log(`⚠️ Chamado criado mas ID não identificado. Resposta: ${JSON.stringify(result.data)}`);
+                    } else {
+                        // log(`Chamado criado! ID: ${newTicketId}`);
+                    }
+
+                    // 5. Vincular Atendente (Passo Extra Obrigatório)
+                    if (attendantId) {
+                        // log(`🔗 Vinculando atendente ID: ${attendantId}...`);
+                        try {
+                            const linkResult = await window.electronAPI.tomticketApi(token, 'link_attendant', {
+                                ticket_id: newTicketId,
+                                operator_id: attendantId
+                            });
+                            if (linkResult.success) {
+                                log(`✅ Atendente vinculado com sucesso.`);
+                            } else {
+                                log(`⚠️ Erro ao vincular atendente: ${linkResult.message}`);
+                            }
+                        } catch (linkErr) {
+                            log(`⚠️ Falha ao vincular atendente: ${linkErr.message}`);
+                        }
+                    }
+
+                    // Visual Success
+                    tr.style.backgroundColor = '#d1e7dd';
+                    tr.querySelectorAll('input, select').forEach(el => {
+                        el.disabled = true;
+                        el.style.color = '#000';
+                        el.style.fontWeight = 'bold';
+                    });
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (err) {
+                console.error(err);
+                log(`Erro linha ${tr.dataset.id}: ${err.message}`);
+                tr.style.backgroundColor = '#f8d7da';
+            }
+
+            // Delay anti-spam
+            await new Promise(r => setTimeout(r, 500));
+        }
+
+        log('Processamento via API finalizado.');
+        return;
+    }
+
+    // --- MODO PUPPETEER (Fallback) ---
+    // ... (Original logic preserved if no token)
+    log('Token não encontrado. Usando modo Navegador (Bot)...');
+
+    // Mapeamento visual para bot legacy
+    const tickets = rowsToProcess.map(tr => ({
+        id: tr.dataset.id,
+        client: tr.querySelector('.input-client').value, // Bot uses name to type/search
+        dept: tr.querySelector('.input-dept').options[tr.querySelector('.input-dept').selectedIndex].text, // Bot types name
+        category: tr.querySelector('.input-cat').value, // Bot types name
+        summary: tr.querySelector('.input-summary').value,
+        message: tr.querySelector('.input-message').value,
+        attendant: tr.querySelector('.input-attendant').options[tr.querySelector('.input-attendant').selectedIndex].text // Bot types name
+    }));
+
+    // Validate
+    if (tickets.some(t => !t.client || !t.dept || !t.summary)) {
+        alert('Por favor, preencha Cliente, Departamento e Resumo para todas as linhas.');
+        return;
+    }
+
+    const credentials = {
+        account: localStorage.getItem('tomticketAccount'),
+        email: localStorage.getItem('tomticketEmail'),
+        password: localStorage.getItem('tomticketPassword'),
+        browser: localStorage.getItem('tomticketBrowser')
+    };
+
+    log('Iniciando robô...');
+    const result = await window.electronAPI.runBot(tickets, credentials);
+    // ... (rest of bot handling logic)
+    // We need to trigger the same HandleResult logic as before or duplicate it.
+    // Let's duplicate/inline the feedback logic for clarity since I'm rewriting the handler.
+
+    log(`Resultado Bot: ${result.message}`);
+    if (result.details) {
+        result.details.forEach(item => {
+            const tr = document.querySelector(`tr[data-id="${item.id}"]`);
+            if (tr) {
+                if (item.status === 'Success') {
+                    tr.style.backgroundColor = '#d1e7dd';
+                    tr.querySelectorAll('input, select').forEach(el => {
+                        el.disabled = true; el.style.color = '#000';
+                    });
+                } else {
+                    tr.style.backgroundColor = '#f8d7da';
+                }
+            }
+        });
+    }
+});
+
+// Helper para delay
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Lógica de Geração de IA
 btnGenerateAI.addEventListener('click', async () => {
@@ -222,13 +541,24 @@ btnGenerateAI.addEventListener('click', async () => {
     }
 
     log(`Processando ${rowsToProcess.length} linhas com IA...`);
+    const isTurbo = localStorage.getItem('turboMode') === 'true';
+    if (!isTurbo) {
+        log(`⚠️ Nota: Para evitar erros de limite (429), haverá uma pausa entre as requisições.`);
+    }
 
-    for (const tr of rowsToProcess) {
+    for (let i = 0; i < rowsToProcess.length; i++) {
+        const tr = rowsToProcess[i];
         const summary = tr.querySelector('.input-summary').value;
         const messageInput = tr.querySelector('.input-message');
 
-        if (summary) {
-            messageInput.value = "Gerando...";
+        if (!summary) continue;
+
+        messageInput.value = "Gerando...";
+
+        let attempts = 0;
+        let success = false;
+
+        while (attempts < 3 && !success) {
             try {
                 // Recuperar chave da API da UI/Storage
                 const apiKey = localStorage.getItem('geminiApiKey') || document.getElementById('geminiApiKey').value;
@@ -239,96 +569,62 @@ btnGenerateAI.addEventListener('click', async () => {
 
                 try {
                     const aiData = JSON.parse(aiResponse);
-                    // Atualizar Assunto e Descrição
                     if (aiData.descricao) messageInput.value = aiData.descricao;
-                    // Removed title update logic as per user request (AI only generates description)
-                    log(`IA gerou texto para linha ${tr.dataset.id} (TomTicket)`);
+                    log(`✅ IA gerou texto para linha ${tr.dataset.id}`);
                 } catch (parseError) {
                     console.warn("Falha ao processar JSON da IA, usando texto bruto.", parseError);
                     messageInput.value = aiResponse; // Fallback
                 }
+                success = true;
+
+                // Delay entre requisições
+                // Turbo Mode logic
+                const isTurbo = localStorage.getItem('turboMode') === 'true';
+
+                // Feedback visual para o usuário saber se o Turbo pegou
+                if (i === 0 && attempts === 0) {
+                    log(isTurbo ? "🚀 MODO TURBO ATIVO (Sem delay)" : "🐢 MODO GRÁTIS ATIVO (Delay de segurança)");
+                }
+
+                if (success && i < rowsToProcess.length - 1) {
+                    if (isTurbo) {
+                        const waitTime = 100; // Minimal delay
+                        log(`⚡ Turbo Mode: Próxima requisição em ${waitTime}ms...`);
+                        await sleep(waitTime);
+                    } else {
+                        const waitTime = 4500;
+                        log(`🐢 Modo Grátis (Otimizado): Aguardando ${waitTime / 1000}s para a próxima...`);
+                        await sleep(waitTime);
+                    }
+                }
+
             } catch (error) {
-                messageInput.value = "Erro na IA";
                 console.warn(error);
+                const errorStr = error.toString();
+
+                if (errorStr.includes('429') || errorStr.includes('Too Many Requests') || errorStr.includes('Quota exceeded')) {
+                    attempts++;
+                    log(`⚠️ Limite da API atingido (429). Aguardando 60s antes de tentar novamente (Tentativa ${attempts}/3)...`);
+                    messageInput.value = `Aguardando (429)... ${attempts}/3`;
+                    await sleep(62000); // Wait 62 seconds to be safe
+                } else {
+                    messageInput.value = "Erro na IA";
+                    log(`❌ Erro na IA linha ${tr.dataset.id}: ${error.message}`);
+                    break; // Non-retryable error
+                }
             }
         }
+
+        if (!success && attempts >= 3) {
+            messageInput.value = "Falha (Limite)";
+            log(`❌ Falha na linha ${tr.dataset.id} após 3 tentativas.`);
+        }
     }
+
+    log('Processamento de IA finalizado.');
 });
 
 // Lógica de Início do Bot
-btnStartBot.addEventListener('click', async () => {
-    log('Iniciando processamento do Bot...');
-    const dataToProcess = [];
-
-    const rows = document.querySelectorAll('#ticket-queue-body tr');
-    rows.forEach(tr => {
-        const client = tr.querySelector('.input-client').value;
-        const dept = tr.querySelector('.input-dept').value;
-        const category = tr.querySelector('.input-cat').value;
-        const attendant = tr.querySelector('.input-attendant').value;
-        const summary = tr.querySelector('.input-summary').value;
-        const message = tr.querySelector('.input-message').value;
-
-        if (client && summary) {
-            dataToProcess.push({
-                id: tr.dataset.id,
-                client, dept, category, attendant, summary, message
-            });
-        }
-    });
-
-    if (dataToProcess.length === 0) {
-        log('❌ Erro: Preencha pelo menos uma linha completa (Cliente e Resumo) antes de iniciar.');
-        // alert('Preencha os campos obrigatórios!'); // REMOVED to avoid blocking
-        return;
-    }
-
-    log(`Enviando ${dataToProcess.length} tickets para o bot.`);
-
-    // Chamar API Electron
-    const credentials = {
-        account: document.getElementById('settings-account').value,
-        email: document.getElementById('settings-email').value,
-        password: document.getElementById('settings-password').value,
-        browser: document.getElementById('settings-browser').value
-    };
-
-    // Validate credentials if needed, but for now we pass them
-    const result = await window.electronAPI.startBot(dataToProcess, credentials);
-
-    // Resultado Processamento
-    log(`Resultado Geral: ${result.message}`);
-
-    if (result.details && Array.isArray(result.details)) {
-        result.details.forEach(item => {
-            const tr = document.querySelector(`tr[data-id="${item.id}"]`);
-            if (tr) {
-                if (item.status === 'Success') {
-                    // Visual Green Success
-                    tr.style.backgroundColor = '#d1e7dd';
-                    const msgInput = tr.querySelector('.input-message');
-                    if (msgInput) msgInput.value += " ✅ [CRIADO]";
-
-                    // Disable inputs and fix contrast (Dark text on light green)
-                    const inputs = tr.querySelectorAll('input, select');
-                    inputs.forEach(input => {
-                        input.disabled = true;
-                        input.style.color = '#000000'; // Black text for readability
-                        input.style.fontWeight = '500';
-                    });
-                } else {
-                    // Visual Red Error
-                    tr.style.backgroundColor = '#f8d7da';
-                    // Error text allows white/default usually, but let's ensure readability if needed
-                    // For now, red bg usually pairs with dark text in Bootstrap danges
-                    tr.style.color = '#721c24';
-                    log(`❌ Erro na linha ${item.id}: ${item.message}`);
-                }
-            }
-        });
-    }
-});
-
 // --- Sincronizar Dados ---
 async function syncData() {
     const token = localStorage.getItem('tomticketToken');
@@ -376,20 +672,26 @@ async function syncData() {
 
     // 2. Categorias (Busca Otimizada com Throttling)
     if (window.fullDepartments) {
-        let allCats = new Set();
+        let allCats = []; // Array of objects {id, name, department_id}
+        let seenCatIds = new Set();
         let count = 0;
         const total = window.fullDepartments.length;
 
-        // Otimização: Buscar em lotes menores para evitar bloqueio
-        const batchSize = 3; // Reduzido de 5 para 3 para segurança
+        const batchSize = 3;
         for (let i = 0; i < total; i += batchSize) {
             const batch = window.fullDepartments.slice(i, i + batchSize);
 
             await Promise.all(batch.map(async (dep) => {
                 try {
-                    const catResult = await window.electronAPI.tomticketApi(token, 'categories', { departmentId: dep.id });
+                    // FIX: Must use 'department_id' to match main.js expectation
+                    const catResult = await window.electronAPI.tomticketApi(token, 'categories', { department_id: dep.id });
                     if (catResult.success && catResult.data) {
-                        catResult.data.forEach(c => allCats.add(c.name));
+                        catResult.data.forEach(c => {
+                            if (!seenCatIds.has(c.id)) {
+                                allCats.push(c);
+                                seenCatIds.add(c.id);
+                            }
+                        });
                     }
                 } catch (err) {
                     console.error(`Falha ao buscar categorias do depto ${dep.id}`, err);
@@ -397,18 +699,22 @@ async function syncData() {
             }));
 
             count += batch.length;
-            // Atualizar status do botão
             const btnSave = document.getElementById('btn-save-settings');
             if (btnSave) {
                 btnSave.innerHTML = `<span class="spinner"></span> Sincronizando... (${Math.min(count, total)}/${total})`;
             }
-            // Aumentar delay para evitar "429 Too Many Requests" ou bloqueio de IP
             await new Promise(r => setTimeout(r, 300));
         }
 
-        CATEGORIES = Array.from(allCats).sort();
+        // Cache full objects for ID lookup
+        window.fullCategories = allCats;
+        localStorage.setItem('cachedFullCategories', JSON.stringify(allCats));
+
+        // Update Global CATEGORIES (Names only for UI Datalist/Select compatibility if other parts use it)
+        CATEGORIES = allCats.map(c => c.name).sort();
         localStorage.setItem('cachedCategories', JSON.stringify(CATEGORIES));
-        log(`Categorias atualizadas: ${CATEGORIES.length}`);
+
+        log(`Categorias atualizadas: ${allCats.length}`);
     }
 
     // 3. Clientes
@@ -445,31 +751,39 @@ function updateDropdownsInExistingRows() {
     const clientRows = document.querySelectorAll('.input-client');
     const attendantRows = document.querySelectorAll('.input-attendant');
 
-    const deptOptions = `<option value="">Selecione...</option>` + DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+    // FIX: Usar ID no value para departamentos se window.fullDepartments existir
+    let deptOptions;
+    if (window.fullDepartments && window.fullDepartments.length > 0) {
+        deptOptions = `<option value="">Selecione...</option>` + window.fullDepartments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+    } else {
+        // Fallback (não ideal, mas previne crash)
+        deptOptions = `<option value="">Selecione...</option>` + DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+    }
+
     const catOptions = `<option value="">Selecione...</option>` + CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
-    // Ordenar clientes para facilitar busca visual se não for feito na API
-    // CUSTOMERS.sort() // Já deve vir ordenado do cache
     const clientOptions = `<option value="">Selecione...</option>` + CUSTOMERS.map(c => `<option value="${c}">${c}</option>`).join('');
-    const operatorOptions = `<option value="">Selecione...</option>` + OPERATORS.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
+
+    // Operadores usam ID
+    let operatorOptions;
+    if (OPERATORS && OPERATORS.length > 0) {
+        operatorOptions = `<option value="">Selecione...</option>` + OPERATORS.map(o => `<option value="${o.id}">${o.name}</option>`).join('');
+    } else {
+        operatorOptions = `<option value="">Selecione...</option>`;
+    }
 
     // Helper segura para atualizar e manter valor
-    const updateSelect = (select, opts, validList) => {
+    const updateSelect = (select, opts) => {
         const keptValue = select.value;
         select.innerHTML = opts;
-        // Se tinha valor e ele ainda existe, mantém. Se não tinha valor (nova linha), fica vazio.
-        if (keptValue && validList.includes(keptValue)) {
-            select.value = keptValue;
-        } else {
-            select.value = ""; // Default to empty
-        }
+        // Tenta manter o valor se ele ainda fizer sentido, senão reseta.
+        // Como mudamos para ID no dept, valores antigos (nomes) vão se perder, o que é CORRETO para forçar re-seleção válida.
+        select.value = keptValue;
     };
 
-    deptRows.forEach(select => updateSelect(select, deptOptions, DEPARTMENTS));
-    catRows.forEach(select => updateSelect(select, catOptions, CATEGORIES));
-    clientRows.forEach(select => updateSelect(select, clientOptions, CUSTOMERS));
-    // ValidList validation for operators is tricky since OPERATORS is objects. For now just map names
-    const operatorNames = OPERATORS.map(o => o.name);
-    attendantRows.forEach(select => updateSelect(select, operatorOptions, operatorNames));
+    deptRows.forEach(select => updateSelect(select, deptOptions));
+    catRows.forEach(select => updateSelect(select, catOptions));
+    clientRows.forEach(select => updateSelect(select, clientOptions));
+    attendantRows.forEach(select => updateSelect(select, operatorOptions));
 }
 
 // Fim da configuração
@@ -508,6 +822,10 @@ btnSaveSettings.addEventListener('click', async () => {
     // 2. Save General Settings (Always)
     localStorage.setItem('tomticketBrowser', browser);
     localStorage.setItem('geminiApiKey', document.getElementById('geminiApiKey').value.trim());
+
+    // Save Turbo Mode
+    const chkTurbo = document.getElementById('chk-turbo-mode');
+    localStorage.setItem('turboMode', chkTurbo ? chkTurbo.checked : false);
 
     // 3. Handle Token and Sync
     if (token) {
@@ -563,7 +881,7 @@ btnLoadApiTickets.addEventListener('click', async () => {
     const emptyState = document.querySelector('.empty-state');
     if (emptyState) emptyState.style.display = 'none';
 
-    const result = await window.electronAPI.tomticketApi(token);
+    const result = await window.electronAPI.tomticketApi(token, 'list_tickets');
 
     btnLoadApiTickets.disabled = false;
     btnLoadApiTickets.innerText = '🔄 Buscar Meus Chamados'; // Restore original text

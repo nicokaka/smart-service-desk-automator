@@ -52,6 +52,23 @@
   },
   {
     "id": null,
+    "name": "Aline Ramos",
+    "email": "aline.ramos@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2026-02-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
     "name": "Allan Emanoel",
     "email": "allan.emanoel@hebron.com.br",
     "phone": null,
@@ -2109,6 +2126,23 @@
   },
   {
     "id": null,
+    "name": "Josefa Mendonça",
+    "email": "josefa@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2026-02-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
     "name": "Josias",
     "email": "",
     "phone": null,
@@ -2292,6 +2326,23 @@
       "name": "QUESALON - EXTREMA"
     },
     "creation_date": "2022-11-16",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Julia Barbarossa",
+    "email": "julia.barbarossa@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "ccc636cacb418ba3baf927453f9f2736",
+      "name": "HEBRON"
+    },
+    "creation_date": "2026-02-12",
     "custom_fields": []
   },
   {
@@ -2819,6 +2870,23 @@
       "name": "HEBRON"
     },
     "creation_date": "2022-10-27",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Marcelo Alvaro",
+    "email": "marcelo.alvaro@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2026-02-10",
     "custom_fields": []
   },
   {
@@ -3550,6 +3618,23 @@
       "name": "NPD"
     },
     "creation_date": "2022-09-12",
+    "custom_fields": []
+  },
+  {
+    "id": null,
+    "name": "Priscila Farias",
+    "email": "priscila.farias@hebron.com.br",
+    "phone": null,
+    "monthly_tickets_quota": 0,
+    "allowed_create_tickets": true,
+    "email_validated": true,
+    "active": true,
+    "account_approved": true,
+    "organization": {
+      "id": "689337f95390ff77f960ca6050d0c767",
+      "name": "INFAN"
+    },
+    "creation_date": "2026-02-11",
     "custom_fields": []
   },
   {
