@@ -92,7 +92,7 @@ async function getTickets(token, filters = {}) {
         };
         const finalParams = { ...defaultFilters, ...filters };
         const response = await tomticketRequest('/ticket/list', token, 'GET', finalParams);
-        return response;
+        return response.data || response; // Unwrap if necessary
     } catch (error) {
         console.error('TomTicket API Error:', error);
         throw error;
@@ -111,8 +111,11 @@ async function getDepartments(token) {
 
 async function getCategories(token, departmentId) {
     try {
+        console.log(`[API] Fetching categories for Dept ${departmentId}...`);
         const response = await tomticketRequest('/department/category/list', token, 'GET', { department_id: departmentId });
-        return response.data || [];
+        const cats = response.data || [];
+        console.log(`[API] Dept ${departmentId} has ${cats.length} categories.`);
+        return cats;
     } catch (error) {
         console.error(`API Error (Categories for ${departmentId}):`, error);
         return [];
@@ -121,72 +124,133 @@ async function getCategories(token, departmentId) {
 
 async function getCustomers(token) {
     let clients = [];
+    let page = 1;
+    let hasMore = true;
+    const MAX_RETRIES = 3;
+
     try {
-        let page = 1;
-        let hasMore = true;
-
         while (hasMore) {
-            const response = await tomticketRequest('/customer/list', token, 'GET', { page: page });
+            console.log(`[API] Fetching Customers Page ${page}... (Current Total: ${clients.length})`);
 
-            if (response.data && response.data.length > 0) {
-                clients = clients.concat(response.data);
-                page++;
+            let attempts = 0;
+            let success = false;
+            let response = null;
+
+            while (attempts < MAX_RETRIES && !success) {
+                attempts++;
+                try {
+                    // Remove 'limit' as API seems to ignore it or stick to 50
+                    response = await tomticketRequest('/customer/list', token, 'GET', { page: page });
+                    success = true;
+                } catch (err) {
+                    console.warn(`[API] Error fetching page ${page} (Attempt ${attempts}/${MAX_RETRIES}):`, err.message);
+                    if (attempts < MAX_RETRIES) {
+                        console.log(`[API] Retrying page ${page} in 2 seconds...`);
+                        await new Promise(r => setTimeout(r, 2000));
+                    } else {
+                        console.error(`[API] Failed to fetch page ${page} after ${MAX_RETRIES} attempts.`);
+                        // Option: continue to next page? Or stop? 
+                        // If a page fails completely, we might miss data. Let's stop to avoid partial sync state being treated as full.
+                        throw new Error(`Failed to fetch page ${page} after multiple attempts.`);
+                    }
+                }
+            }
+
+            if (response && response.data && Array.isArray(response.data)) {
+                const count = response.data.length;
+                console.log(`[API] Page ${page}: Received ${count} customers.`);
+
+                if (count > 0) {
+                    clients = clients.concat(response.data);
+
+                    // Check if we should continue
+                    // API Documentation says 'next_page' is null if no more pages, or maybe we just check if count < 50?
+                    // Let's rely on data presence first.
+                    // If response.next_page is explicitly null, we stop.
+                    if (response.next_page === null) {
+                        console.log(`[API] Page ${page} indicated no next page.`);
+                        hasMore = false;
+                    } else {
+                        page++;
+                    }
+                } else {
+                    console.log(`[API] Page ${page} returned 0 customers. Reached end.`);
+                    hasMore = false;
+                }
             } else {
+                console.log(`[API] Page ${page} invalid response format or empty. Stopping.`);
                 hasMore = false;
             }
 
-            if (page > 30) {
-                console.warn('Limite de páginas de clientes atingido (30). Parando.');
+            // Safety limit (increased)
+            if (page > 1000) {
+                console.warn('Limite de segurança de páginas de clientes atingido (1000). Parando.');
                 hasMore = false;
+            }
+
+            // Rate Limit Protection delay
+            if (hasMore) {
+                await new Promise(r => setTimeout(r, 200));
             }
         }
 
         return clients;
     } catch (error) {
         console.error('API Error (Customers):', error);
+        // Return what we have so far? or rethrow? 
+        // Returning partial data might be better than nothing, but user should be warned.
+        // For now, let's return partial but log heavily.
         return clients;
     }
 }
 
 async function getOperators(token) {
     let operators = [];
+    const operatorMap = new Map();
 
     // Strategy 1: Try /operator/list (Standard?)
     try {
-        console.log('Attempting /operator/list...');
+        console.log('[API] Attempting Operator Strategy 1: /operator/list');
         const response = await tomticketRequest('/operator/list', token, 'GET');
-        if (response.data && response.data.length > 0) {
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+            console.log(`[API] /operator/list returned ${response.data.length} operators.`);
             return response.data;
         }
-    } catch (e) { console.warn('/operator/list failed or empty'); }
+    } catch (e) { console.warn('[API] /operator/list failed:', e.message); }
 
-    // Strategy 2: Try /attendant/list (Guess based on PT term)
+    // Strategy 2: Fallback - Extract from Tickets (Scan deeper)
     try {
-        console.log('Attempting /attendant/list...');
-        const response = await tomticketRequest('/attendant/list', token, 'GET');
-        if (response.data && response.data.length > 0) {
-            return response.data;
-        }
-    } catch (e) { console.warn('/attendant/list failed or empty'); }
+        console.log('[API] Attempting Operator Strategy 2: Extraction from recent tickets (Deep Scan)...');
 
-    // Strategy 3: Fallback - Extract from Tickets
-    try {
-        console.log('Attempting extraction from recent tickets...');
-        // Fetch last 100 tickets to get a good sample of active operators
-        const ticketsResponse = await getTickets(token, { page: 1 });
-        const tickets = ticketsResponse.data || [];
+        // Scan up to 5 pages of tickets to find operators
+        for (let page = 1; page <= 5; page++) {
+            try {
+                const response = await tomticketRequest('/ticket/list', token, 'GET', { page: page, limit: 100 }); // Try fetching 100 tickets/page
 
-        const operatorMap = new Map();
-        tickets.forEach(t => {
-            if (t.operator && t.operator.id) {
-                operatorMap.set(t.operator.id, t.operator);
+                // Handle unwrapped vs wrapped data
+                const tickets = response.data || response || [];
+
+                if (Array.isArray(tickets) && tickets.length > 0) {
+                    tickets.forEach(t => {
+                        if (t.operator && t.operator.id) {
+                            if (!operatorMap.has(t.operator.id)) {
+                                operatorMap.set(t.operator.id, t.operator);
+                                console.log(`[API] Found new operator: ${t.operator.name}`);
+                            }
+                        }
+                    });
+                } else {
+                    break; // No more tickets
+                }
+            } catch (innerErr) {
+                console.warn(`[API] Error scanning ticket page ${page} for operators:`, innerErr.message);
             }
-        });
+        }
 
         operators = Array.from(operatorMap.values());
-        console.log(`Extracted ${operators.length} operators from tickets.`);
+        console.log(`[API] Extracted total ${operators.length} unique operators from history.`);
     } catch (e) {
-        console.error('Fallback extraction failed:', e);
+        console.error('[API] Fallback extraction failed:', e);
     }
 
     return operators;
@@ -216,4 +280,18 @@ async function finalizeTicket(token, ticketId, message) {
     }
 }
 
-module.exports = { getTickets, getDepartments, getCategories, getCustomers, getOperators, createTicket, finalizeTicket };
+async function linkAttendant(token, ticketId, operatorId) {
+    try {
+        const params = {
+            ticket_id: ticketId,
+            operator_id: operatorId
+        };
+        const response = await tomticketRequest('/ticket/operator/link', token, 'POST', params);
+        return response;
+    } catch (error) {
+        console.error(`API Error (Link Attendant ${ticketId}):`, error);
+        throw error;
+    }
+}
+
+module.exports = { getTickets, getDepartments, getCategories, getCustomers, getOperators, createTicket, finalizeTicket, linkAttendant };

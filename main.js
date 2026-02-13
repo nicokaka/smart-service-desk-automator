@@ -97,46 +97,48 @@ ipcMain.handle('close-tickets', async (event, tickets, credentials) => {
 // Manipulador para API do TomTicket
 ipcMain.handle('tomticket-api-call', async (event, token, type, params) => {
     try {
-        const { getDepartments, getCategories, getCustomers, createTicket } = require('./tomticket_api');
+        const { getDepartments, getCategories, getCustomers, createTicket, linkAttendant, getTickets } = require('./tomticket_api');
 
         if (type === 'departments') {
-            console.log('Fetching Departments...');
             const data = await getDepartments(token);
             return { success: true, data };
         }
 
         if (type === 'categories') {
-            console.log(`Fetching Categories for Department ${params.departmentId}...`);
-            const data = await getCategories(token, params.departmentId);
+            const data = await getCategories(token, params.department_id);
             return { success: true, data };
         }
 
         if (type === 'customers') {
-            console.log('Fetching Customers...');
             const data = await getCustomers(token);
             return { success: true, data };
         }
 
         if (type === 'create_ticket') {
-            console.log('Creating Ticket...', params);
-            const result = await createTicket(token, params);
-            return { success: true, data: result };
+            const data = await createTicket(token, params);
+            return { success: true, data };
+        }
+
+        if (type === 'link_attendant') {
+            const data = await linkAttendant(token, params.ticket_id, params.operator_id);
+            return { success: true, data };
+        }
+
+        if (type === 'list_tickets') {
+            // Fallback for list tickets
+            const data = await getTickets(token);
+            return { success: true, data };
         }
 
         if (type === 'operators') {
-            console.log('Fetching Operators...');
             const { getOperators } = require('./tomticket_api');
             const data = await getOperators(token);
             return { success: true, data };
         }
 
-        // Padrão: Listar Chamados
-        console.log('Fetching tickets via API...');
-        const response = await getTickets(token);
-        return { success: true, data: response.data || response };
-
-    } catch (e) {
-        console.error('API Call Failed:', e);
-        return { success: false, message: e.message };
+        throw new Error(`Unknown API call type: ${type}`);
+    } catch (error) {
+        console.error('API Call Failed:', error);
+        return { success: false, message: (error.response && error.response.data && error.response.data.message) || error.message };
     }
 });
