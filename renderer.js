@@ -592,8 +592,8 @@ btnGenerateAI.addEventListener('click', async () => {
                         log(`⚡ Turbo Mode: Próxima requisição em ${waitTime}ms...`);
                         await sleep(waitTime);
                     } else {
-                        const waitTime = 4500;
-                        log(`🐢 Modo Grátis (Otimizado): Aguardando ${waitTime / 1000}s para a próxima...`);
+                        const waitTime = 2000;
+                        log(`🐢 Modo Grátis: Aguardando ${waitTime / 1000}s para a próxima...`);
                         await sleep(waitTime);
                     }
                 }
