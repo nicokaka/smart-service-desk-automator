@@ -1,217 +1,451 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Service Desk Automator</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
     <!-- Google Fonts para Visual Premium -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-</head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
-
+  <body>
     <div class="app-container">
-        <!-- Barra Lateral -->
-        <aside class="sidebar">
-            <div class="logo">
-                <h2>⚡ SmartDesk</h2>
+      <!-- Barra Lateral -->
+      <aside class="sidebar">
+        <div class="logo">
+          <h2>⚡ SmartDesk</h2>
+        </div>
+        <nav class="nav-menu">
+          <button class="nav-item active" data-tab="queue">
+            <span class="icon">📋</span> Fila de Chamados
+          </button>
+          <button class="nav-item" data-tab="manager">
+            <span class="icon">🔍</span> Gerenciar Abertos
+            <span class="badge new-feature">Novo</span>
+          </button>
+          <button class="nav-item" data-tab="settings">
+            <span class="icon">⚙️</span> Credenciais
+          </button>
+          <button class="nav-item" data-tab="logs">
+            <span class="icon">📜</span> Logs
+          </button>
+        </nav>
+        <div class="sidebar-footer">
+          <p>v1.0.0</p>
+        </div>
+      </aside>
+
+      <!-- Conteúdo Principal -->
+      <main class="content-area">
+        <!-- Aba: Fila de Chamados -->
+        <div id="queue" class="tab-content active">
+          <header class="tab-header">
+            <h1>Fila de Processamento</h1>
+            <div class="actions">
+              <button id="btn-add-row" class="btn secondary">
+                + Adicionar Linha
+              </button>
+              <button
+                id="btn-remove-selected"
+                class="btn danger"
+                style="display: none"
+              >
+                Excluir Selecionados
+              </button>
+              <button id="btn-generate-ai" class="btn secondary-color">
+                ✨ Gerar com IA
+                <span class="tooltip-container"
+                  >?
+                  <span class="tooltip-text"
+                    >A IA gera os textos automaticamente com base nas palavras
+                    informadas na caixa "Resumo".</span
+                  >
+                </span>
+              </button>
+              <button id="btn-start-bot" class="btn primary">
+                ▶ Iniciar Bot
+              </button>
             </div>
-            <nav class="nav-menu">
-                <button class="nav-item active" data-tab="queue">
-                    <span class="icon">📋</span> Fila de Chamados
-                </button>
-                <button class="nav-item" data-tab="manager">
-                    <span class="icon">🔍</span> Gerenciar Abertos
-                    <span class="badge new-feature">Novo</span>
-                </button>
-                <button class="nav-item" data-tab="settings">
-                    <span class="icon">⚙️</span> Credenciais
-                </button>
-                <button class="nav-item" data-tab="logs">
-                    <span class="icon">📜</span> Logs
-                </button>
-            </nav>
-            <div class="sidebar-footer">
-                <p>v1.0.0</p>
+          </header>
+
+          <div class="table-container">
+            <table class="ticket-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="select-all" /></th>
+                  <th>Cliente</th>
+                  <th>Departamento</th>
+                  <th>Categoria</th>
+                  <th>Atendente</th>
+                  <th>Resumo (O que aconteceu?)</th>
+                  <th>Mensagem Gerada (IA)</th>
+                </tr>
+              </thead>
+              <tbody id="ticket-queue-body">
+                <!-- Linhas serão adicionadas aqui pelo JS -->
+              </tbody>
+            </table>
+
+            <!-- Empty State: Fila de Chamados -->
+            <div id="queue-empty-state" class="friendly-empty-state">
+              <div class="icon">✨</div>
+              <h3>Tudo limpo por aqui!</h3>
+              <p>
+                Nenhum chamado na fila de processamento. Clique em
+                <strong>+ Adicionar Linha</strong> acima para começar a
+                automatizar tarefas com Inteligência Artificial.
+              </p>
             </div>
-        </aside>
 
-        <!-- Conteúdo Principal -->
-        <main class="content-area">
+            <datalist id="clients-list"></datalist>
+          </div>
+        </div>
 
-            <!-- Aba: Fila de Chamados -->
-            <div id="queue" class="tab-content active">
-                <header class="tab-header">
-                    <h1>Fila de Processamento</h1>
-                    <div class="actions">
-                        <button id="btn-add-row" class="btn secondary">+ Adicionar Linha</button>
-                        <button id="btn-remove-selected" class="btn danger" style="display: none;">Excluir
-                            Selecionados</button>
-                        <button id="btn-generate-ai" class="btn secondary-color">✨ Gerar com IA</button>
-                        <button id="btn-start-bot" class="btn primary">▶ Iniciar Bot</button>
-                    </div>
-                </header>
+        <!-- Aba: Gerenciador de Chamados (Busca) -->
+        <div id="manager" class="tab-content">
+          <header class="tab-header">
+            <h1>Gerenciar Chamados Abertos</h1>
+            <div class="actions">
+              <button id="btnLoadApiTickets" class="btn secondary">
+                🔄 Buscar Meus Chamados
+              </button>
+              <select
+                id="operatorFilter"
+                class="input-field"
+                style="display: none; margin-left: 10px"
+              >
+                <option value="">Filtrar Atendente...</option>
+              </select>
+              <span
+                id="apiStatus"
+                style="margin-left: 10px; font-size: 0.9em; color: #888"
+              ></span>
+            </div>
+          </header>
+          <div class="empty-state" id="manager-empty-state">
+            <div class="friendly-empty-state" style="margin-top: 50px">
+              <div class="icon">🔍</div>
+              <h3>Pronto para buscar os chamados!</h3>
+              <p>
+                Clique no botão <strong>Buscar Meus Chamados</strong> acima para
+                trazer sua fila do TomTicket para cá e fechar vários
+                simultaneamente.
+              </p>
+            </div>
+          </div>
+          <div class="table-container hidden" id="manager-table-container">
+            <table class="ticket-table">
+              <thead>
+                <tr>
+                  <th style="width: 30px">
+                    <input type="checkbox" id="select-all-manager" />
+                  </th>
+                  <th>ID</th>
+                  <th>Assunto</th>
+                  <th>Cliente</th>
+                  <th>Solução (IA)</th>
+                </tr>
+              </thead>
+              <tbody id="manager-queue-body"></tbody>
+            </table>
+            <div
+              class="bulk-actions"
+              style="margin-top: 15px; display: flex; gap: 10px"
+            >
+              <button id="btnCloseSelected" class="btn danger">
+                Fechar Selecionados
+              </button>
+              <button
+                id="btnGenerateSolutionAI"
+                class="btn primary"
+                style="
+                  background: linear-gradient(45deg, #ff0080, #7928ca);
+                  border: none;
+                "
+              >
+                ✨ Gerar Solução com IA
+              </button>
+            </div>
+          </div>
+        </div>
 
-                <div class="table-container">
-                    <table class="ticket-table">
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" id="select-all"></th>
-                                <th>Cliente</th>
-                                <th>Departamento</th>
-                                <th>Categoria</th>
-                                <th>Atendente</th>
-                                <th>Resumo (O que aconteceu?)</th>
-                                <th>Mensagem Gerada (IA)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ticket-queue-body">
-                            <!-- Linhas serão adicionadas aqui pelo JS -->
-                        </tbody>
-                    </table>
-                    <datalist id="clients-list"></datalist>
+        <!-- Aba: Configurações -->
+        <div id="settings" class="tab-content">
+          <header class="tab-header">
+            <h1>Configurações de Acesso</h1>
+          </header>
+          <div class="form-container">
+            <div class="form-group">
+              <label>URL do Sistema</label>
+              <input
+                type="text"
+                value="https://console.tomticket.com"
+                disabled
+                class="input-field"
+              />
+            </div>
+            <div class="form-group">
+              <label>Conta (Empresa)</label>
+              <input
+                type="text"
+                id="settings-account"
+                placeholder="Ex: Hebron"
+                class="input-field"
+              />
+            </div>
+            <div class="form-group">
+              <label>Email de Acesso</label>
+              <input
+                type="email"
+                id="settings-email"
+                placeholder="seu.email@empresa.com"
+                class="input-field"
+              />
+            </div>
+            <div class="form-group">
+              <label>Senha</label>
+              <input
+                type="password"
+                id="settings-password"
+                placeholder="********"
+                class="input-field"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>
+                Token API TomTicket (Beta)
+                <span class="tooltip-container"
+                  >?
+                  <span class="tooltip-text"
+                    >Este token de segurança conecta o aplicativo aos seus
+                    chamados. Você pode gerá-lo no portal online do TomTicket
+                    indo em Configurações > API.</span
+                  >
+                </span>
+              </label>
+              <input
+                type="password"
+                id="apiToken"
+                placeholder="Cole seu Token aqui..."
+                class="input-field"
+              />
+              <small style="color: #aaa"
+                >Salvo localmente no seu computador.</small
+              >
+            </div>
+
+            <div class="form-group">
+              <label>Chave API Gemini (IA)</label>
+              <input
+                type="password"
+                id="geminiApiKey"
+                placeholder="Cole sua API Key do Google Gemini..."
+                class="input-field"
+              />
+              <small style="color: #aaa"
+                >Necessário para gerar textos com IA.
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  style="color: #8be9fd"
+                  >Obter Chave</a
+                ></small
+              >
+            </div>
+
+            <div class="form-group">
+              <label>
+                Instruções Customizadas para IA (Opcional)
+                <span class="tooltip-container"
+                  >?
+                  <span class="tooltip-text"
+                    >Escreva o contexto da sua empresa para a inteligência
+                    artificial. Como ela deve agir? Quais regras ela não pode
+                    quebrar?</span
+                  >
+                </span>
+              </label>
+              <textarea
+                id="customAIPrompt"
+                rows="4"
+                class="input-field"
+                style="resize: vertical"
+              ></textarea>
+            </div>
+            <!-- Save Credentials Checkbox -->
+            <div
+              class="form-group"
+              style="display: flex; align-items: center; gap: 10px"
+            >
+              <input type="checkbox" id="chk-save-credentials" />
+              <label
+                for="chk-save-credentials"
+                style="margin: 0; cursor: pointer"
+                >Salvar Senha (Inseguro)</label
+              >
+            </div>
+            <!-- Seção de Opções Avançadas -->
+            <div class="accordion" id="advanced-accordion">
+              <div
+                class="accordion-header"
+                onclick="
+                  document
+                    .getElementById('advanced-accordion')
+                    .classList.toggle('open')
+                "
+              >
+                <span>⚙️ Opções Avançadas</span>
+                <span class="accordion-icon">▼</span>
+              </div>
+              <div class="accordion-body">
+                <div class="form-group">
+                  <label>
+                    Modelo de Inteligência Artificial
+                    <span class="tooltip-container"
+                      >?
+                      <span class="tooltip-text"
+                        >Escolha o motor da IA. O Flash é extremamente rápido e
+                        barato. O Pro é demorado, detalhista e possui limites
+                        diários mais rigorosos do Google.</span
+                      >
+                    </span>
+                  </label>
+                  <select id="settings-gemini-model" class="input-field">
+                    <option value="gemini-2.5-flash">
+                      Gemini 2.5 Flash (Padrão e Rápido)
+                    </option>
+                    <option value="gemini-1.5-pro">
+                      Gemini 1.5 Pro (Avançado e Lento)
+                    </option>
+                  </select>
                 </div>
+
+                <div class="form-group">
+                  <label>
+                    Pausa Anti-Spam (Segundos)
+                    <span class="tooltip-container"
+                      >?
+                      <span class="tooltip-text"
+                        >Tempo de espera entre o envio de cada chamado. Evita
+                        que a rede bloqueie o robô por mandar requisições rápido
+                        demais (Erro 429). Padrão = 2.</span
+                      >
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    id="settings-delay"
+                    class="input-field"
+                    value="2"
+                    min="0"
+                    max="10"
+                  />
+                </div>
+
+                <!-- Legacy Fallback -->
+                <div class="form-group">
+                  <label>
+                    Navegador Interno (Fallback RPA)
+                    <span class="tooltip-container"
+                      >?
+                      <span class="tooltip-text"
+                        >Utilizado apenas se o sistema falhar em conectar via
+                        API do TomTicket, recorrendo à robótica de clique na
+                        tela (Puppeteer).</span
+                      >
+                    </span>
+                  </label>
+                  <select id="settings-browser" class="input-field">
+                    <option value="chromium">Google Chrome</option>
+                    <option value="firefox">Firefox</option>
+                  </select>
+                </div>
+
+                <div
+                  class="form-group"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-top: 15px;
+                    border-top: 1px solid #45475a;
+                    padding-top: 15px;
+                  "
+                >
+                  <input type="checkbox" id="chk-turbo-mode" />
+                  <label for="chk-turbo-mode" style="margin: 0; cursor: pointer"
+                    >⚡ Modo Turbo (Zero Delay - Requer Google Cloud
+                    Pago)</label
+                  >
+                </div>
+
+                <div
+                  class="form-group"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-top: 10px;
+                  "
+                >
+                  <input type="checkbox" id="chk-debug-mode" />
+                  <label for="chk-debug-mode" style="margin: 0; cursor: pointer"
+                    >🐞 Modo de Depuração (Ver Logs Completos do
+                    Servidor)</label
+                  >
+                </div>
+              </div>
             </div>
 
-            <!-- Aba: Gerenciador de Chamados (Busca) -->
-            <div id="manager" class="tab-content">
-                <header class="tab-header">
-                    <h1>Gerenciar Chamados Abertos</h1>
-                    <div class="actions">
-                        <button id="btnLoadApiTickets" class="btn secondary">🔄 Buscar Meus Chamados</button>
-                        <select id="operatorFilter" class="input-field" style="display:none; margin-left:10px;">
-                            <option value="">Filtrar Atendente...</option>
-                        </select>
-                        <span id="apiStatus" style="margin-left: 10px; font-size: 0.9em; color: #888;"></span>
-                    </div>
-                </header>
-                <div class="empty-state">
-                    <p>Clique em "Buscar" para listar seus chamados do TomTicket.</p>
-                </div>
-                <div class="table-container hidden" id="manager-table-container">
-                    <table class="ticket-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 30px;"><input type="checkbox" id="select-all-manager"></th>
-                                <th>ID</th>
-                                <th>Assunto</th>
-                                <th>Cliente</th>
-                                <th>Solução (IA)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="manager-queue-body"></tbody>
-                    </table>
-                    <div class="bulk-actions" style="margin-top: 15px; display:flex; gap:10px;">
-                        <button id="btnCloseSelected" class="btn danger">Fechar Selecionados</button>
-                        <button id="btnGenerateSolutionAI" class="btn primary"
-                            style="background: linear-gradient(45deg, #FF0080, #7928CA); border: none;">✨ Gerar Solução
-                            com IA</button>
-                    </div>
-                </div>
+            <button
+              id="btn-save-settings"
+              class="btn primary"
+              style="margin-top: 20px; width: 100%"
+            >
+              Sincronizar Dados
+            </button>
+          </div>
+        </div>
+
+        <!-- Aba: Logs -->
+        <div id="logs" class="tab-content">
+          <header class="tab-header">
+            <h1>Logs de Execução</h1>
+            <button id="btn-clear-logs" class="btn secondary">Limpar</button>
+          </header>
+          <div class="logs-container" id="logs-output">
+            <div class="log-entry info">
+              [System] App iniciado. Aguardando comandos.
             </div>
-
-            <!-- Aba: Configurações -->
-            <div id="settings" class="tab-content">
-                <header class="tab-header">
-                    <h1>Configurações de Acesso</h1>
-                </header>
-                <div class="form-container">
-                    <div class="form-group">
-                        <label>URL do Sistema</label>
-                        <input type="text" value="https://console.tomticket.com" disabled class="input-field">
-                    </div>
-                    <div class="form-group">
-                        <label>Conta (Empresa)</label>
-                        <input type="text" id="settings-account" placeholder="Ex: Hebron" class="input-field">
-                    </div>
-                    <div class="form-group">
-                        <label>Email de Acesso</label>
-                        <input type="email" id="settings-email" placeholder="seu.email@empresa.com" class="input-field">
-                    </div>
-                    <div class="form-group">
-                        <label>Senha</label>
-                        <input type="password" id="settings-password" placeholder="********" class="input-field">
-                    </div>
-                    <div class="form-group">
-                        <label>Navegador</label>
-                        <select id="settings-browser" class="input-field">
-                            <option value="chromium">Google Chrome</option>
-                            <option value="firefox">Firefox</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Token API TomTicket (Beta)</label>
-                        <input type="password" id="apiToken" placeholder="Cole seu Token aqui..." class="input-field">
-                        <small style="color: #aaa;">Salvo localmente no seu computador.</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Chave API Gemini (IA)</label>
-                        <input type="password" id="geminiApiKey" placeholder="Cole sua API Key do Google Gemini..."
-                            class="input-field">
-                        <small style="color: #aaa;">Necessário para gerar textos com IA. <a
-                                href="https://aistudio.google.com/app/apikey" target="_blank"
-                                style="color: #8be9fd;">Obter Chave</a></small>
-                    </div>
-                    <!-- Save Credentials Checkbox -->
-                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="chk-save-credentials">
-                        <label for="chk-save-credentials" style="margin:0; cursor:pointer;">Salvar Senha
-                            (Inseguro)</label>
-                    </div>
-
-                    <div class="form-group"
-                        style="display: flex; align-items: center; gap: 10px; margin-top: 10px; border-top: 1px solid #45475a; padding-top: 10px;">
-                        <input type="checkbox" id="chk-turbo-mode">
-                        <label for="chk-turbo-mode" style="margin:0; cursor:pointer;">⚡ Modo Turbo (Requer Conta
-                            Paga/Cartão)</label>
-                    </div>
-                    <small style="color: #a6adbb; display: block; margin-bottom: 15px;">
-                        Ative <b>apenas</b> se você vinculou um cartão no Google Cloud. Remove os delays de segurança da
-                        IA.
-                    </small>
-                    <button id="btn-save-settings" class="btn primary">Sincronizar Dados</button>
-                </div>
-            </div>
-
-
-            <!-- Aba: Logs -->
-            <div id="logs" class="tab-content">
-                <header class="tab-header">
-                    <h1>Logs de Execução</h1>
-                    <button id="btn-clear-logs" class="btn secondary">Limpar</button>
-                </header>
-                <div class="logs-container" id="logs-output">
-                    <div class="log-entry info">[System] App iniciado. Aguardando comandos.</div>
-                </div>
-            </div>
-
-        </main>
+          </div>
+        </div>
+      </main>
     </div>
 
-    <div class="container mt-4" id="apiResults" style="display: none;">
-        <h4>Chamados Encontrados</h4>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Protocolo</th>
-                        <th>Assunto</th>
-                        <th>Cliente</th>
-                        <th>Situação</th>
-                        <th>Atendente</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="ticketsBody">
-                </tbody>
-            </table>
-        </div>
+    <div class="container mt-4" id="apiResults" style="display: none">
+      <h4>Chamados Encontrados</h4>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Protocolo</th>
+              <th>Assunto</th>
+              <th>Cliente</th>
+              <th>Situação</th>
+              <th>Atendente</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="ticketsBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <script src="renderer.js"></script>
-</body>
-
+  </body>
 </html>
