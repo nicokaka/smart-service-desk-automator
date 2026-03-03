@@ -391,41 +391,12 @@ btnStartBot.addEventListener("click", async () => {
           return obj.id || obj.Id || obj.customer_id || obj.key || obj._id;
         };
 
-        // Debug matching
-        if (i === 1) {
-          log(
-            `🔍 DEBUG (Linha ${tr.dataset.id}): Buscando Cliente "${clientName}"...`,
-          );
-          log(
-            `📊 Total Clientes Carregados: ${window.fullCustomers ? window.fullCustomers.length : "ZERO/NULL"}`,
-          );
-          if (window.fullCustomers && window.fullCustomers.length > 0) {
-            const sample = window.fullCustomers[0];
-            // console.log("Amostra Cliente:", sample);
-            log(`📝 Chaves do Cliente: ${Object.keys(sample).join(", ")}`);
-          }
-        }
-
         const searchName = clientName.trim().toLowerCase();
         const customerObj = (window.fullCustomers || []).find((c) => {
           return c.name && c.name.trim().toLowerCase() === searchName;
         });
 
-        let foundId = null;
-        if (customerObj) {
-          foundId = getSafeId(customerObj);
-          if (!foundId) {
-            log(`⚠️ Cliente ENCONTRADO mas ID é NULO.`);
-          } else {
-            log(
-              `✅ Cliente ENCONTRADO: "${customerObj.name}" -> ID: ${foundId}`,
-            );
-          }
-        } else {
-          log(
-            `❌ Cliente NÃO ENCONTRADO na lista interna. Comparado com tag: "${searchName}"`,
-          );
-        }
+        const foundId = customerObj ? getSafeId(customerObj) : null;
 
         if (!customerObj) {
           log(

@@ -40,21 +40,15 @@ app.on("window-all-closed", () => {
 
 // Manipulador para "Iniciar Nuvem/Bot"
 ipcMain.handle("start-bot", async (event, tickets, credentials) => {
-  console.log("Received tickets to process:", tickets);
-  console.log("Received credentials:", { ...credentials, password: "***" });
-
-  // Simulação de processamento
   try {
-    const result = await runBot(tickets, credentials);
-    return result;
+    return await runBot(tickets, credentials);
   } catch (error) {
     return { success: false, message: error.message };
   }
 });
 
-// Manipulador para "Gerar Mensagem com IA" (Mock)
-const { generateTicketMessage } = require("./ai_service");
-const { getTickets } = require("./tomticket_api");
+const { generateTicketMessage, generateSolutionMessage } = require("./ai_service");
+const { getTickets, getDepartments, getCategories, getCustomers, createTicket, linkAttendant, getOperators } = require("./tomticket_api");
 
 // Manipulador para "Gerar Mensagem com IA"
 ipcMain.handle(
@@ -82,7 +76,6 @@ ipcMain.handle(
     customPrompt,
     model,
   ) => {
-    const { generateSolutionMessage } = require("./ai_service");
     return await generateSolutionMessage(
       title,
       description,
@@ -94,61 +87,9 @@ ipcMain.handle(
   },
 );
 
-// Manipulador para "Fechar Chamados"
-// Manipulador para "Fechar Chamados" (Via API Direta)
-ipcMain.handle("close-tickets", async (event, tickets, credentials) => {
-  const { finalizeTicket } = require("./tomticket_api");
-  const token = credentials.token;
-
-  if (!token) {
-    return {
-      success: false,
-      message: "Token de API não fornecido para fechamento.",
-    };
-  }
-
-  const results = [];
-  console.log(`Iniciando fechamento de ${tickets.length} chamados via API...`);
-
-  for (const ticket of tickets) {
-    try {
-      console.log(`Finalizing ticket ${ticket.id} via API...`);
-      await finalizeTicket(token, ticket.id, ticket.solution);
-      results.push({
-        id: ticket.id,
-        status: "Success",
-        message: "Chamado finalizado via API",
-      });
-    } catch (err) {
-      console.error(`Failed to close ticket ${ticket.id}:`, err);
-      const errorMsg =
-        err.response && err.response.data && err.response.data.message
-          ? err.response.data.message
-          : err.message;
-      results.push({ id: ticket.id, status: "Error", message: errorMsg });
-    }
-    // Small delay to avoid rate limits
-    await new Promise((r) => setTimeout(r, 500));
-  }
-
-  return {
-    success: true,
-    message: "Processamento concluído com API!",
-    details: results,
-  };
-});
-
 // Manipulador para API do TomTicket
 ipcMain.handle("tomticket-api-call", async (event, token, type, params) => {
   try {
-    const {
-      getDepartments,
-      getCategories,
-      getCustomers,
-      createTicket,
-      linkAttendant,
-      getTickets,
-    } = require("./tomticket_api");
 
     if (type === "departments") {
       const data = await getDepartments(token);
