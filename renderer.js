@@ -172,6 +172,7 @@ if (btnRemoveSelected) {
     });
     toggleRemoveButton();
     toggleQueueEmptyState();
+    saveQueueState(); // Save to localStorage after removing
   });
 }
 
@@ -274,6 +275,7 @@ function addRow(data = null) {
     });
 
     tableBody.appendChild(tr);
+    toggleQueueEmptyState();
     if (!data) saveQueueState(); // Save new empty row
   } catch (e) {
     console.error("Error in addRow:", e);

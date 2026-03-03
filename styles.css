@@ -450,4 +450,7 @@ body {
   }
 }
 
-/* CSS Limpo - Autocomplete removido */
+/* Utilitários Visuais */
+.hidden {
+  display: none !important;
+}

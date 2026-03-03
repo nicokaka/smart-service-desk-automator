@@ -1,4 +1,11 @@
-const { chromium, firefox } = require('@playwright/test');
+let chromium, firefox;
+try {
+    const defaultPlaywright = require('@playwright/test');
+    chromium = defaultPlaywright.chromium;
+    firefox = defaultPlaywright.firefox;
+} catch (e) {
+    console.warn("Playwright dependencies are missing or could not be loaded. Browser fallback will fail if attempted.");
+}
 
 // Configuração
 const HEADLESS = false; // Navegador visível
