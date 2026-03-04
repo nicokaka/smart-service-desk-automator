@@ -598,10 +598,23 @@ btnGenerateAI.addEventListener("click", async () => {
     (tr) => tr.querySelector(".row-select").checked,
   );
 
-  // Filter rows: If any selected, use those. Otherwise, use ALL rows.
-  const rowsToProcess = anySelected
-    ? rows.filter((tr) => tr.querySelector(".row-select").checked)
-    : rows;
+  // Format rows to process safely: If no checkboxes are selected, prioritize empty/error rows.
+  let rowsToProcess;
+  if (anySelected) {
+    rowsToProcess = rows.filter((tr) => tr.querySelector(".row-select").checked);
+  } else {
+    // Smart Bulk: Only process rows that DO NOT have a valid message yet
+    rowsToProcess = rows.filter((tr) => {
+      const msg = tr.querySelector(".input-message").value.trim();
+      return msg === "" || msg === "Gerando..." || msg === "Erro na IA" || msg === "Falha (Limite)";
+    });
+
+    if (rowsToProcess.length === 0 && rows.length > 0) {
+      log("ℹ️ Todas as mensagens já foram geradas. Selecione a caixa (checkbox) da linha caso deseje reescrever uma específica.");
+      alert("Todas as mensagens já estão geradas! Marque a caixinha do chamado que deseja refazer.");
+      return;
+    }
+  }
 
   if (rowsToProcess.length === 0) {
     log("Nenhuma linha para processar.");
@@ -1106,7 +1119,7 @@ function renderTickets(tickets) {
 
   if (tickets.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="5" style="text-align:center;">Nenhum chamado encontrado.</td></tr>';
+      '<tr><td colspan="6" style="text-align:center;">Nenhum chamado encontrado.</td></tr>';
     return;
   }
 
@@ -1120,12 +1133,14 @@ function renderTickets(tickets) {
     const protocol = ticket.protocol || ticket.id;
     const subject = ticket.subject || "Sem Assunto";
     const client = ticket.customer ? ticket.customer.name : "Desconhecido";
+    const attendant = ticket.operator ? ticket.operator.name : "Sem Atendente";
 
     tr.innerHTML = `
             <td><input type="checkbox" class="manager-check"></td>
             <td>${protocol}</td>
             <td>${subject}</td>
             <td>${client}</td>
+            <td>${attendant}</td>
             <td>
                 <textarea class="input-solution" rows="1" placeholder="Mensagem de encerramento..."></textarea>
             </td>
@@ -1153,9 +1168,18 @@ if (btnGenerateSolutionAI) {
       (tr) => tr.querySelector(".manager-check").checked,
     );
 
-    // Se ninguem selecionado, faz em todos (Smart Bulk)
+    // Se ninguem selecionado, faz em todos que estiverem vazios (Smart Bulk safely)
     if (selectedRows.length === 0 && rows.length > 0) {
-      selectedRows = Array.from(rows);
+      selectedRows = Array.from(rows).filter((tr) => {
+        const sol = tr.querySelector(".input-solution").value.trim();
+        return sol === "" || sol === "Gerando..." || sol === "Erro na IA.";
+      });
+
+      if (selectedRows.length === 0) {
+        log("ℹ️ Todas as soluções já foram geradas. Selecione a caixa da linha caso deseje reescrever uma específica.");
+        alert("Todas as soluções já estão geradas! Marque a caixinha do chamado que deseja refazer.");
+        return;
+      }
     }
 
     if (selectedRows.length === 0) return;
