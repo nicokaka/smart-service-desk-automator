@@ -47,6 +47,40 @@ ipcMain.handle("start-bot", async (event, tickets, credentials) => {
   }
 });
 
+// Manipulador para "Fechar Chamados" (API com Fallback para Bot)
+ipcMain.handle("close-tickets", async (event, tickets, credentials) => {
+  try {
+    const { finalizeTicket } = require("./tomticket_api");
+    const { runBot } = require("./bot");
+    const token = credentials.token;
+
+    // Fallback: Se não tiver token, usa o robô (Playwright) via UI
+    if (!token) {
+      console.log('Token de API ausente. Realizando fallback para fechamento via Navegador (Bot)...');
+      credentials.mode = 'close';
+      return await runBot(tickets, credentials);
+    }
+
+    // Com token: Fechamento via API (Rápido e silencioso)
+    console.log('Iniciando fechamento em lote via API...');
+    const results = [];
+    for (const ticket of tickets) {
+      console.log(`Closing ticket ID via API: ${ticket.id}`);
+      try {
+        await finalizeTicket(token, ticket.id, ticket.solution);
+        results.push({ id: ticket.id, status: 'Success', message: 'Chamado finalizado via API' });
+      } catch (err) {
+        console.error(`Failed to close ticket ${ticket.id} via API:`, err);
+        results.push({ id: ticket.id, status: 'Error', message: err.message });
+      }
+    }
+
+    return { success: true, message: "Lote processado via API!", details: results };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+});
+
 const { generateTicketMessage, generateSolutionMessage } = require("./ai_service");
 const { getTickets, getDepartments, getCategories, getCustomers, createTicket, linkAttendant, getOperators } = require("./tomticket_api");
 
