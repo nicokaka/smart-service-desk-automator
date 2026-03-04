@@ -111,7 +111,13 @@ async function runBot(tickets, credentials = {}) {
 async function closeTicket(page, ticket) {
     const detailUrl = `${URL}/panel/chamados/detalhes/${ticket.id}`;
     console.log(`Navigating to Ticket: ${detailUrl}`);
-    await page.goto(detailUrl);
+    try {
+        await page.goto(detailUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    } catch (navErr) {
+        console.warn(`page.goto failed, trying JS navigation: ${navErr.message}`);
+        await page.evaluate((url) => { window.location.href = url; }, detailUrl);
+        await page.waitForTimeout(2000); // Give it time to load
+    }
     await page.waitForTimeout(1000);
 
     // 1. Clicar em "Finalizar"
@@ -119,9 +125,38 @@ async function closeTicket(page, ticket) {
     console.log('Clicking "Finalizar"...');
     try {
         // Tenta botão com texto "Finalizar" ou ícone
-        await page.click('a.btn-success:has-text("Finalizar"), button:has-text("Finalizar"), a:has-text("Finalizar")');
+        const finishSelectors = [
+            'a.btn-success:has-text("Finalizar")',
+            'button:has-text("Finalizar")',
+            'a:has-text("Finalizar")',
+            'a.btn:has-text("Encerrar")',
+            'button:has-text("Encerrar")',
+            'a:has-text("Encerrar")',
+            'a.btn-success:has-text("Resolver")',
+            'button:has-text("Resolver")',
+            'a:has-text("Resolver")',
+            'a[href*="/panel/chamados/finalizar/"]' // Fallback baseado na URL
+        ];
+
+        let clicked = false;
+        for (const selector of finishSelectors) {
+            try {
+                const element = await page.$(selector);
+                if (element && await element.isVisible()) {
+                    console.log(`Found button with selector: ${selector}`);
+                    await element.click();
+                    clicked = true;
+                    break;
+                }
+            } catch (ignore) { }
+        }
+
+        if (!clicked) {
+            throw new Error('Nenhum seletor de botão finalizador funcionou.');
+        }
+
     } catch (e) {
-        throw new Error('Botão "Finalizar" não encontrado.');
+        throw new Error('Botão "Finalizar/Encerrar" não encontrado na página.');
     }
 
     // 2. Preencher Solução
