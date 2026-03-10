@@ -1354,3 +1354,39 @@ if (btnCloseSelected) {
     }
   });
 }
+
+// --- About Modal ---
+const aboutModal = document.getElementById("about-modal");
+const btnAbout = document.getElementById("btn-about");
+const btnCloseAbout = document.getElementById("btn-close-about");
+const aboutGithubLink = document.getElementById("about-github-link");
+
+if (btnAbout && aboutModal) {
+  btnAbout.addEventListener("click", () => {
+    aboutModal.style.display = "flex";
+  });
+
+  btnCloseAbout.addEventListener("click", () => {
+    aboutModal.style.display = "none";
+  });
+
+  // Fechar ao clicar fora do modal
+  aboutModal.addEventListener("click", (e) => {
+    if (e.target === aboutModal) {
+      aboutModal.style.display = "none";
+    }
+  });
+
+  // Abrir link do GitHub no navegador padrão
+  if (aboutGithubLink) {
+    aboutGithubLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = aboutGithubLink.getAttribute("href");
+      if (window.electronAPI && window.electronAPI.openExternal) {
+        window.electronAPI.openExternal(url);
+      } else {
+        window.open(url, "_blank");
+      }
+    });
+  }
+}

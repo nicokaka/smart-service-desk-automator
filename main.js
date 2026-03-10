@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut } = require("electron");
 const path = require("path");
 const { runBot } = require("./bot");
 
@@ -18,6 +18,23 @@ function createWindow() {
 
   win.loadFile("index.html");
   // win.webContents.openDevTools(); // Open DevTools for debugging
+
+  // --- Zoom Controls ---
+  // Ctrl+= ou Ctrl+Shift+= (Zoom In)
+  win.webContents.on("before-input-event", (event, input) => {
+    if (input.control && !input.alt) {
+      if (input.key === "=" || input.key === "+") {
+        win.webContents.setZoomLevel(win.webContents.getZoomLevel() + 0.5);
+        event.preventDefault();
+      } else if (input.key === "-") {
+        win.webContents.setZoomLevel(win.webContents.getZoomLevel() - 0.5);
+        event.preventDefault();
+      } else if (input.key === "0") {
+        win.webContents.setZoomLevel(0);
+        event.preventDefault();
+      }
+    }
+  });
 }
 
 app.whenReady().then(() => {

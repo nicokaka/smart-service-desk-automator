@@ -11,6 +11,7 @@
 [![Playwright](https://img.shields.io/badge/Playwright-Automation-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-Runtime-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-0078D6?style=for-the-badge&logo=windows&logoColor=white)]()
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)]()
 
 [🇺🇸 English](#-english) | [🇧🇷 Português](#-português)
 
@@ -23,6 +24,25 @@
 ## 🇺🇸 English
 
 > **A production-ready Electron desktop application that automates the entire Service Desk lifecycle — from intelligent ticket creation with AI-generated responses to bulk resolution — built for IT teams that need to scale support without scaling headcount.**
+
+### 📸 Screenshots & Demo
+
+<div align="center">
+
+#### 🖥️ Main Interface — Ticket Processing Queue
+<img src="screenshots/screenshot-main.png" alt="Main Interface" width="800"/>
+
+<br/>
+
+#### 📋 Bulk Ticket Manager — Close Hundreds at Once
+<img src="screenshots/screenshot-manager.png" alt="Ticket Manager" width="800"/>
+
+<br/>
+
+#### ℹ️ About Dialog
+<img src="screenshots/screenshot-about.png" alt="About Dialog" width="400"/>
+
+</div>
 
 ### 🎯 The Problem It Solves
 
@@ -107,6 +127,20 @@ The application connects directly to the **TomTicket API**, fetches open tickets
     Credentials)
 ```
 
+### 🔒 Security by Design
+
+> This project was built with a **security-first mindset**, following Electron and OWASP best practices.
+
+| Practice | Implementation |
+|----------|---------------|
+| **Context Isolation** | `contextIsolation: true` — renderer has zero direct access to Node.js APIs |
+| **Node Integration Disabled** | `nodeIntegration: false` — prevents XSS from escalating to RCE |
+| **IPC Bridge (Preload)** | All main↔renderer communication goes through a secure, whitelisted `preload.js` bridge |
+| **No Hardcoded Secrets** | API keys and tokens are stored locally in `localStorage`, never committed to source |
+| **Local-Only Data** | Zero telemetry, zero analytics — all user data stays on the machine |
+| **Input Sanitization** | AI-generated content is sanitized before being injected into the DOM |
+| **LGPD/GDPR Compliant** | No PII collection, no external data transmission beyond necessary API calls |
+
 ### 🛠️ Advanced Settings
 
 | Setting | Description | Default |
@@ -138,7 +172,7 @@ The installer creates desktop shortcuts, Start Menu entries, and registers in Ad
 ### 💻 Tech Stack
 
 | Layer | Technology | Purpose |
-|-------|-----------|---------|
+|-------|-----------|---------| 
 | **Frontend** | HTML5, CSS3, Vanilla JS | Lightweight, no framework overhead |
 | **Desktop** | Electron 40.x | Cross-platform native experience |
 | **AI Engine** | Google Gemini API | Intelligent text generation |
@@ -154,6 +188,25 @@ The installer creates desktop shortcuts, Start Menu entries, and registers in Ad
 ## 🇧🇷 Português
 
 > **Um aplicativo Desktop Electron pronto para produção que automatiza todo o ciclo de vida do Service Desk — desde a criação inteligente de chamados com respostas geradas por IA até a resolução em massa — feito para equipes de TI que precisam escalar o suporte sem aumentar a equipe.**
+
+### 📸 Capturas de Tela & Demo
+
+<div align="center">
+
+#### 🖥️ Interface Principal — Fila de Processamento
+<img src="screenshots/screenshot-main.png" alt="Interface Principal" width="800"/>
+
+<br/>
+
+#### 📋 Gerenciador em Massa — Feche Centenas de Uma Vez
+<img src="screenshots/screenshot-manager.png" alt="Gerenciador de Chamados" width="800"/>
+
+<br/>
+
+#### ℹ️ Modal Sobre
+<img src="screenshots/screenshot-about.png" alt="Modal Sobre" width="400"/>
+
+</div>
 
 ### 🎯 O Problema que Ele Resolve
 
@@ -238,6 +291,20 @@ A aplicação se conecta diretamente à **API do TomTicket**, busca chamados abe
     e Credenciais)
 ```
 
+### 🔒 Segurança por Design
+
+> Este projeto foi construído com **mentalidade security-first**, seguindo boas práticas do Electron e OWASP.
+
+| Prática | Implementação |
+|---------|---------------|
+| **Context Isolation** | `contextIsolation: true` — renderer não tem acesso direto às APIs do Node.js |
+| **Node Integration Desabilitado** | `nodeIntegration: false` — impede que XSS escale para RCE |
+| **IPC Bridge (Preload)** | Toda comunicação main↔renderer passa por um bridge seguro e whitelistado no `preload.js` |
+| **Sem Secrets Hardcoded** | Chaves de API e tokens são armazenados localmente em `localStorage`, nunca commitados |
+| **Dados 100% Locais** | Zero telemetria, zero analytics — todos os dados ficam na máquina do usuário |
+| **Sanitização de Input** | Conteúdo gerado por IA é sanitizado antes de ser injetado no DOM |
+| **Conformidade LGPD/GDPR** | Sem coleta de PII, sem transmissão externa de dados além das chamadas de API necessárias |
+
 ### 🛠️ Configurações Avançadas
 
 | Configuração | Descrição | Padrão |
@@ -269,7 +336,7 @@ O instalador cria atalhos na Área de Trabalho, entradas no Menu Iniciar e regis
 ### 💻 Tecnologias
 
 | Camada | Tecnologia | Propósito |
-|--------|-----------|-----------|
+|--------|-----------|-----------| 
 | **Frontend** | HTML5, CSS3, JS Vanilla | Leve, sem overhead de framework |
 | **Desktop** | Electron 40.x | Experiência nativa multiplataforma |
 | **Motor de IA** | Google Gemini API | Geração inteligente de texto |
@@ -284,7 +351,7 @@ O instalador cria atalhos na Área de Trabalho, entradas no Menu Iniciar e regis
 
 **Developed by Nícolas Oliveira de Araújo** · [@nicokaka](https://github.com/nicokaka)
 <br>
-IT Infrastructure Professional & Full-Stack Developer
+IT Infrastructure & Cybersecurity Professional
 
 <br>
 
