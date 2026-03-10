@@ -236,6 +236,14 @@ body {
   outline: none;
 }
 
+.ticket-table input:disabled,
+.ticket-table textarea:disabled,
+.ticket-table textarea[readonly] {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
 /* Tooltips e Helpers CSS */
 .tooltip-container {
   position: relative;

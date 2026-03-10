@@ -260,21 +260,33 @@ function addRow(data = null) {
                     ${operatorOptions}
                 </select>
             </td>
-            <td><input type="text" placeholder="Ex: Internet lenta" class="input-summary" value="${data?.subject || ""}"></td>
-            <td><input type="text" placeholder="Aguardando IA..." class="input-message" disabled value="${data?.message || ""}"></td>
+            <td><textarea placeholder="Ex: Internet lenta" class="input-summary" rows="3">${data?.subject || ""}</textarea></td>
+            <td><textarea placeholder="Pode digitar ou gerar com IA..." class="input-message" rows="3">${data?.message || ""}</textarea></td>
         `;
 
     const checkbox = tr.querySelector(".row-select");
     checkbox.addEventListener("change", toggleRemoveButton);
 
     // Auto-save listeners (Persistence)
-    const inputs = tr.querySelectorAll("input, select");
+    const inputs = tr.querySelectorAll("input, select, textarea");
     inputs.forEach((input) => {
       input.addEventListener("change", saveQueueState);
       input.addEventListener("input", saveQueueState);
     });
 
     tableBody.appendChild(tr);
+
+    // Restore Visual Success State
+    if (data && data.status === "success") {
+      tr.dataset.status = "success";
+      tr.style.backgroundColor = "#d1e7dd";
+      tr.querySelectorAll("input, select, textarea").forEach((el) => {
+        el.disabled = true;
+        el.style.color = "#000";
+        el.style.fontWeight = "bold";
+      });
+    }
+
     toggleQueueEmptyState();
     if (!data) saveQueueState(); // Save new empty row
   } catch (e) {
@@ -295,6 +307,7 @@ function saveQueueState() {
       subject: tr.querySelector(".input-summary").value,
       message: tr.querySelector(".input-message").value,
       selected: tr.querySelector(".row-select").checked,
+      status: tr.dataset.status || "",
     });
   });
   localStorage.setItem("ticketQueueState", JSON.stringify(rows));
@@ -502,12 +515,14 @@ btnStartBot.addEventListener("click", async () => {
           }
 
           // Visual Success
+          tr.dataset.status = "success";
           tr.style.backgroundColor = "#d1e7dd";
-          tr.querySelectorAll("input, select").forEach((el) => {
+          tr.querySelectorAll("input, select, textarea").forEach((el) => {
             el.disabled = true;
             el.style.color = "#000";
             el.style.fontWeight = "bold";
           });
+          saveQueueState();
         } else {
           throw new Error(result.message);
         }
@@ -572,11 +587,14 @@ btnStartBot.addEventListener("click", async () => {
       const tr = document.querySelector(`tr[data-id="${item.id}"]`);
       if (tr) {
         if (item.status === "Success") {
+          tr.dataset.status = "success";
           tr.style.backgroundColor = "#d1e7dd";
-          tr.querySelectorAll("input, select").forEach((el) => {
+          tr.querySelectorAll("input, select, textarea").forEach((el) => {
             el.disabled = true;
             el.style.color = "#000";
+            el.style.fontWeight = "bold";
           });
+          saveQueueState();
         } else {
           tr.style.backgroundColor = "#f8d7da";
         }
@@ -637,6 +655,7 @@ btnGenerateAI.addEventListener("click", async () => {
     if (!summary) continue;
 
     messageInput.value = "Gerando...";
+    messageInput.readOnly = true;
 
     let attempts = 0;
     let success = false;
@@ -685,6 +704,7 @@ btnGenerateAI.addEventListener("click", async () => {
           messageInput.value = aiResponse; // Fallback
         }
         success = true;
+        messageInput.readOnly = false;
 
         // Delay entre requisições
         // Turbo Mode logic
@@ -730,6 +750,7 @@ btnGenerateAI.addEventListener("click", async () => {
           await sleep(62000); // Wait 62 seconds to be safe
         } else {
           messageInput.value = "Erro na IA";
+          messageInput.readOnly = false;
           log(`❌ Erro na IA linha ${tr.dataset.id}: ${error.message}`);
           break; // Non-retryable error
         }
@@ -738,6 +759,7 @@ btnGenerateAI.addEventListener("click", async () => {
 
     if (!success && attempts >= 3) {
       messageInput.value = "Falha (Limite)";
+      messageInput.readOnly = false;
       log(`❌ Falha na linha ${tr.dataset.id} após 3 tentativas.`);
     }
   }
@@ -1142,7 +1164,7 @@ function renderTickets(tickets) {
             <td>${client}</td>
             <td>${attendant}</td>
             <td>
-                <textarea class="input-solution" rows="1" placeholder="Mensagem de encerramento..."></textarea>
+                <textarea class="input-solution" rows="3" placeholder="Mensagem de encerramento..."></textarea>
             </td>
         `;
     tbody.appendChild(tr);
@@ -1300,6 +1322,8 @@ if (btnCloseSelected) {
       password: localStorage.getItem("tomticketPassword"),
       browser: localStorage.getItem("tomticketBrowser"),
       token: localStorage.getItem("tomticketToken"), // ADDING TOKEN FOR API usage
+      delay: localStorage.getItem("antiSpamDelay") || "2",
+      turbo: localStorage.getItem("turboMode") === "true",
     };
 
     const result = await window.electronAPI.closeTickets(

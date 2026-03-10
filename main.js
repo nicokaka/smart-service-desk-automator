@@ -64,7 +64,14 @@ ipcMain.handle("close-tickets", async (event, tickets, credentials) => {
     // Com token: Fechamento via API (Rápido e silencioso)
     console.log('Iniciando fechamento em lote via API...');
     const results = [];
-    for (const ticket of tickets) {
+
+    // Obter delay das configurações repassadas pela UI. Fallback: 2s
+    const delaySeconds = credentials.delay ? parseInt(credentials.delay, 10) : 2;
+    const isTurbo = credentials.turbo === true;
+    const waitTime = isTurbo ? 100 : (delaySeconds * 1000);
+
+    for (let i = 0; i < tickets.length; i++) {
+      const ticket = tickets[i];
       console.log(`Closing ticket ID via API: ${ticket.id}`);
       try {
         await finalizeTicket(token, ticket.id, ticket.solution);
@@ -72,6 +79,11 @@ ipcMain.handle("close-tickets", async (event, tickets, credentials) => {
       } catch (err) {
         console.error(`Failed to close ticket ${ticket.id} via API:`, err);
         results.push({ id: ticket.id, status: 'Error', message: err.message });
+      }
+
+      // Delay de proteção apenas se não for o último 
+      if (i < tickets.length - 1) {
+        await new Promise(r => setTimeout(r, waitTime));
       }
     }
 

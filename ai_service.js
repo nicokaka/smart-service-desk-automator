@@ -52,12 +52,16 @@ async function generateTicketMessage(
     return fallbackMessage;
   }
 
-  const defaultHebronContext = `- Hebronline: Sistema de visita médica. Usuários: Propagandistas (PGs) ou setores (ex: 10.14.007)
-- "Liberar contato" = Ativar médico/veterinário desativado/cancelado
-- PDV = Ponto de Venda (CNPJ). V.A. = PDF/Portfólio de medicamentos
-- CRM = Software ou registro médico (ex: CRM MG 12345)
-- Internet Lenta = Verificar portal de gestão (consumo de dados/bloqueio)
-- Certificados: Fornecedor Certisign (A1=Software, A3=Hardware)`;
+  const defaultHebronContext = `Contexto de Domínio e Infraestrutura:
+- Hebronline: Sistema de visita médica. 
+- Usuários: Propagandistas (PGs) ou setores.
+- Contatos: Médicos ou veterinários. 
+- Ações e Status: "Liberar contato" sempre significa Ativar um contato desativado. Use apenas os termos "ativo" ou "desativado".
+- Termos Comerciais: PDV = Ponto de Venda (identificado via CNPJ). V.A. = Arquivo PDF com portfólio de medicamentos.
+- CRM: Pode ser o Sistema de Gestão ou o Registro Profissional (ex: CRM MG 12345).
+- Internet Móvel/Chips: Em caso de lentidão/falha, a primeira ação é sempre verificar o portal de gestão (consumo de franquia ou bloqueios).
+- Certificados Digitais: Fornecedor Certisign. A1 (Software), A3 (Hardware). "Configurar" geralmente significa corrigir erros, não apenas instalar.
+- Formatação Obrigatória: Nomes, CRMs, CNPJs e linhas devem estar em **negrito**. Códigos numéricos de setor devem estar em negrito e entre cifrões (ex: **$10.14.007$\`).`;
 
   const appliedContext =
     customPrompt && customPrompt.trim() !== ""
@@ -71,14 +75,14 @@ Crie uma DESCRIÇÃO TÉCNICA concisa para o chamado abaixo.
 ${appliedContext}
 
 # Entrada
-Cliente: "${clientName}"
-Problema: "${summary}"
+  Cliente: "${clientName}"
+  Problema: "${summary}"
 
 # Formato
-"O usuário [Nome] solicita/relata [Problema]. [Ação técnica sugerida]."
+  "O usuário [Nome] solicita/relata [Problema]. [Ação técnica sugerida]."
 
-# Saída (JSON)
-{ "descricao": "Texto da descrição" }`;
+# Saída(JSON)
+  { "descricao": "Texto da descrição" } `;
 
   try {
     const model = getModel(API_KEY, activeModel);
@@ -117,37 +121,39 @@ async function generateSolutionMessage(
   const API_KEY = userApiKey || ENV_API_KEY;
 
   const fallbackMessage = JSON.stringify({
-    solucao: `Chamado referente a "${title}" foi analisado e resolvido. Atenciosamente, Suporte.`,
+    solucao: `Chamado referente a "${title}" foi analisado e resolvido.Atenciosamente, Suporte.`,
   });
 
   if (!API_KEY) return fallbackMessage;
 
-  const defaultHebronContext = `- PGs: Propagandistas. PDV: Ponto de Venda. V.A.: PDF/Portfólio
-- "Liberar contato" = Ativar médico/veterinário desativado
-- CRM = Software ou registro médico`;
+  const defaultHebronContext = `- PGs: Propagandistas.PDV: Ponto de Venda.V.A.: PDF / Portfólio
+    - "Liberar contato" = Ativar médico / veterinário desativado
+      - CRM = Software ou registro médico`;
 
   const appliedContext =
     customPrompt && customPrompt.trim() !== ""
       ? customPrompt
       : defaultHebronContext;
 
-  const prompt = `Escreva uma mensagem de encerramento (solução) concisa e profissional para um chamado de Service Desk.
+  const prompt = `Escreva uma mensagem de encerramento(solução) concisa e profissional para um chamado de Service Desk.
 
 # Regras e Contexto:
 ${appliedContext}
 
 # Entrada
-Cliente: "${clientName}"
-Título: "${title}"
-Descrição: "${description || title}"
+  Cliente: "${clientName}"
+  Título: "${title}"
+  Descrição: "${description || title}"
 
-# Regras
-- NÃO comece com "Chamado finalizado."
-- O problema FOI resolvido. Afirme isso
-- Formato: "O problema referente a [Tema] foi tratado e resolvido com sucesso." ou variações naturais
+# Regras para a Mensagem de Finalização:
+  - Objetivo: Criar uma mensagem concisa confirmando que a tarefa foi concluída ou o problema foi resolvido, e que a solução foi validada.
+- Anonimato do Solicitante: Use APENAS termos genéricos como "o cliente" ou "o usuário".NUNCA escreva o nome da pessoa nesta mensagem.
+- Palavras Proibidas: NUNCA inclua a frase "Chamado finalizado." no texto(pois isso já é um status do sistema).
+  - Formatação Obrigatória: Mantenha identificadores(CRMs, CNPJs) em ** negrito ** e códigos de setor como ** $10.14.002$ **, caso precise mencioná - los.
+- Tom: Direto, técnico e em português do Brasil.
 
-# Saída (JSON)
-{ "solucao": "Texto da solução" }`;
+# Saída(JSON)
+  { "solucao": "Texto da solução" } `;
 
   try {
     const model = getModel(API_KEY, activeModel);
