@@ -101,16 +101,26 @@
 
       <!-- Aba: Gerenciador de Chamados (Busca) -->
       <div id="manager" class="tab-content">
-        <header class="tab-header">
-          <h1>Gerenciar Chamados Abertos</h1>
-          <div class="actions">
-            <button id="btnLoadApiTickets" class="btn secondary">
+        <header class="tab-header" style="flex-wrap: wrap; gap: 10px;">
+          <h1 style="margin-right: auto;">Gerenciar Chamados Abertos</h1>
+          <div class="actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <div class="bulk-actions" style="display: flex; gap: 10px;">
+              <button id="btnCloseSelected" class="btn danger" style="padding: 10px 15px; font-size: 0.9em;">
+                Fechar Selecionados
+              </button>
+              <button id="btnGenerateSolutionAI" class="btn primary"
+                style="background: linear-gradient(45deg, #ff0080, #7928ca); border: none; padding: 10px 15px; font-size: 0.9em;">
+                ✨ Gerar Solução com IA
+              </button>
+            </div>
+
+            <button id="btnLoadApiTickets" class="btn secondary" style="padding: 10px 15px; font-size: 0.9em;">
               🔄 Buscar Meus Chamados
             </button>
-            <select id="operatorFilter" class="input-field" style="display: none; margin-left: 10px">
+            <select id="operatorFilter" class="input-field" style="display: none;">
               <option value="">Filtrar Atendente...</option>
             </select>
-            <span id="apiStatus" style="margin-left: 10px; font-size: 0.9em; color: #888"></span>
+            <span id="apiStatus" style="font-size: 0.9em; color: #888"></span>
           </div>
         </header>
         <div class="empty-state" id="manager-empty-state">
@@ -140,17 +150,6 @@
             </thead>
             <tbody id="manager-queue-body"></tbody>
           </table>
-          <div class="bulk-actions" style="margin-top: 15px; display: flex; gap: 10px">
-            <button id="btnCloseSelected" class="btn danger">
-              Fechar Selecionados
-            </button>
-            <button id="btnGenerateSolutionAI" class="btn primary" style="
-                  background: linear-gradient(45deg, #ff0080, #7928ca);
-                  border: none;
-                ">
-              ✨ Gerar Solução com IA
-            </button>
-          </div>
         </div>
       </div>
 
