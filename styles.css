@@ -39,11 +39,27 @@ body {
   border-right: 1px solid var(--border-color);
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.logo img.app-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+  /* Opcional, para deixar o ícone levemente arredondado se não for vazado */
+}
+
 .logo h2 {
   color: var(--primary-color);
-  margin-bottom: 30px;
   font-size: 1.5rem;
-  text-align: center;
+  margin-bottom: 0;
+  /* Remove a margem original para alinhar com a imagem */
 }
 
 .nav-menu {
