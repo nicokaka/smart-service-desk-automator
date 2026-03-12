@@ -589,7 +589,7 @@ btnStartBot.addEventListener("click", async () => {
         if (item.status === "Success") {
           tr.dataset.status = "success";
           tr.style.backgroundColor = "#d1e7dd";
-          tr.querySelectorAll("input, select, textarea").forEach((el) => {
+          tr.querySelectorAll("input:not(.row-select), select, textarea").forEach((el) => {
             el.disabled = true;
             el.style.color = "#000";
             el.style.fontWeight = "bold";
@@ -1339,7 +1339,7 @@ if (btnCloseSelected) {
         if (tr) {
           if (item.status === "Success") {
             tr.style.backgroundColor = "#d1e7dd"; // Green
-            const inputs = tr.querySelectorAll("input, textarea");
+            const inputs = tr.querySelectorAll("input:not([type='checkbox']), textarea");
             inputs.forEach((input) => {
               input.disabled = true;
               input.style.color = "#000000";
