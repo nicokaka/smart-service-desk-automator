@@ -1292,10 +1292,16 @@ if (btnCloseSelected) {
       return;
     }
 
-    const ticketsToClose = selectedRows.map((tr) => ({
-      id: tr.dataset.id,
-      solution: tr.querySelector(".input-solution").value,
-    }));
+    const ticketsToClose = selectedRows.map((tr) => {
+      const ta = tr.querySelector(".input-solution");
+      // Fallback para textContent ou innerText caso o value falhe em Svelte/Shadow DOM overrides (mesmo não sendo esperado aqui)
+      const currentText = ta ? (ta.value || ta.textContent || "").trim() : "";
+      console.log(`[FECHAR LOTE] Ticket ID: ${tr.dataset.id} | Editado: "${currentText.substring(0,30)}..."`);
+      return {
+        id: tr.dataset.id,
+        solution: currentText,
+      };
+    });
 
     // Validate solutions
     if (
