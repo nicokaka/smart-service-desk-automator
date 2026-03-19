@@ -173,7 +173,8 @@
           </div>
           <div class="form-group">
             <label>Senha</label>
-            <input type="password" id="settings-password" placeholder="********" class="input-field" />
+            <input type="password" id="settings-password" placeholder="********" class="input-field"
+              autocomplete="off" />
           </div>
 
           <div class="form-group">
@@ -185,14 +186,15 @@
                   indo em Configurações > API.</span>
               </span>
             </label>
-            <input type="password" id="apiToken" placeholder="Cole seu Token aqui..." class="input-field" />
+            <input type="password" id="apiToken" placeholder="Cole seu Token aqui..." class="input-field"
+              autocomplete="off" />
             <small style="color: #aaa">Salvo localmente no seu computador.</small>
           </div>
 
           <div class="form-group">
             <label>Chave API Gemini (IA)</label>
             <input type="password" id="geminiApiKey" placeholder="Cole sua API Key do Google Gemini..."
-              class="input-field" />
+              class="input-field" autocomplete="off" />
             <small style="color: #aaa">Necessário para gerar textos com IA.
               <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #8be9fd">Obter
                 Chave</a></small>
@@ -216,11 +218,7 @@
           </div>
           <!-- Seção de Opções Avançadas -->
           <div class="accordion" id="advanced-accordion">
-            <div class="accordion-header" onclick="
-                  document
-                    .getElementById('advanced-accordion')
-                    .classList.toggle('open')
-                ">
+            <div class="accordion-header" id="advanced-accordion-toggle">
               <span>⚙️ Opções Avançadas</span>
               <span class="accordion-icon">▼</span>
             </div>
@@ -371,7 +369,7 @@
     </div>
   </div>
 
-  <script src="renderer.js"></script>
+  <script type="module" src="renderer.js"></script>
 </body>
 
 </html>

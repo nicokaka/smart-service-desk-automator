@@ -75,7 +75,7 @@ The application connects directly to the **TomTicket API**, fetches open tickets
 - Process hundreds of tickets with a single click
 - Intelligent anti-spam throttling with configurable delays
 - Turbo Mode for premium API accounts
-- Automatic retry logic with exponential backoff (3 attempts)
+- Basic retry handling for AI rate limits (up to 3 attempts)
 
 </td>
 </tr>
@@ -85,7 +85,7 @@ The application connects directly to the **TomTicket API**, fetches open tickets
 **🔌 Dual-Mode Architecture**
 - **Primary:** Direct HTTPS API integration (fast, lightweight)
 - **Fallback:** Playwright browser automation (resilient, universal)
-- Automatic failover ensures zero downtime
+- Browser fallback is available when API mode cannot be used
 - Cross-browser support: Chromium & Firefox
 
 </td>
@@ -96,7 +96,7 @@ The application connects directly to the **TomTicket API**, fetches open tickets
 - Dark-friendly design with modern CSS
 - Collapsible Advanced Settings panel
 - Real-time log viewer with Debug Mode
-- Onboarding tooltips for non-technical users
+- Contextual tooltips for common settings and actions
 
 </td>
 </tr>
@@ -122,9 +122,9 @@ The application connects directly to the **TomTicket API**, fetches open tickets
 └─────────────────────────────────────────────────────┘
          │                              │
          ▼                              ▼
-   localStorage               External APIs
-   (Settings &            (Google AI + TomTicket)
-    Credentials)
+   Main Process Store         External APIs
+   (Encrypted when         (Google AI + TomTicket)
+    available)
 ```
 
 ### 🔒 Security by Design
@@ -136,9 +136,9 @@ The application connects directly to the **TomTicket API**, fetches open tickets
 | **Context Isolation** | `contextIsolation: true` — renderer has zero direct access to Node.js APIs |
 | **Node Integration Disabled** | `nodeIntegration: false` — prevents XSS from escalating to RCE |
 | **IPC Bridge (Preload)** | All main↔renderer communication goes through a secure, whitelisted `preload.js` bridge |
-| **No Hardcoded Secrets** | API keys and tokens are stored locally in `localStorage`, never committed to source |
+| **No Hardcoded Secrets** | API keys, tokens and password are stored via the main-process config store, with Electron `safeStorage` when available |
 | **Local-Only Data** | Zero telemetry, zero analytics — all user data stays on the machine |
-| **Input Sanitization** | AI-generated content is sanitized before being injected into the DOM |
+| **Input Handling** | Renderer content is escaped before being injected into the DOM |
 | **LGPD/GDPR Compliant** | No PII collection, no external data transmission beyond necessary API calls |
 
 ### 🛠️ Advanced Settings
@@ -159,6 +159,7 @@ The application is packaged as a professional **Windows NSIS Installer** using `
 # Development
 npm install
 npm start
+npm test
 
 # Build Windows Installer (.exe)
 npm run dist:win
@@ -239,7 +240,7 @@ A aplicação se conecta diretamente à **API do TomTicket**, busca chamados abe
 - Processe centenas de chamados com um único clique
 - Throttling anti-spam inteligente com delays configuráveis
 - Modo Turbo para contas premium do Google Cloud
-- Lógica de retry automático com backoff exponencial (3 tentativas)
+- Tratamento básico de limite de IA com até 3 tentativas
 
 </td>
 </tr>
@@ -249,7 +250,7 @@ A aplicação se conecta diretamente à **API do TomTicket**, busca chamados abe
 **🔌 Arquitetura Dual-Mode**
 - **Primário:** Integração direta via API HTTPS (rápido, leve)
 - **Fallback:** Automação via navegador Playwright (resiliente, universal)
-- Failover automático garante zero downtime
+- Fallback via navegador disponível quando o modo API não puder ser usado
 - Suporte multi-navegador: Chromium e Firefox
 
 </td>
@@ -260,7 +261,7 @@ A aplicação se conecta diretamente à **API do TomTicket**, busca chamados abe
 - Design moderno com CSS avançado
 - Painel de Configurações Avançadas retrátil
 - Visualizador de logs em tempo real com Modo Debug
-- Tooltips de onboarding para usuários não técnicos
+- Tooltips contextuais para configurações e ações principais
 
 </td>
 </tr>
@@ -286,7 +287,7 @@ A aplicação se conecta diretamente à **API do TomTicket**, busca chamados abe
 └─────────────────────────────────────────────────────┘
          │                              │
          ▼                              ▼
-   localStorage               APIs Externas
+   Store do Main Process      APIs Externas
    (Configurações          (Google IA + TomTicket)
     e Credenciais)
 ```
@@ -302,7 +303,7 @@ A aplicação se conecta diretamente à **API do TomTicket**, busca chamados abe
 | **IPC Bridge (Preload)** | Toda comunicação main↔renderer passa por um bridge seguro e whitelistado no `preload.js` |
 | **Sem Secrets Hardcoded** | Chaves de API e tokens são armazenados localmente em `localStorage`, nunca commitados |
 | **Dados 100% Locais** | Zero telemetria, zero analytics — todos os dados ficam na máquina do usuário |
-| **Sanitização de Input** | Conteúdo gerado por IA é sanitizado antes de ser injetado no DOM |
+| **Tratamento de Input** | O renderer escapa conteúdo antes de injetá-lo no DOM |
 | **Conformidade LGPD/GDPR** | Sem coleta de PII, sem transmissão externa de dados além das chamadas de API necessárias |
 
 ### 🛠️ Configurações Avançadas
@@ -323,6 +324,7 @@ A aplicação é empacotada como um **Instalador NSIS profissional para Windows*
 # Desenvolvimento
 npm install
 npm start
+npm test
 
 # Gerar Instalador Windows (.exe)
 npm run dist:win

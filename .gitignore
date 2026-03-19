@@ -7,3 +7,7 @@ dist/
 .env
 .DS_Store
 Thumbs.db
+*.log
+api_response.json
+debug_customers.json
+model_test_log.txt

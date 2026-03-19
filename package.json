@@ -1,7 +1,7 @@
 {
   "name": "tomticketbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Electron desktop app for TomTicket automation with Gemini-assisted workflows.",
   "main": "main.js",
   "keywords": [],
   "author": "Nicolas",
@@ -11,11 +11,22 @@
     "start": "electron .",
     "dist:win": "electron-builder --win",
     "dist:dir": "electron-builder --dir",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test"
   },
   "build": {
     "appId": "com.nicolas.smartservicedesk",
     "productName": "Smart Service Desk Automator",
+    "files": [
+      "**/*",
+      "!tests{,/**}",
+      "!test_*.js",
+      "!api_response.json",
+      "!debug_customers.json",
+      "!model_test_log.txt",
+      "!playwright-report{,/**}",
+      "!blob-report{,/**}",
+      "!test-results{,/**}"
+    ],
     "win": {
       "target": "nsis",
       "icon": "build/icon.ico"
