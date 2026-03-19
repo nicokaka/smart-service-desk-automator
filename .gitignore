@@ -11,3 +11,5 @@ Thumbs.db
 api_response.json
 debug_customers.json
 model_test_log.txt
+build4.log
+scripts/manual/output/

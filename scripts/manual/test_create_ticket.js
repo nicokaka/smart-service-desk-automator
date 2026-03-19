@@ -1,7 +1,9 @@
 const fs = require("fs");
-const { createTicket } = require("./tomticket_api");
+const path = require("path");
+const { createTicket } = require("../../tomticket_api");
 
 const TOKEN = process.env.TOMTICKET_TOKEN;
+const CUSTOMERS_FILE = path.join(__dirname, "output", "debug_customers.json");
 
 process.on("uncaughtException", (error) => {
   console.error("CRITICAL ERROR (Uncaught Exception):", error);
@@ -22,15 +24,15 @@ async function run() {
 
   let customers = [];
   try {
-    if (!fs.existsSync("debug_customers.json")) {
-      console.error("File debug_customers.json not found. Run test_customers.js first.");
+    if (!fs.existsSync(CUSTOMERS_FILE)) {
+      console.error(`File ${CUSTOMERS_FILE} not found. Run test_customers.js first.`);
       process.exitCode = 1;
       return;
     }
 
-    customers = JSON.parse(fs.readFileSync("debug_customers.json", "utf8"));
+    customers = JSON.parse(fs.readFileSync(CUSTOMERS_FILE, "utf8"));
   } catch (error) {
-    console.error("Failed to read debug_customers.json:", error);
+    console.error(`Failed to read ${CUSTOMERS_FILE}:`, error);
     process.exitCode = 1;
     return;
   }

@@ -11,7 +11,10 @@
     "start": "electron .",
     "dist:win": "electron-builder --win",
     "dist:dir": "electron-builder --dir",
-    "test": "node --test"
+    "test": "node --test",
+    "manual:customers": "node scripts/manual/test_customers.js",
+    "manual:tickets:list": "node scripts/manual/test_token.js",
+    "manual:tickets:create": "node scripts/manual/test_create_ticket.js"
   },
   "build": {
     "appId": "com.nicolas.smartservicedesk",
@@ -19,7 +22,7 @@
     "files": [
       "**/*",
       "!tests{,/**}",
-      "!test_*.js",
+      "!scripts/manual{,/**}",
       "!api_response.json",
       "!debug_customers.json",
       "!model_test_log.txt",
