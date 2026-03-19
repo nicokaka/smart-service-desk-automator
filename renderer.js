@@ -267,6 +267,27 @@ function addRow(data = null) {
     const checkbox = tr.querySelector(".row-select");
     checkbox.addEventListener("change", toggleRemoveButton);
 
+    const deptSelect = tr.querySelector(".input-dept");
+    const catSelect = tr.querySelector(".input-cat");
+
+    // Helper to update categories dropdown based on selected department
+    const updateCategories = (deptId, selectedCatName = null) => {
+      const allCats = window.fullCategories || [];
+      let filteredCats = allCats;
+      if (deptId) {
+        filteredCats = allCats.filter((c) => String(c.department_id) === String(deptId));
+      }
+      const validCatNames = Array.from(new Set(filteredCats.map((c) => c.name))).sort();
+      catSelect.innerHTML = createOptions(validCatNames, selectedCatName, false);
+    };
+
+    // Initialize categories based on current department
+    updateCategories(data?.deptId, data?.catName);
+
+    deptSelect.addEventListener("change", (e) => {
+      updateCategories(e.target.value);
+    });
+
     // Auto-save listeners (Persistence)
     const inputs = tr.querySelectorAll("input, select, textarea");
     inputs.forEach((input) => {
@@ -446,11 +467,14 @@ btnStartBot.addEventListener("click", async () => {
 
         const ticketData = {
           department_id: deptId,
-          category_id: catId,
           subject: subject,
           message: message,
           priority: "2", // 1=Low, 2=Normal, 3=High. Correct param name is 'priority' NOT 'priority_id'
         };
+
+        if (catId) {
+            ticketData.category_id = catId;
+        }
 
         // Remove attendant_id from creation payload as it is not supported there
 
