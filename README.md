@@ -33,26 +33,26 @@ It implements a **dual-path architecture**: operations go through the REST API f
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    Electron Main Process             │
-│                                                     │
+┌────────────────────────────────────────────────────┐
+│                    Electron Main Process           │
+│                                                    │
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────┐ │
 │  │ tomticket_   │  │  ai_service  │  │  config-  │ │
 │  │   api.js     │  │     .js      │  │ store.js  │ │
 │  │              │  │              │  │           │ │
 │  │ REST Client  │  │ Gemini 2.5   │  │ safeStore │ │
-│  │ + Retry/    │  │ Flash +      │  │ Electron  │ │
-│  │ Backoff     │  │ Model Cache  │  │ Keychain  │ │
+│  │ + Retry/     │  │ Flash +      │  │ Electron  │ │
+│  │ Backoff      │  │ Model Cache  │  │ Keychain  │ │
 │  └──────┬───────┘  └──────┬───────┘  └─────┬─────┘ │
 │         │                 │                │       │
 │  ┌──────▼─────────────────▼────────────────▼─────┐ │
 │  │                    main.js                    │ │
 │  │      IPC Handlers + Operation Orchestrator    │ │
 │  └──────────────────────┬────────────────────────┘ │
-└─────────────────────────┼───────────────────────────┘
+└─────────────────────────┼──────────────────────────┘
                           │ contextBridge (preload.js)
 ┌─────────────────────────▼───────────────────────────┐
-│                  Renderer Process                    │
+│                  Renderer Process                   │
 │   index.html + renderer.js + styles.css             │
 │   Ticket Queue │ Open Manager │ Credentials │ Logs  │
 └─────────────────────────────────────────────────────┘
