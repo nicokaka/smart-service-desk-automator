@@ -57,8 +57,6 @@ export function setButtonBusy(button, busyText) {
   const previous = {
     disabled: button.disabled,
     html: button.innerHTML,
-    color: button.style.color,
-    backgroundColor: button.style.backgroundColor,
   };
 
   button.disabled = true;
@@ -67,7 +65,5 @@ export function setButtonBusy(button, busyText) {
   return () => {
     button.disabled = previous.disabled;
     button.innerHTML = previous.html;
-    button.style.color = previous.color;
-    button.style.backgroundColor = previous.backgroundColor;
   };
 }

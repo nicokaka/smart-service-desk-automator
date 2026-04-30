@@ -1,5 +1,11 @@
-const https = require("https");
-const querystring = require("querystring");
+"use strict";
+
+/**
+ * TomTicket REST API client.
+ *
+ * Uses Node.js built-in `fetch` (available since Node 18).
+ * Implements retry with exponential back-off for transient errors.
+ */
 
 const {
   RESULT_STATUS,
@@ -11,7 +17,11 @@ const {
 
 const API_BASE_URL = "https://api.tomticket.com/v2.0";
 const DEFAULT_TIMEOUT_MS = 15000;
+
+/** HTTP status codes that warrant an automatic retry. */
 const RETRYABLE_STATUS_CODES = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+/** Network-layer error codes that warrant an automatic retry. */
 const RETRYABLE_ERROR_CODES = new Set([
   "ECONNRESET",
   "ECONNREFUSED",
@@ -20,7 +30,11 @@ const RETRYABLE_ERROR_CODES = new Set([
   "ENOTFOUND",
   "EAI_AGAIN",
   "ECONNABORTED",
+  "UND_ERR_CONNECT_TIMEOUT",
+  "UND_ERR_SOCKET",
 ]);
+
+// ─── Internal helpers ─────────────────────────────────────────────────────────
 
 function createApiError(message, details = {}) {
   const error = new Error(message);
@@ -39,84 +53,82 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Build the full URL with query parameters for GET requests.
+ */
 function buildUrl(endpoint, params, method) {
-  let url = `${API_BASE_URL}${endpoint}`;
+  const url = `${API_BASE_URL}${endpoint}`;
   if (method === "GET" && params && Object.keys(params).length > 0) {
-    url += `?${new URLSearchParams(params).toString()}`;
+    return `${url}?${new URLSearchParams(params).toString()}`;
   }
   return url;
 }
 
-function sendHttpRequest({
-  operation,
-  endpoint,
-  token,
-  method = "GET",
-  params = {},
-  timeoutMs = DEFAULT_TIMEOUT_MS,
-}) {
-  return new Promise((resolve, reject) => {
-    const url = buildUrl(endpoint, params, method);
-    const bodyData =
-      method === "POST" ? querystring.stringify(params || {}) : null;
+// ─── HTTP layer (fetch-based) ─────────────────────────────────────────────────
 
-    const request = https.request(
+/**
+ * Perform a single HTTP request using the built-in `fetch`.
+ * Returns a normalized { statusCode, body } object.
+ *
+ * @throws on network-level failures (no response received)
+ */
+async function sendHttpRequest({ operation, endpoint, token, method = "GET", params = {} }) {
+  const url = buildUrl(endpoint, params, method);
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/json",
+  };
+
+  let body;
+  if (method === "POST") {
+    // TomTicket v2 API uses application/x-www-form-urlencoded for mutations
+    body = new URLSearchParams(params).toString();
+    headers["Content-Type"] = "application/x-www-form-urlencoded";
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      method,
+      headers,
+      body,
+      signal: controller.signal,
+    });
+
+    const responseText = await response.text();
+
+    return {
+      operation,
       url,
-      {
-        method,
-        timeout: timeoutMs,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-          ...(bodyData
-            ? { "Content-Length": Buffer.byteLength(bodyData) }
-            : {}),
-        },
-      },
-      (response) => {
-        let responseBody = "";
-
-        response.on("data", (chunk) => {
-          responseBody += chunk;
-        });
-
-        response.on("end", () => {
-          resolve({
-            operation,
-            url,
-            method,
-            statusCode: response.statusCode || 0,
-            headers: response.headers,
-            body: responseBody,
-          });
-        });
-      },
-    );
-
-    request.on("timeout", () => {
-      request.destroy(
-        createApiError(`[${operation}] HTTP timeout after ${timeoutMs}ms`, {
-          code: "ETIMEDOUT",
-        }),
+      method,
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers.entries()),
+      body: responseText,
+    };
+  } catch (fetchError) {
+    // AbortController timeout surfaces as AbortError
+    if (fetchError.name === "AbortError") {
+      throw createApiError(
+        `[${operation}] HTTP timeout after ${DEFAULT_TIMEOUT_MS}ms`,
+        { code: "ETIMEDOUT" },
       );
-    });
-
-    request.on("error", (error) => {
-      reject(
-        createApiError(`[${operation}] HTTP transport failed: ${error.message}`, {
-          cause: error,
-          code: error.code,
-        }),
-      );
-    });
-
-    if (bodyData) {
-      request.write(bodyData);
     }
 
-    request.end();
-  });
+    // Propagate with a normalized code so isRetryableError can classify it
+    const code = fetchError.cause?.code || fetchError.code || "ECONNRESET";
+    throw createApiError(
+      `[${operation}] HTTP transport failed: ${fetchError.message}`,
+      { cause: fetchError, code },
+    );
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
+
+// ─── Response normalization ───────────────────────────────────────────────────
 
 function normalizeResponse(operation, rawResponse) {
   let parsedBody = null;
@@ -140,9 +152,7 @@ function normalizeResponse(operation, rawResponse) {
       ok: true,
       payload: parsedBody,
       data: parsedBody?.data ?? parsedBody,
-      meta: {
-        statusCode: rawResponse.statusCode,
-      },
+      meta: { statusCode: rawResponse.statusCode },
     };
   }
 
@@ -162,6 +172,8 @@ function normalizeResponse(operation, rawResponse) {
   throw error;
 }
 
+// ─── Retry logic ──────────────────────────────────────────────────────────────
+
 async function requestWithRetry({
   operation,
   endpoint,
@@ -175,24 +187,17 @@ async function requestWithRetry({
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
-      const rawResponse = await sendHttpRequest({
-        operation,
-        endpoint,
-        token,
-        method,
-        params,
-      });
-
-      const normalizedResponse = normalizeResponse(operation, rawResponse);
+      const rawResponse = await sendHttpRequest({ operation, endpoint, token, method, params });
+      const normalized = normalizeResponse(operation, rawResponse);
 
       return successResult(
         operation,
-        normalizedResponse.data,
+        normalized.data,
         `[${operation}] Request completed successfully.`,
         {
           attempts: attempt,
-          statusCode: normalizedResponse.meta.statusCode,
-          payload: normalizedResponse.payload,
+          statusCode: normalized.meta.statusCode,
+          payload: normalized.payload,
         },
       );
     } catch (error) {
@@ -202,20 +207,20 @@ async function requestWithRetry({
         break;
       }
 
-      await sleep(backoffMs * attempt);
+      const delay = backoffMs * attempt;
+      console.warn(`[${operation}] Retryable error (attempt ${attempt}/${maxAttempts}), waiting ${delay}ms: ${error.message}`);
+      await sleep(delay);
     }
   }
 
   if (isRetryableError(lastError)) {
-    return retryableErrorResult(operation, lastError, {
-      attempts: maxAttempts,
-    });
+    return retryableErrorResult(operation, lastError, { attempts: maxAttempts });
   }
 
-  return fatalErrorResult(operation, lastError, {
-    attempts: maxAttempts,
-  });
+  return fatalErrorResult(operation, lastError, { attempts: maxAttempts });
 }
+
+// ─── Array assertion helper ───────────────────────────────────────────────────
 
 function ensureArray(operation, result) {
   if (result.status !== RESULT_STATUS.SUCCESS) {
@@ -235,9 +240,11 @@ function ensureArray(operation, result) {
   return result;
 }
 
+// ─── Public API functions ─────────────────────────────────────────────────────
+
 async function getTickets(token, filters = {}) {
   const operation = "tickets:list";
-  const requestResult = await requestWithRetry({
+  const result = await requestWithRetry({
     operation,
     endpoint: "/ticket/list",
     token,
@@ -249,24 +256,24 @@ async function getTickets(token, filters = {}) {
     },
   });
 
-  return ensureArray(operation, requestResult);
+  return ensureArray(operation, result);
 }
 
 async function getDepartments(token) {
   const operation = "catalog:departments";
-  const requestResult = await requestWithRetry({
+  const result = await requestWithRetry({
     operation,
     endpoint: "/department/list",
     token,
     method: "GET",
   });
 
-  return ensureArray(operation, requestResult);
+  return ensureArray(operation, result);
 }
 
 async function getCategories(token, departmentId) {
   const operation = `catalog:categories:${departmentId}`;
-  const requestResult = await requestWithRetry({
+  const result = await requestWithRetry({
     operation,
     endpoint: "/department/category/list",
     token,
@@ -274,7 +281,7 @@ async function getCategories(token, departmentId) {
     params: { department_id: departmentId },
   });
 
-  return ensureArray(operation, requestResult);
+  return ensureArray(operation, result);
 }
 
 async function getCustomers(token) {
@@ -299,28 +306,23 @@ async function getCustomers(token) {
           customers,
           pageResult.errors,
           pageResult.warnings,
-          {
-            failedPage: page,
-            partialCount: customers.length,
-          },
+          { failedPage: page, partialCount: customers.length },
         );
       }
 
       return pageResult.status === RESULT_STATUS.RETRYABLE_ERROR
         ? retryableErrorResult(
             operation,
-            createApiError(
-              `[${operation}] Failed before any customer page was loaded.`,
-              { details: pageResult.errors },
-            ),
+            createApiError(`[${operation}] Failed before any customer page was loaded.`, {
+              details: pageResult.errors,
+            }),
             { failedPage: page },
           )
         : fatalErrorResult(
             operation,
-            createApiError(
-              `[${operation}] Failed before any customer page was loaded.`,
-              { details: pageResult.errors },
-            ),
+            createApiError(`[${operation}] Failed before any customer page was loaded.`, {
+              details: pageResult.errors,
+            }),
             { failedPage: page },
           );
     }
@@ -328,10 +330,9 @@ async function getCustomers(token) {
     if (!Array.isArray(pageResult.data)) {
       return fatalErrorResult(
         operation,
-        createApiError(
-          `[${operation}] Customer page ${page} did not return an array.`,
-          { details: pageResult.data },
-        ),
+        createApiError(`[${operation}] Customer page ${page} did not return an array.`, {
+          details: pageResult.data,
+        }),
         { failedPage: page },
       );
     }
@@ -379,6 +380,7 @@ async function getOperators(token) {
     }
   }
 
+  // Fallback: extract operators from ticket scan (up to 5 pages)
   const extractedOperators = [];
   const seenOperators = new Set();
   const extractionErrors = [];
@@ -454,10 +456,7 @@ async function finalizeTicket(token, ticketId, message) {
     endpoint: "/ticket/finish",
     token,
     method: "POST",
-    params: {
-      ticket_id: ticketId,
-      message,
-    },
+    params: { ticket_id: ticketId, message },
     maxAttempts: 2,
     backoffMs: 1200,
   });
@@ -469,14 +468,13 @@ async function linkAttendant(token, ticketId, operatorId) {
     endpoint: "/ticket/operator/link",
     token,
     method: "POST",
-    params: {
-      ticket_id: ticketId,
-      operator_id: operatorId,
-    },
+    params: { ticket_id: ticketId, operator_id: operatorId },
     maxAttempts: 2,
     backoffMs: 1200,
   });
 }
+
+// ─── Exports ──────────────────────────────────────────────────────────────────
 
 module.exports = {
   RESULT_STATUS,
@@ -488,4 +486,7 @@ module.exports = {
   getOperators,
   getTickets,
   linkAttendant,
+  // Interne para testes
+  _isRetryableError: isRetryableError,
+  _normalizeResponse: normalizeResponse,
 };

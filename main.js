@@ -26,12 +26,16 @@ const {
   retryableErrorResult,
   successResult,
 } = require("./operation-result");
+const {
+  normalizeString,
+  computeWaitTime,
+  findCustomerIdentifier,
+  findCategoryId,
+  buildCreatePayload,
+  extractCreatedTicketId,
+} = require("./shared/domain");
 
 app.disableHardwareAcceleration();
-
-function normalizeString(value, fallback = "") {
-  return typeof value === "string" ? value.trim() : fallback;
-}
 
 function normalizeBoolean(value) {
   return value === true || value === "true";
@@ -48,110 +52,12 @@ function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function computeWaitTime(settings) {
-  if (normalizeBoolean(settings.turboMode)) {
-    return 100;
-  }
-
-  const parsed = Number.parseInt(settings.delay, 10);
-  return (Number.isFinite(parsed) ? Math.max(parsed, 0) : 2) * 1000;
-}
-
 function hasBrowserCredentials(settings) {
   return Boolean(settings.account && settings.email && settings.password);
 }
 
-function findCustomerIdentifier(customers, clientName) {
-  const normalizedClient = normalizeString(clientName).toLowerCase();
-  if (!normalizedClient) {
-    return null;
-  }
-
-  const customer = (customers || []).find((item) => {
-    return normalizeString(item?.name).toLowerCase() === normalizedClient;
-  });
-
-  if (!customer) {
-    return null;
-  }
-
-  const identifier =
-    customer.id ||
-    customer.Id ||
-    customer.customer_id ||
-    customer.key ||
-    customer._id ||
-    null;
-
-  if (identifier) {
-    return {
-      identifier,
-      identifierType: "I",
-    };
-  }
-
-  if (customer.email) {
-    return {
-      identifier: customer.email,
-      identifierType: "E",
-    };
-  }
-
-  return null;
-}
-
-function findCategoryId(categories, departmentId, categoryName) {
-  const normalizedCategory = normalizeString(categoryName);
-  if (!normalizedCategory) {
-    return null;
-  }
-
-  const preferredMatch = (categories || []).find((category) => {
-    return (
-      normalizeString(category?.name) === normalizedCategory &&
-      String(category?.department_id ?? "") === String(departmentId ?? "")
-    );
-  });
-
-  if (preferredMatch?.id) {
-    return preferredMatch.id;
-  }
-
-  const fallbackMatch = (categories || []).find((category) => {
-    return normalizeString(category?.name) === normalizedCategory;
-  });
-
-  return fallbackMatch?.id ?? null;
-}
-
-function buildCreatePayload(row, customerIdentifier, categoryId) {
-  const payload = {
-    department_id: normalizeString(row.departmentId),
-    subject: normalizeString(row.subject),
-    message: normalizeString(row.message) || normalizeString(row.subject),
-    priority: "2",
-    customer_id: customerIdentifier.identifier,
-  };
-
-  if (categoryId) {
-    payload.category_id = categoryId;
-  }
-
-  if (customerIdentifier.identifierType === "E") {
-    payload.customer_id_type = "E";
-  }
-
-  return payload;
-}
-
-function extractCreatedTicketId(responseData) {
-  return (
-    responseData?.ticket_id ||
-    responseData?.id ||
-    responseData?.data?.id ||
-    null
-  );
-}
+// findCategoryId, buildCreatePayload, extractCreatedTicketId
+// are imported from ./shared/domain
 
 function createBrowserTicketRows(rows) {
   return rows.map((row) => ({
@@ -532,6 +438,7 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
     const settings = mergeSettings(overrides);
     ensureToken(settings);
 
+    // Step 1: Departments first (everything else depends on them)
     const departmentsResult = await getDepartments(settings.token);
     logOperation("catalog:departments", departmentsResult);
 
@@ -544,29 +451,28 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
         : departmentsResult;
     }
 
+    // Step 2: Fetch operators and customers sequentially
     const operatorsResult = await getOperators(settings.token);
     logOperation("catalog:operators", operatorsResult);
 
+    const customersResult = await getCustomers(settings.token);
+    logOperation("catalog:customers", customersResult);
+
+    // Step 3: Fetch department categories sequentially to avoid API Rate Limits
     const categoryResults = [];
     for (const department of departmentsResult.data) {
-      const categoryResult = await getCategories(settings.token, department.id);
-      const normalizedCategoryResult =
-        categoryResult.status === RESULT_STATUS.SUCCESS
-          ? {
-              ...categoryResult,
-              data: attachDepartmentMetadata(categoryResult.data, department),
-            }
-          : categoryResult;
-
-      logOperation(normalizedCategoryResult.operation, normalizedCategoryResult);
-      categoryResults.push(normalizedCategoryResult);
+      const result = await getCategories(settings.token, department.id);
+      const normalized = result.status === RESULT_STATUS.SUCCESS
+          ? { ...result, data: attachDepartmentMetadata(result.data, department) }
+          : result;
+      logOperation(normalized.operation, normalized);
+      categoryResults.push(normalized);
     }
+
+
 
     const categoriesResult = buildCategorySectionResult(categoryResults);
     logOperation("catalog:categories", categoriesResult);
-
-    const customersResult = await getCustomers(settings.token);
-    logOperation("catalog:customers", customersResult);
 
     const sections = {
       departments: departmentsResult,
@@ -668,6 +574,11 @@ ipcMain.handle("tickets:create", async (event, rows = [], context = {}) => {
 
     for (let index = 0; index < rows.length; index += 1) {
       const row = rows[index];
+      event.sender.send("tickets:progress", {
+        current: index + 1,
+        total: rows.length,
+        action: "create",
+      });
 
       try {
         const customerIdentifier = findCustomerIdentifier(
@@ -805,6 +716,11 @@ ipcMain.handle("tickets:close", async (event, tickets = [], overrides = {}) => {
 
     for (let index = 0; index < tickets.length; index += 1) {
       const ticket = tickets[index];
+      event.sender.send("tickets:progress", {
+        current: index + 1,
+        total: tickets.length,
+        action: "close",
+      });
       const closeResult = await finalizeTicket(
         settings.token,
         ticket.id,

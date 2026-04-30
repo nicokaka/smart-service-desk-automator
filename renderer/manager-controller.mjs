@@ -1,7 +1,8 @@
-import { $, $$, sleep } from "./common.mjs";
+import { $, $$, sleep, setButtonBusy } from "./common.mjs";
 import {
   computeWaitTime,
   escapeHtml,
+  findRowById,
   getResultTone,
   isPartialStatus,
   isPendingSolution,
@@ -12,6 +13,8 @@ import {
   collectAiSettings,
   collectExecutionSettings,
 } from "./runtime-settings.mjs";
+import { toast } from "./toast.mjs";
+import { showConfirmDialog } from "./confirm-modal.mjs";
 
 export function createManagerController({
   electronAPI,
@@ -64,7 +67,7 @@ export function createManagerController({
     elements.loadTicketsButton.innerText = "Carregando...";
     elements.apiStatus.innerText = "Buscando chamados...";
     if (elements.emptyState) {
-      elements.emptyState.style.display = "none";
+      elements.emptyState.classList.add("hidden");
     }
 
     try {
@@ -108,7 +111,7 @@ export function createManagerController({
       }
     });
 
-    elements.operatorFilter.style.display = "inline-block";
+    elements.operatorFilter.classList.remove("hidden");
     elements.operatorFilter.innerHTML =
       '<option value="">Todos os Atendentes</option>';
 
@@ -139,7 +142,7 @@ export function createManagerController({
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
       elements.tableBody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;">Nenhum chamado encontrado.</td></tr>';
+        '<tr><td colspan="6" class="text-muted text-center">Nenhum chamado encontrado.</td></tr>';
       return;
     }
 
@@ -187,8 +190,8 @@ export function createManagerController({
         log(
           "Todas as solucoes ja foram geradas. Marque a linha para reescrever uma especifica.",
         );
-        window.alert(
-          "Todas as solucoes ja estao geradas. Marque a caixinha do chamado que deseja refazer.",
+        toast.info(
+          "Todas as soluções já estão geradas. Marque a caixinha do chamado que deseja refazer."
         );
         return;
       }
@@ -199,6 +202,11 @@ export function createManagerController({
     }
 
     log(`Gerando solucao para ${selectedRows.length} chamados...`);
+
+    const restoreBtn = setButtonBusy(
+      elements.generateSolutionButton, 
+      '<span class="spinner"></span> Iniciando...'
+    );
 
     const aiSettings = collectAiSettings(documentRef);
     const executionSettings = collectExecutionSettings(documentRef);
@@ -214,6 +222,7 @@ export function createManagerController({
         continue;
       }
 
+      elements.generateSolutionButton.innerHTML = `<span class="spinner"></span> Gerando IA (${index + 1}/${selectedRows.length})...`;
       solutionInput.value = "Gerando...";
 
       try {
@@ -239,13 +248,15 @@ export function createManagerController({
         await sleep(waitTime);
       }
     }
+    
+    restoreBtn();
   }
 
   async function handleCloseSelected() {
     const selectedRows = getSelectedRows();
 
     if (selectedRows.length === 0) {
-      window.alert("Selecione pelo menos um chamado para fechar.");
+      toast.warning("Selecione pelo menos um chamado para fechar.");
       return;
     }
 
@@ -255,9 +266,13 @@ export function createManagerController({
     }));
 
     if (ticketsToClose.some((ticket) => isPendingSolution(ticket.solution))) {
-      const confirmed = window.confirm(
-        "Alguns chamados estao sem solucao definida. Deseja continuar mesmo assim?",
-      );
+      const confirmed = await showConfirmDialog({
+        title: "Atenção",
+        message: "Alguns chamados estão sem solução definida. Deseja continuar mesmo assim?",
+        confirmText: "Sim, continuar",
+        cancelText: "Cancelar",
+        confirmClass: "danger"
+      });
       if (!confirmed) {
         return;
       }
@@ -266,6 +281,19 @@ export function createManagerController({
     log(`Iniciando fechamento de ${ticketsToClose.length} chamados...`);
 
     const executionSettings = collectExecutionSettings(documentRef);
+    
+    const closeBtn = document.getElementById("btnCloseSelected");
+    const progressHandler = (data) => {
+      if (data.action === "close" && closeBtn) {
+        closeBtn.innerHTML = `<span class="spinner"></span> Fechando (${data.current}/${data.total})...`;
+      }
+    };
+    electronAPI.tickets.onProgress(progressHandler);
+
+    const restoreBtn = setButtonBusy(
+      closeBtn,
+      '<span class="spinner"></span> Iniciando...'
+    );
 
     try {
       const result = await electronAPI.tickets.close(
@@ -278,7 +306,7 @@ export function createManagerController({
         result.status === RESULT_STATUS.FATAL_ERROR ||
         result.status === RESULT_STATUS.RETRYABLE_ERROR
       ) {
-        window.alert(result.message);
+        toast.error(result.message);
       }
 
       const details = Array.isArray(result.details)
@@ -290,29 +318,31 @@ export function createManagerController({
       }
 
       details.forEach((item) => {
-        const row = documentRef.querySelector(`tr[data-id="${item.id}"]`);
+        const row = findRowById(documentRef, item.id);
         if (!row) {
           return;
         }
 
         if (item.status === RESULT_STATUS.SUCCESS || item.status === "Success") {
-          row.style.backgroundColor = "#d1e7dd";
+          row.classList.add("row-status-success");
+          row.classList.remove("row-status-error", "row-status-partial");
           $$("input:not([type='checkbox']), textarea", row).forEach((input) => {
             input.disabled = true;
-            input.style.color = "#000000";
-            input.style.fontWeight = "bold";
           });
         } else if (isPartialStatus(item.status)) {
-          row.style.backgroundColor = "#fff3cd";
-          row.style.color = "#664d03";
+          row.classList.add("row-status-partial");
+          row.classList.remove("row-status-success", "row-status-error");
         } else {
-          row.style.backgroundColor = "#f8d7da";
-          row.style.color = "#721c24";
+          row.classList.add("row-status-error");
+          row.classList.remove("row-status-success", "row-status-partial");
         }
       });
 
     } catch (error) {
       log(`Falha no fechamento: ${error.message}`, "error");
+    } finally {
+      electronAPI.tickets.removeProgressListener();
+      restoreBtn();
     }
   }
 

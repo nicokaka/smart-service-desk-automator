@@ -19,10 +19,18 @@ try {
   );
 }
 
-const HEADLESS = false;
 const URL = "https://console.tomticket.com";
 const DEFAULT_TIMEOUT_MS = 15000;
 const SHORT_TIMEOUT_MS = 5000;
+
+/**
+ * Determine headless mode from credentials / settings.
+ * Headless = true (invisible) unless debugMode is explicitly set.
+ * This avoids a disruptive browser window for normal production use.
+ */
+function isHeadless(credentials = {}) {
+  return !credentials.debugMode;
+}
 
 const SELECTORS = Object.freeze({
   authenticated: [
@@ -270,7 +278,7 @@ async function launchBrowserSession(credentials, runtime = {}) {
   const browserType = credentials.browser || "chromium";
   const engines = getBrowserEngines(runtime);
   const logger = getLogger(runtime);
-  const launchOptions = { headless: HEADLESS };
+  const launchOptions = { headless: isHeadless(credentials) };
 
   let browser;
   if (browserType === "chromium") {

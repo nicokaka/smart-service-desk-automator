@@ -10,6 +10,7 @@ import {
   persistSettingsFromDom,
   collectExecutionSettings,
 } from "./runtime-settings.mjs";
+import { toast } from "./toast.mjs";
 
 export function createSettingsController({
   electronAPI,
@@ -21,7 +22,51 @@ export function createSettingsController({
   const syncButton = documentRef.getElementById("btn-save-settings");
   const accordion = documentRef.getElementById("advanced-accordion");
   const accordionToggle = documentRef.getElementById("advanced-accordion-toggle");
+  const syncTimeSpan = documentRef.getElementById("catalog-sync-time");
+  const syncBadge = documentRef.getElementById("sync-status-badge");
   let initialized = false;
+
+  function renderSyncTime(timestamp) {
+    if (!syncTimeSpan) return;
+
+    let isStale = false;
+    let hasNeverSynced = !timestamp;
+
+    if (!timestamp) {
+      syncTimeSpan.innerText = "Catálogo atualizado: Nunca";
+      syncTimeSpan.className = "catalog-sync-time color-warning";
+    } else {
+      try {
+        const date = new Date(timestamp);
+        syncTimeSpan.innerText = `Catálogo atualizado: ${date.toLocaleString()}`;
+        
+        const AgeInMs = Date.now() - date.getTime();
+        const AgeInHours = AgeInMs / (1000 * 60 * 60);
+
+        if (AgeInHours > 24) {
+          isStale = true;
+          syncTimeSpan.className = "catalog-sync-time color-warning";
+        } else {
+          syncTimeSpan.className = "catalog-sync-time color-success";
+        }
+      } catch {
+        syncTimeSpan.innerText = "Catálogo atualizado: Desconhecido";
+        syncTimeSpan.className = "catalog-sync-time color-text";
+        hasNeverSynced = true;
+      }
+    }
+
+    if (syncBadge) {
+      syncBadge.className = "sync-badge";
+      if (hasNeverSynced) {
+        syncBadge.classList.add("sync-never");
+      } else if (isStale) {
+        syncBadge.classList.add("sync-stale");
+      } else {
+        syncBadge.classList.add("sync-ok");
+      }
+    }
+  }
 
   async function init() {
     if (initialized) {
@@ -30,6 +75,10 @@ export function createSettingsController({
 
     initialized = true;
     await loadSettingsIntoDom(documentRef, electronAPI, storage);
+    
+    const catalog = queueController.getCatalog();
+    renderSyncTime(catalog.timestamp);
+
     accordionToggle?.addEventListener("click", () => {
       accordion?.classList.toggle("open");
     });
@@ -52,8 +101,9 @@ export function createSettingsController({
     );
 
     if (!hasToken && !hasBrowserCredentials) {
-      window.alert(
+      toast.warning(
         "Informe ao menos o token da API ou as credenciais completas do navegador.",
+        6000
       );
       return;
     }
@@ -63,8 +113,8 @@ export function createSettingsController({
     );
 
     if (!hasToken) {
-      window.alert(
-        "Configuracoes salvas. Sem token, a sincronizacao da lista nao sera executada.",
+      toast.info(
+        "Configurações salvas. Sem token, a lista não será sincronizada."
       );
       return;
     }
@@ -74,21 +124,30 @@ export function createSettingsController({
       '<span class="spinner"></span> Sincronizando...',
     );
 
+    const tableBody = documentRef.getElementById("ticket-queue-body");
+    if (tableBody) {
+      tableBody.innerHTML = `
+        <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      `;
+    }
+
     try {
       const syncResult = await syncCatalog(settings.token);
       if (isPartialStatus(syncResult.status)) {
-        syncButton.innerText = "Sincronizacao Parcial";
-        syncButton.style.backgroundColor = "#f1c40f";
-        syncButton.style.color = "#1e1e2e";
-        window.alert(syncResult.message);
+        syncButton.innerText = "Sincronização Parcial";
+        syncButton.classList.add("btn-sync-partial");
+        syncButton.classList.remove("btn-sync-success");
+        toast.warning(syncResult.message);
       } else {
         syncButton.innerText = "Salvo! OK";
-        syncButton.style.backgroundColor = "var(--success-color)";
-        syncButton.style.color = "#1e1e2e";
+        syncButton.classList.add("btn-sync-success");
+        syncButton.classList.remove("btn-sync-partial");
       }
     } catch (error) {
       log(`Falha na sincronizacao: ${error.message}`, "error");
-      window.alert(`Falha na sincronizacao: ${error.message}`);
+      toast.error(`Falha na sincronização: ${error.message}`);
     } finally {
       await sleep(1500);
       restoreButton();
@@ -193,8 +252,14 @@ export function createSettingsController({
     log(`Atendentes atualizados: ${operators.length}`);
 
     if (isPartialStatus(syncResponse.status)) {
-      log(syncResponse.message, "warning");
+      const isOperatorFallback = operatorsSection?.status === RESULT_STATUS.PARTIAL;
+      const msg = isOperatorFallback 
+        ? "Catálogo sincronizado. (Nota: Atendentes obtidos via busca alternativa)"
+        : syncResponse.message;
+      log(msg, "warning");
     }
+
+    renderSyncTime(new Date().toISOString());
 
     return syncResponse;
   }

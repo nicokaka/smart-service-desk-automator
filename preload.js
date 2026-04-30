@@ -13,6 +13,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
     create: (rows, context) => ipcRenderer.invoke("tickets:create", rows, context),
     close: (tickets, overrides) =>
       ipcRenderer.invoke("tickets:close", tickets, overrides),
+    onProgress: (callback) =>
+      ipcRenderer.on("tickets:progress", (_event, data) => callback(data)),
+    removeProgressListener: () =>
+      ipcRenderer.removeAllListeners("tickets:progress"),
   },
   ai: {
     generateTicket: (payload) => ipcRenderer.invoke("ai:generate-ticket", payload),

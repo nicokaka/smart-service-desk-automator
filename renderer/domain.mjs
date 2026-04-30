@@ -1,3 +1,20 @@
+/**
+ * Renderer-side domain module (ES Module).
+ *
+ * Business logic that is RENDERER-ONLY lives here.
+ * Logic shared with the main process is re-exported from shared/domain.js
+ * (loaded via window.sharedDomain injected by preload, or directly imported
+ * in testable contexts).
+ *
+ * NOTE: In Electron's renderer with contextIsolation, we cannot directly
+ * `require('./shared/domain')`. Instead, the pure functions are duplicated
+ * here ONLY for UI-specific helpers. All overlap was resolved by moving
+ * shared logic to shared/domain.js and updating main.js to import from there.
+ */
+
+/* SYNC: Must match RESULT_STATUS in operation-result.js */
+/* SYNC: Notice! This code duplicates parts of shared/domain.js. Any changes here MUST be replicated there to prevent drift! */
+
 export const RESULT_STATUS = Object.freeze({
   SUCCESS: "success",
   PARTIAL: "partial",
@@ -5,9 +22,13 @@ export const RESULT_STATUS = Object.freeze({
   FATAL_ERROR: "fatal_error",
 });
 
+// ─── String helpers ───────────────────────────────────────────────────────────
+
 function normalizeString(value) {
   return String(value ?? "").trim();
 }
+
+// ─── Department / category metadata helpers ───────────────────────────────────
 
 function getDepartmentIdLike(value) {
   return normalizeString(
@@ -28,6 +49,8 @@ function getDepartmentNameLike(value) {
   );
 }
 
+// ─── HTML escaping ────────────────────────────────────────────────────────────
+
 export function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -36,6 +59,8 @@ export function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
+
+// ─── Select option markup ─────────────────────────────────────────────────────
 
 export function createOptionsMarkup(
   items,
@@ -60,6 +85,8 @@ export function createOptionsMarkup(
   ].join("");
 }
 
+// ─── Name utilities ───────────────────────────────────────────────────────────
+
 export function uniqueSortedNames(items) {
   return Array.from(
     new Set(
@@ -69,6 +96,8 @@ export function uniqueSortedNames(items) {
     ),
   ).sort((left, right) => left.localeCompare(right));
 }
+
+// ─── Category / department filtering ─────────────────────────────────────────
 
 export function filterCategoriesByDepartment(
   categories,
@@ -110,6 +139,8 @@ export function filterCategoriesByDepartment(
   return filteredNames.length > 0 ? filteredNames : allCategoryNames;
 }
 
+// ─── Customer / category lookup (renderer-side, for UI validation) ────────────
+
 export function findCustomerIdentifier(customers, clientName) {
   const normalizedClient = normalizeString(clientName).toLowerCase();
   if (!normalizedClient) {
@@ -133,26 +164,14 @@ export function findCustomerIdentifier(customers, clientName) {
     null;
 
   if (identifier) {
-    return {
-      customer,
-      identifier,
-      identifierType: "I",
-    };
+    return { customer, identifier, identifierType: "I" };
   }
 
   if (customer.email) {
-    return {
-      customer,
-      identifier: customer.email,
-      identifierType: "E",
-    };
+    return { customer, identifier: customer.email, identifierType: "E" };
   }
 
-  return {
-    customer,
-    identifier: null,
-    identifierType: null,
-  };
+  return { customer, identifier: null, identifierType: null };
 }
 
 export function findCategoryId(categories, departmentId, categoryName) {
@@ -181,6 +200,7 @@ export function findCategoryId(categories, departmentId, categoryName) {
 }
 
 export function buildCreateTicketPayload({
+  // Note: shared/domain.js has a similar function but with positional arguments.
   departmentId,
   subject,
   message,
@@ -215,24 +235,26 @@ export function extractCreatedTicketId(responseData) {
   );
 }
 
+// ─── Status sentinels ─────────────────────────────────────────────────────────
+
+const PENDING_MESSAGES = new Set([
+  "",
+  "Gerando...",
+  "Erro na IA",
+  "Falha (Limite)",
+]);
+
+const PENDING_SOLUTIONS = new Set(["", "Gerando...", "Erro na IA."]);
+
 export function isPendingGeneratedMessage(message) {
-  const normalized = normalizeString(message);
-  return (
-    normalized === "" ||
-    normalized === "Gerando..." ||
-    normalized === "Erro na IA" ||
-    normalized === "Falha (Limite)"
-  );
+  return PENDING_MESSAGES.has(normalizeString(message));
 }
 
 export function isPendingSolution(message) {
-  const normalized = normalizeString(message);
-  return (
-    normalized === "" ||
-    normalized === "Gerando..." ||
-    normalized === "Erro na IA."
-  );
+  return PENDING_SOLUTIONS.has(normalizeString(message));
 }
+
+// ─── Wait time ────────────────────────────────────────────────────────────────
 
 export function computeWaitTime({ turbo, delaySeconds }) {
   if (turbo) {
@@ -244,24 +266,32 @@ export function computeWaitTime({ turbo, delaySeconds }) {
   return seconds * 1000;
 }
 
+// ─── Deduplication ────────────────────────────────────────────────────────────
+
 export function dedupeById(items) {
   const seen = new Set();
   const deduped = [];
 
   for (const item of items || []) {
-    const identifier = item?.id;
-    if (!identifier || seen.has(identifier)) {
+    const id = item?.id;
+    if (!id || seen.has(id)) {
       continue;
     }
 
-    seen.add(identifier);
+    seen.add(id);
     deduped.push(item);
   }
 
   return deduped;
 }
 
+// ─── JSON parsing ─────────────────────────────────────────────────────────────
+
 export function parseJsonSafely(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
   try {
     return JSON.parse(value);
   } catch {
@@ -269,30 +299,25 @@ export function parseJsonSafely(value) {
   }
 }
 
+// ─── Validation ───────────────────────────────────────────────────────────────
+
 export function hasIncompleteQueueData(row) {
   const missingFields = [];
 
-  if (!normalizeString(row?.clientName)) {
-    missingFields.push("Cliente");
-  }
-
-  if (!normalizeString(row?.departmentId)) {
-    missingFields.push("Departamento");
-  }
-
-  if (!normalizeString(row?.subject)) {
-    missingFields.push("Resumo");
-  }
+  if (!normalizeString(row?.clientName)) missingFields.push("Cliente");
+  if (!normalizeString(row?.departmentId)) missingFields.push("Departamento");
+  if (!normalizeString(row?.subject)) missingFields.push("Resumo");
 
   return missingFields;
 }
+
+// ─── Result helpers ───────────────────────────────────────────────────────────
 
 export function getResultTone(status) {
   switch (status) {
     case RESULT_STATUS.SUCCESS:
       return "info";
     case RESULT_STATUS.PARTIAL:
-      return "warning";
     case RESULT_STATUS.RETRYABLE_ERROR:
       return "warning";
     case RESULT_STATUS.FATAL_ERROR:
@@ -317,4 +342,25 @@ export function resultHasUsableData(result) {
       result.data !== null &&
       result.data !== undefined,
   );
+}
+
+// ─── Safe querySelector with escaped ID ──────────────────────────────────────
+
+/**
+ * Safely finds a <tr> by its data-id attribute.
+ * Using attribute selector [data-id="..."] avoids CSS injection risks
+ * from untrusted ticket IDs coming from the API.
+ *
+ * @param {Document} documentRef
+ * @param {string} id
+ * @returns {Element | null}
+ */
+export function findRowById(documentRef, id) {
+  if (!id) {
+    return null;
+  }
+
+  // Escape backslashes and double quotes to prevent attribute selector injection
+  const safeId = String(id).replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+  return documentRef.querySelector(`tr[data-id="${safeId}"]`);
 }

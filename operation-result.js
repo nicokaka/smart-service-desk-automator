@@ -1,3 +1,4 @@
+/* SYNC: Must match RESULT_STATUS in renderer/domain.mjs */
 const RESULT_STATUS = Object.freeze({
   SUCCESS: "success",
   PARTIAL: "partial",

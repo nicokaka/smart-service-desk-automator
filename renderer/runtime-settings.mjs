@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   cachedCustomers: "cachedCustomers",
   cachedFullCustomers: "cachedFullCustomers",
   cachedOperators: "cachedOperators",
+  catalogTimestamp: "catalogTimestamp",
 };
 
 const LEGACY_RENDERER_SETTINGS_KEYS = [
@@ -123,6 +124,7 @@ function applySettingsToDom(settings, documentRef = document) {
 
 export function loadCatalogSnapshot(storage = localStorage) {
   return {
+    timestamp: storage.getItem(STORAGE_KEYS.catalogTimestamp) || null,
     departments: parseStoredJson(storage, STORAGE_KEYS.cachedDepartments, [
       "Administrativo",
       "Comercial",
@@ -147,32 +149,52 @@ export function loadCatalogSnapshot(storage = localStorage) {
   };
 }
 
+function safeSetItem(storage, key, value) {
+  try {
+    storage.setItem(key, value);
+  } catch (error) {
+    console.error(`[Storage] Falha ao salvar "${key}" (${value?.length} chars):`, error.message);
+  }
+}
+
 export function saveCatalogSnapshot(snapshot, storage = localStorage) {
-  storage.setItem(
+  safeSetItem(
+    storage,
+    STORAGE_KEYS.catalogTimestamp,
+    new Date().toISOString()
+  );
+  safeSetItem(
+    storage,
     STORAGE_KEYS.cachedDepartments,
     JSON.stringify(snapshot.departments || []),
   );
-  storage.setItem(
+  safeSetItem(
+    storage,
     STORAGE_KEYS.cachedCategories,
     JSON.stringify(snapshot.categories || []),
   );
-  storage.setItem(
+  safeSetItem(
+    storage,
     STORAGE_KEYS.cachedCustomers,
     JSON.stringify(snapshot.customers || []),
   );
-  storage.setItem(
+  safeSetItem(
+    storage,
     STORAGE_KEYS.cachedOperators,
     JSON.stringify(snapshot.operators || []),
   );
-  storage.setItem(
+  safeSetItem(
+    storage,
     STORAGE_KEYS.cachedFullDepartments,
     JSON.stringify(snapshot.fullDepartments || []),
   );
-  storage.setItem(
+  safeSetItem(
+    storage,
     STORAGE_KEYS.cachedFullCategories,
     JSON.stringify(snapshot.fullCategories || []),
   );
-  storage.setItem(
+  safeSetItem(
+    storage,
     STORAGE_KEYS.cachedFullCustomers,
     JSON.stringify(snapshot.fullCustomers || []),
   );
@@ -183,7 +205,7 @@ export function loadQueueState(storage = localStorage) {
 }
 
 export function saveQueueState(rows, storage = localStorage) {
-  storage.setItem(STORAGE_KEYS.queueState, JSON.stringify(rows));
+  safeSetItem(storage, STORAGE_KEYS.queueState, JSON.stringify(rows));
 }
 
 export async function loadSettingsIntoDom(

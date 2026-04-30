@@ -1,9 +1,10 @@
-import { $, $$, sleep } from "./common.mjs";
+import { $, $$, sleep, setButtonBusy } from "./common.mjs";
 import {
   computeWaitTime,
   createOptionsMarkup,
   escapeHtml,
   filterCategoriesByDepartment,
+  findRowById,
   hasIncompleteQueueData,
   isPendingGeneratedMessage,
   isPartialStatus,
@@ -19,6 +20,7 @@ import {
   saveCatalogSnapshot,
   saveQueueState,
 } from "./runtime-settings.mjs";
+import { toast } from "./toast.mjs";
 
 export function createQueueController({
   electronAPI,
@@ -116,7 +118,7 @@ export function createQueueController({
     }
 
     const hasRows = elements.tableBody.querySelectorAll("tr").length > 0;
-    elements.emptyState.style.display = hasRows ? "none" : "flex";
+    elements.emptyState.classList.toggle("hidden", hasRows);
 
     if (elements.selectAllCheckbox) {
       elements.selectAllCheckbox.disabled = !hasRows;
@@ -132,8 +134,7 @@ export function createQueueController({
     }
 
     const checkedCount = $$(".row-select:checked", elements.tableBody).length;
-    elements.removeSelectedButton.style.display =
-      checkedCount > 0 ? "inline-block" : "none";
+    elements.removeSelectedButton.classList.toggle("hidden", checkedCount === 0);
   }
 
   function createRowMarkup(data = {}) {
@@ -169,22 +170,22 @@ export function createQueueController({
         data.selected ? " checked" : ""
       }></td>
       <td>
-        <select class="input-client input-field" style="padding:5px;">
+        <select class="input-client input-field">
           ${customerOptions}
         </select>
       </td>
       <td>
-        <select class="input-dept input-field" style="padding:5px;">
+        <select class="input-dept input-field">
           ${departmentOptions}
         </select>
       </td>
       <td>
-        <select class="input-cat input-field" style="padding:5px;">
+        <select class="input-cat input-field">
           ${categoryOptions}
         </select>
       </td>
       <td>
-        <select class="input-attendant input-field" style="padding:5px;">
+        <select class="input-attendant input-field">
           ${operatorOptions}
         </select>
       </td>
@@ -396,8 +397,8 @@ export function createQueueController({
         (row) => hasIncompleteQueueData(row).length > 0,
       )
     ) {
-      window.alert(
-        "Por favor, preencha Cliente, Departamento e Resumo para todas as linhas.",
+      toast.warning(
+        "Por favor, preencha Cliente, Departamento e Resumo para todas as linhas."
       );
       return;
     }
@@ -405,49 +406,69 @@ export function createQueueController({
     log(
       executionSettings.token
         ? `Iniciando criacao via API (${rowsPayload.length} chamados)...`
-        : "Token nao encontrado. Usando modo Navegador (Bot)...",
+        : "Token nao encontrado. Usando modo Navegador (Bot)..."
     );
 
-    const result = await electronAPI.tickets.create(rowsPayload, {
-      settings: executionSettings,
-      catalog: {
-        fullCustomers: catalog.fullCustomers,
-        fullCategories: catalog.fullCategories,
-      },
-    });
+    const startButton = document.getElementById("btn-start-bot");
+    
+    const progressHandler = (data) => {
+      if (data.action === "create" && startButton) {
+        startButton.innerHTML = `<span class="spinner"></span> Criando (${data.current}/${data.total})...`;
+      }
+    };
+    
+    electronAPI.tickets.onProgress(progressHandler);
 
-    log(`Resultado processamento: ${result.message}`, getResultTone(result.status));
+    const restoreButton = setButtonBusy(
+      startButton,
+      '<span class="spinner"></span> Iniciando...',
+    );
 
-    if (
-      result.status === RESULT_STATUS.FATAL_ERROR ||
-      result.status === RESULT_STATUS.RETRYABLE_ERROR
-    ) {
-      window.alert(result.message);
-    }
+    try {
+      const result = await electronAPI.tickets.create(rowsPayload, {
+        settings: executionSettings,
+        catalog: {
+          fullCustomers: catalog.fullCustomers,
+          fullCategories: catalog.fullCategories,
+        },
+      });
 
-    const details = Array.isArray(result.details)
-      ? result.details
-      : result.data?.details || [];
+      log(`Resultado processamento: ${result.message}`, getResultTone(result.status));
 
-    if (!Array.isArray(details) || details.length === 0) {
-      return;
-    }
+      if (
+        result.status === RESULT_STATUS.FATAL_ERROR ||
+        result.status === RESULT_STATUS.RETRYABLE_ERROR
+      ) {
+        toast.error(result.message);
+      }
 
-    details.forEach((item) => {
-      const row = documentRef.querySelector(`tr[data-id="${item.id}"]`);
-      if (!row) {
+      const details = Array.isArray(result.details)
+        ? result.details
+        : result.data?.details || [];
+
+      if (!Array.isArray(details) || details.length === 0) {
         return;
       }
 
-      if (item.status === RESULT_STATUS.SUCCESS || item.status === "Success") {
-        markRowAsSuccess(row);
-      } else if (isPartialStatus(item.status)) {
-        markRowAsPartial(row);
-      } else {
-        markRowAsError(row);
-      }
-    });
+      details.forEach((item) => {
+        const row = findRowById(documentRef, item.id);
+        if (!row) {
+          return;
+        }
 
+        if (item.status === RESULT_STATUS.SUCCESS || item.status === "Success") {
+          markRowAsSuccess(row);
+        } else if (isPartialStatus(item.status)) {
+          markRowAsPartial(row);
+        } else {
+          markRowAsError(row);
+        }
+      });
+    } finally {
+      electronAPI.tickets.removeProgressListener();
+      restoreButton();
+    }
+    
     saveCurrentQueueState();
   }
 
@@ -465,8 +486,8 @@ export function createQueueController({
       log(
         "Todas as mensagens ja foram geradas. Selecione a caixa da linha caso deseje reescrever uma especifica.",
       );
-      window.alert(
-        "Todas as mensagens ja estao geradas. Marque a caixinha do chamado que deseja refazer.",
+      toast.info(
+        "Todas as mensagens já estão geradas. Marque a caixinha do chamado que deseja refazer.",
       );
       return;
     }
@@ -545,12 +566,13 @@ export function createQueueController({
             errorText.includes("Quota exceeded")
           ) {
             attempt += 1;
+            const delayInSeconds = attempt === 1 ? 30 : attempt === 2 ? 60 : 120;
             messageInput.value = `Aguardando (429)... ${attempt}/3`;
             log(
-              `Limite da API atingido (429). Aguardando 60s antes de tentar novamente (Tentativa ${attempt}/3)...`,
+              `Limite da API atingido (429). Aguardando ${delayInSeconds}s antes de tentar novamente (Tentativa ${attempt}/3)...`,
               "error",
             );
-            await sleep(62000);
+            await sleep(delayInSeconds * 1000);
           } else {
             messageInput.value = "Erro na IA";
             messageInput.readOnly = false;
@@ -576,26 +598,25 @@ export function createQueueController({
 
   function markRowAsSuccess(row) {
     row.dataset.status = "success";
-    row.style.backgroundColor = "#d1e7dd";
+    row.classList.add("row-status-success");
+    row.classList.remove("row-status-error", "row-status-partial");
     $$("input, select, textarea", row).forEach((element) => {
       if (!element.classList.contains("row-select")) {
         element.disabled = true;
       }
-      element.style.color = "#000";
-      element.style.fontWeight = "bold";
     });
   }
 
   function markRowAsError(row) {
     row.dataset.status = "error";
-    row.style.backgroundColor = "#f8d7da";
-    row.style.color = "#721c24";
+    row.classList.add("row-status-error");
+    row.classList.remove("row-status-success", "row-status-partial");
   }
 
   function markRowAsPartial(row) {
     row.dataset.status = "partial";
-    row.style.backgroundColor = "#fff3cd";
-    row.style.color = "#664d03";
+    row.classList.add("row-status-partial");
+    row.classList.remove("row-status-success", "row-status-error");
   }
 
   return {

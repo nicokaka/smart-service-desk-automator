@@ -15,16 +15,16 @@ export function initAboutModal(documentRef = document, electronAPI = window.elec
   aboutModal.dataset.bound = "true";
 
   openButton.addEventListener("click", () => {
-    aboutModal.style.display = "flex";
+    aboutModal.classList.remove("hidden");
   });
 
   closeButton.addEventListener("click", () => {
-    aboutModal.style.display = "none";
+    aboutModal.classList.add("hidden");
   });
 
   aboutModal.addEventListener("click", (event) => {
     if (event.target === aboutModal) {
-      aboutModal.style.display = "none";
+      aboutModal.classList.add("hidden");
     }
   });
 

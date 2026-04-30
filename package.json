@@ -1,6 +1,6 @@
 {
   "name": "tomticketbot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Electron desktop app for TomTicket automation with Gemini-assisted workflows.",
   "main": "main.js",
   "keywords": [],
@@ -42,13 +42,13 @@
       "shortcutName": "Smart Service Desk"
     }
   },
-  "devDependencies": {
-    "electron": "^40.6.1",
-    "electron-builder": "^26.8.1"
-  },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@playwright/test": "^1.58.1",
-    "dotenv": "^17.3.1"
+    "@playwright/test": "^1.58.1"
+  },
+  "devDependencies": {
+    "dotenv": "^17.3.1",
+    "electron": "^40.6.1",
+    "electron-builder": "^26.8.1"
   }
 }

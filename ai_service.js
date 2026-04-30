@@ -1,35 +1,92 @@
+"use strict";
+
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Access API Key from environment or secure storage
+// API key from environment (only used as last resort — renderer always passes the key explicitly)
 const ENV_API_KEY = process.env.GEMINI_API_KEY || "";
 
-// --- Cached Model Instances (Reuse across calls) ---
-let _modelCache = {};
+// ─── Model cache (max 8 entries — LRU) ───────────────────────────────────────
 
+const MODEL_CACHE_MAX = 8;
+
+/** @type {Map<string, object>} — key → model instance, insertion-order LRU */
+const _modelCache = new Map();
+
+/**
+ * Get (or create and cache) a Gemini model instance.
+ * Uses LRU eviction once the cache exceeds MODEL_CACHE_MAX entries.
+ *
+ * @param {string} apiKey
+ * @param {string} [modelName]
+ * @param {boolean} [useFallback]
+ */
 function getModel(apiKey, modelName = "gemini-2.5-flash", useFallback = false) {
   const targetModel = useFallback ? "gemini-flash-latest" : modelName;
-  const cacheKey = `${apiKey}_${targetModel}`;
+  const cacheKey = `${apiKey}::${targetModel}`;
 
-  if (!_modelCache[cacheKey]) {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    _modelCache[cacheKey] = genAI.getGenerativeModel({
-      model: targetModel,
-      generationConfig: { responseMimeType: "application/json" },
-    });
-    console.log(
-      `[AI Service] Model instance created (cached) for: ${targetModel}`,
-    );
+  if (_modelCache.has(cacheKey)) {
+    // Refresh LRU position: delete + re-insert
+    const cached = _modelCache.get(cacheKey);
+    _modelCache.delete(cacheKey);
+    _modelCache.set(cacheKey, cached);
+    return cached;
   }
-  return _modelCache[cacheKey];
+
+  // Evict oldest entry if at capacity
+  if (_modelCache.size >= MODEL_CACHE_MAX) {
+    const oldestKey = _modelCache.keys().next().value;
+    _modelCache.delete(oldestKey);
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: targetModel,
+    generationConfig: { responseMimeType: "application/json" },
+  });
+
+  _modelCache.set(cacheKey, model);
+  console.log(`[AI Service] Model cached: ${targetModel} (cache size: ${_modelCache.size})`);
+  return model;
 }
+
+/** Exposed for testing only — clears the entire model cache. */
+function _clearModelCache() {
+  _modelCache.clear();
+}
+
+// ─── Response cleanup ─────────────────────────────────────────────────────────
 
 function cleanResponse(text) {
-  return text
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .trim();
+  return text.replace(/```json/g, "").replace(/```/g, "").trim();
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ─── Default prompt context ───────────────────────────────────────────────────
+
+/**
+ * Generic service desk context.
+ * Companies with specific domain knowledge should use the `customPrompt`
+ * setting in the app — this is intentionally generic so the tool works
+ * out of the box for any team.
+ */
+const DEFAULT_SERVICE_DESK_CONTEXT = `Contexto: Suporte técnico de TI generalista.
+- Usuários finais de diferentes departamentos.
+- Foco em comunicação clara, objetiva e profissional em português do Brasil.
+- Evite jargões internos ou referências específicas a sistemas proprietários.`;
+
+// ─── Generate ticket description ──────────────────────────────────────────────
+
+/**
+ * @param {string} summary     Raw one-liner from the attendant
+ * @param {string} clientName  Customer name
+ * @param {string} userApiKey  Gemini API key from settings
+ * @param {string} customPrompt Company-specific context (optional)
+ * @param {string} activeModel  Gemini model identifier
+ * @returns {Promise<string>}   JSON string: { "descricao": "..." }
+ */
 async function generateTicketMessage(
   summary,
   clientName,
@@ -37,42 +94,32 @@ async function generateTicketMessage(
   customPrompt,
   activeModel,
 ) {
-  const API_KEY = userApiKey || ENV_API_KEY;
+  const apiKey = userApiKey || ENV_API_KEY;
+  const model = activeModel || "gemini-2.5-flash";
 
   console.log(
-    `[AI Service] Generating message for: "${summary}" | Client: "${clientName}" | Model: "${activeModel || "gemini-2.5-flash"}"`,
+    `[AI Service] generateTicketMessage | model=${model} | client="${clientName}"`,
   );
 
-  const fallbackMessage = JSON.stringify({
+  const fallback = JSON.stringify({
     descricao: `Olá,\n\nO usuário ${clientName} relatou: ${summary}.\n\nSolicito verificação.\n\nAtenciosamente,\nBot Automatizado.`,
   });
 
-  if (!API_KEY) {
-    console.warn("No API Key found. Returning fallback.");
-    return fallbackMessage;
+  if (!apiKey) {
+    console.warn("[AI Service] No API key — returning fallback message.");
+    return fallback;
   }
 
-  const defaultHebronContext = `Contexto de Domínio e Infraestrutura:
-- Hebronline: Sistema de visita médica. 
-- Usuários: Propagandistas (PGs) ou setores.
-- Contatos: Médicos ou veterinários. 
-- Ações e Status: "Liberar contato" sempre significa Ativar um contato desativado. Use apenas os termos "ativo" ou "desativado".
-- Termos Comerciais: PDV = Ponto de Venda (identificado via CNPJ). V.A. = Arquivo PDF com portfólio de medicamentos.
-- CRM: Pode ser o Sistema de Gestão ou o Registro Profissional (ex: CRM MG 12345).
-- Internet Móvel/Chips: Em caso de lentidão/falha, a primeira ação é sempre verificar o portal de gestão (consumo de franquia ou bloqueios).
-- Certificados Digitais: Fornecedor Certisign. A1 (Software), A3 (Hardware). "Configurar" geralmente significa corrigir erros, não apenas instalar.
-- Formatação Obrigatória: Nomes, CRMs, CNPJs e linhas devem estar em **negrito**. Códigos numéricos de setor devem estar em negrito e entre cifrões (ex: **$10.14.007$\`).`;
-
-  const appliedContext =
+  const context =
     customPrompt && customPrompt.trim() !== ""
-      ? customPrompt
-      : defaultHebronContext;
+      ? customPrompt.trim()
+      : DEFAULT_SERVICE_DESK_CONTEXT;
 
   const prompt = `Você é um especialista em Service Desk aplicando as regras de negócio listadas abaixo.
 Crie uma DESCRIÇÃO TÉCNICA concisa para o chamado abaixo.
 
 # Regras e Contexto:
-${appliedContext}
+${context}
 
 # Entrada
   Cliente: "${clientName}"
@@ -81,35 +128,23 @@ ${appliedContext}
 # Formato
   "O usuário [Nome] solicita/relata [Problema]. [Ação técnica sugerida]."
 
-# Saída(JSON)
-  { "descricao": "Texto da descrição" } `;
+# Saída (JSON)
+  { "descricao": "Texto da descrição" }`;
 
-  try {
-    const model = getModel(API_KEY, activeModel);
-    const result = await model.generateContent(prompt);
-    return cleanResponse(result.response.text());
-  } catch (error) {
-    const errStr = error.toString();
-
-    if (errStr.includes("404") || errStr.includes("Not Found")) {
-      console.warn(
-        "⚠️ Primary model not found. Fallback to 'gemini-flash-latest'...",
-      );
-      try {
-        const fallbackModel = getModel(API_KEY, activeModel, true);
-        const result = await fallbackModel.generateContent(prompt);
-        return cleanResponse(result.response.text());
-      } catch (fallbackError) {
-        console.error("Fallback failed:", fallbackError);
-        throw fallbackError;
-      }
-    }
-
-    console.error("AI Generation Error:", error);
-    throw error;
-  }
+  return callWithFallback(apiKey, model, prompt, fallback);
 }
 
+// ─── Generate solution / closing message ──────────────────────────────────────
+
+/**
+ * @param {string} title        Ticket subject
+ * @param {string} description  Ticket description (may equal title if absent)
+ * @param {string} clientName   Customer name
+ * @param {string} userApiKey   Gemini API key from settings
+ * @param {string} customPrompt Company-specific context (optional)
+ * @param {string} activeModel  Gemini model identifier
+ * @returns {Promise<string>}   JSON string: { "solucao": "..." }
+ */
 async function generateSolutionMessage(
   title,
   description,
@@ -118,27 +153,26 @@ async function generateSolutionMessage(
   customPrompt,
   activeModel,
 ) {
-  const API_KEY = userApiKey || ENV_API_KEY;
+  const apiKey = userApiKey || ENV_API_KEY;
+  const model = activeModel || "gemini-2.5-flash";
 
-  const fallbackMessage = JSON.stringify({
-    solucao: `Chamado referente a "${title}" foi analisado e resolvido.Atenciosamente, Suporte.`,
+  const fallback = JSON.stringify({
+    solucao: `Chamado referente a "${title}" foi analisado e resolvido. Atenciosamente, Suporte.`,
   });
 
-  if (!API_KEY) return fallbackMessage;
+  if (!apiKey) {
+    return fallback;
+  }
 
-  const defaultHebronContext = `- PGs: Propagandistas.PDV: Ponto de Venda.V.A.: PDF / Portfólio
-    - "Liberar contato" = Ativar médico / veterinário desativado
-      - CRM = Software ou registro médico`;
-
-  const appliedContext =
+  const context =
     customPrompt && customPrompt.trim() !== ""
-      ? customPrompt
-      : defaultHebronContext;
+      ? customPrompt.trim()
+      : DEFAULT_SERVICE_DESK_CONTEXT;
 
-  const prompt = `Escreva uma mensagem de encerramento(solução) concisa e profissional para um chamado de Service Desk.
+  const prompt = `Escreva uma mensagem de encerramento (solução) concisa e profissional para um chamado de Service Desk.
 
 # Regras e Contexto:
-${appliedContext}
+${context}
 
 # Entrada
   Cliente: "${clientName}"
@@ -146,39 +180,72 @@ ${appliedContext}
   Descrição: "${description || title}"
 
 # Regras para a Mensagem de Finalização:
-  - Objetivo: Criar uma mensagem concisa confirmando que a tarefa foi concluída ou o problema foi resolvido, e que a solução foi validada.
-- Anonimato do Solicitante: Use APENAS termos genéricos como "o cliente" ou "o usuário".NUNCA escreva o nome da pessoa nesta mensagem.
-- Palavras Proibidas: NUNCA inclua a frase "Chamado finalizado." no texto(pois isso já é um status do sistema).
-  - Formatação Obrigatória: Mantenha identificadores(CRMs, CNPJs) em ** negrito ** e códigos de setor como ** $10.14.002$ **, caso precise mencioná - los.
-- Tom: Direto, técnico e em português do Brasil.
+  - Objetivo: Confirmar que a tarefa foi concluída ou o problema foi resolvido.
+  - Anonimato do Solicitante: Use APENAS "o cliente" ou "o usuário". NUNCA o nome da pessoa.
+  - Palavras Proibidas: NUNCA inclua "Chamado finalizado." (é status do sistema).
+  - Tom: Direto, técnico, português do Brasil.
 
-# Saída(JSON)
-  { "solucao": "Texto da solução" } `;
+# Saída (JSON)
+  { "solucao": "Texto da solução" }`;
 
-  try {
-    const model = getModel(API_KEY, activeModel);
-    const result = await model.generateContent(prompt);
-    return cleanResponse(result.response.text());
-  } catch (error) {
-    const errStr = error.toString();
+  return callWithFallback(apiKey, model, prompt, fallback);
+}
 
-    if (errStr.includes("404") || errStr.includes("Not Found")) {
-      console.warn(
-        "⚠️ Solution: Model not found. Fallback to 'gemini-flash-latest'...",
-      );
-      try {
-        const fallbackModel = getModel(API_KEY, activeModel, true);
-        const result = await fallbackModel.generateContent(prompt);
-        return cleanResponse(result.response.text());
-      } catch (fbError) {
-        console.error("Solution Fallback Error:", fbError);
-        throw fbError;
+// ─── Shared call helper ───────────────────────────────────────────────────────
+
+/**
+ * Calls the primary model; on 404 retries with the fallback model alias.
+ * On any other error, throws so the caller can surface it via operation-result.
+ *
+ * @param {string} apiKey
+ * @param {string} modelName
+ * @param {string} prompt
+ * @param {string} fallbackPayload  Returned when no API key is set
+ */
+async function callWithFallback(apiKey, modelName, prompt, fallbackPayload) {
+  let attempt = 0;
+  const maxRetries = process.env.NODE_ENV === "test" ? 0 : 3;
+
+  while (attempt <= maxRetries) {
+    try {
+      const model = getModel(apiKey, modelName);
+      const result = await model.generateContent(prompt);
+      return cleanResponse(result.response.text());
+    } catch (primaryError) {
+      const errStr = String(primaryError);
+
+      if (errStr.includes("429") || errStr.toLowerCase().includes("rate limit") || errStr.toLowerCase().includes("quota")) {
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt) * 2000;
+          console.warn(`[AI Service] Rate limit hit. Retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})...`);
+          await sleep(delay);
+          attempt++;
+          continue;
+        }
       }
-    }
 
-    console.error("AI Solution Gen Error:", error);
-    throw error;
+      if (errStr.includes("404") || errStr.includes("Not Found")) {
+        console.warn(`[AI Service] Model '${modelName}' not found — retrying with fallback alias.`);
+        try {
+          const fallbackModel = getModel(apiKey, modelName, true);
+          const result = await fallbackModel.generateContent(prompt);
+          return cleanResponse(result.response.text());
+        } catch (fallbackError) {
+          console.error("[AI Service] Fallback model also failed:", fallbackError);
+          throw fallbackError;
+        }
+      }
+
+      console.error("[AI Service] Generation error:", primaryError);
+      throw primaryError;
+    }
   }
 }
 
-module.exports = { generateTicketMessage, generateSolutionMessage };
+// ─── Exports ──────────────────────────────────────────────────────────────────
+
+module.exports = {
+  generateTicketMessage,
+  generateSolutionMessage,
+  _clearModelCache,
+};

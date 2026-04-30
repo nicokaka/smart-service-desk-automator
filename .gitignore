@@ -13,3 +13,6 @@ debug_customers.json
 model_test_log.txt
 build4.log
 scripts/manual/output/
+screenshots/
+build/
+.agent/
