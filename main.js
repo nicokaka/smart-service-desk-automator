@@ -364,7 +364,7 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: true,
+      sandbox: false,
     },
   });
 
@@ -402,6 +402,17 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+// Per-operation cancel token. Each batch op creates its own token object
+// so concurrent calls never share cancellation state.
+let activeCancelToken = null;
+
+ipcMain.handle("tickets:cancel", async () => {
+  if (activeCancelToken) {
+    activeCancelToken.requested = true;
+  }
+  return successResult("tickets:cancel", null, "Sinal de cancelamento enviado.");
 });
 
 ipcMain.handle("settings:load", async () => {
@@ -486,6 +497,11 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
     }));
     const overallStatus = combineStatuses(sectionStatuses);
 
+    const catalogData = { 
+      sections,
+      lastSynced: new Date().toISOString()
+    };
+
     if (
       overallStatus === RESULT_STATUS.SUCCESS &&
       customersResult.status === RESULT_STATUS.SUCCESS &&
@@ -493,7 +509,7 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
     ) {
       return successResult(
         "catalog:sync",
-        { sections },
+        catalogData,
         "Catalogo sincronizado com sucesso.",
       );
     }
@@ -501,7 +517,7 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
     return partialResult(
       "catalog:sync",
       "Catalogo sincronizado parcialmente. Verifique as secoes com falha.",
-      { sections },
+      catalogData,
       Object.values(sections).flatMap((section) => section.errors || []),
       [],
     );
@@ -571,8 +587,15 @@ ipcMain.handle("tickets:create", async (event, rows = [], context = {}) => {
     }
 
     const details = [];
+    const cancelToken = { requested: false };
+    activeCancelToken = cancelToken;
 
     for (let index = 0; index < rows.length; index += 1) {
+      if (cancelToken.requested) {
+        logOperation("tickets:create", { status: RESULT_STATUS.PARTIAL, message: "Cancelado pelo usuário." });
+        break;
+      }
+
       const row = rows[index];
       event.sender.send("tickets:progress", {
         current: index + 1,
@@ -673,6 +696,7 @@ ipcMain.handle("tickets:create", async (event, rows = [], context = {}) => {
       "Lote de criacao concluido com falhas parciais.",
     );
     logOperation("tickets:create", result);
+    activeCancelToken = null;
     return { ...result, details };
   } catch (error) {
     const result = fatalErrorResult("tickets:create", error, {
@@ -713,8 +737,15 @@ ipcMain.handle("tickets:close", async (event, tickets = [], overrides = {}) => {
     }
 
     const details = [];
+    const cancelToken = { requested: false };
+    activeCancelToken = cancelToken;
 
     for (let index = 0; index < tickets.length; index += 1) {
+      if (cancelToken.requested) {
+        logOperation("tickets:close", { status: RESULT_STATUS.PARTIAL, message: "Fechamento cancelado pelo usuário." });
+        break;
+      }
+
       const ticket = tickets[index];
       event.sender.send("tickets:progress", {
         current: index + 1,
@@ -750,6 +781,7 @@ ipcMain.handle("tickets:close", async (event, tickets = [], overrides = {}) => {
       "Lote de fechamento concluido com falhas parciais.",
     );
     logOperation("tickets:close", result);
+    activeCancelToken = null;
     return { ...result, details };
   } catch (error) {
     const result = fatalErrorResult("tickets:close", error, {

@@ -240,6 +240,10 @@ async function callWithFallback(apiKey, modelName, prompt, fallbackPayload) {
       throw primaryError;
     }
   }
+
+  throw new Error(
+    `[AI Service] Todas as ${maxRetries + 1} tentativas falharam por limite de requisicoes (429). Aguarde alguns minutos e tente novamente.`,
+  );
 }
 
 // ─── Exports ──────────────────────────────────────────────────────────────────

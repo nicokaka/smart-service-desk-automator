@@ -11,12 +11,15 @@ export function sleep(ms) {
 }
 
 export function createLogger(outputElement) {
+  // Capture document reference at creation time so tests can mock it.
+  const doc = typeof document !== "undefined" ? document : null;
+
   return function log(message, level = "info") {
-    if (!outputElement) {
+    if (!outputElement || !doc) {
       return;
     }
 
-    const entry = document.createElement("div");
+    const entry = doc.createElement("div");
     entry.classList.add("log-entry");
 
     if (level && level !== "info") {

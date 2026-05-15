@@ -215,41 +215,68 @@ export function createManagerController({
       delaySeconds: executionSettings.delay,
     });
 
-    for (let index = 0; index < selectedRows.length; index += 1) {
-      const row = selectedRows[index];
-      const solutionInput = $(".input-solution", row);
-      if (!solutionInput) {
-        continue;
-      }
+    let solutionCancelRequested = false;
+    const cancelButton = documentRef.getElementById("btnCancelManager");
 
-      elements.generateSolutionButton.innerHTML = `<span class="spinner"></span> Gerando IA (${index + 1}/${selectedRows.length})...`;
-      solutionInput.value = "Gerando...";
+    if (cancelButton) {
+      cancelButton.classList.remove("hidden");
+      cancelButton.onclick = () => {
+        solutionCancelRequested = true;
+        cancelButton.innerHTML = `<span class="spinner"></span> Cancelando...`;
+        cancelButton.disabled = true;
+      };
+    }
 
-      try {
-        const aiResponse = await electronAPI.ai.generateSolution({
-          title: row.dataset.title || "",
-          description: row.dataset.description || "",
-          clientName: row.dataset.client || "Cliente",
-          settings: aiSettings,
-        });
-
-        if (!aiResponse.success) {
-          throw new Error(aiResponse.message || "Falha ao gerar solucao.");
+    try {
+      for (let index = 0; index < selectedRows.length; index += 1) {
+        if (solutionCancelRequested) {
+          log("Geração de soluções cancelada pelo usuário.");
+          break;
         }
 
-        const parsed = parseJsonSafely(aiResponse.data);
-        solutionInput.value = parsed?.solucao || aiResponse.data;
-      } catch (error) {
-        solutionInput.value = "Erro na IA.";
-        log(`Erro ao gerar solucao: ${error.message}`, "error");
+        const row = selectedRows[index];
+        const solutionInput = $(".input-solution", row);
+        if (!solutionInput) {
+          continue;
+        }
+
+        elements.generateSolutionButton.innerHTML = `<span class="spinner"></span> Gerando IA (${index + 1}/${selectedRows.length})...`;
+        solutionInput.value = "Gerando...";
+
+        try {
+          const aiResponse = await electronAPI.ai.generateSolution({
+            title: row.dataset.title || "",
+            description: row.dataset.description || "",
+            clientName: row.dataset.client || "Cliente",
+            settings: aiSettings,
+          });
+
+          if (!aiResponse.success) {
+            throw new Error(aiResponse.message || "Falha ao gerar solucao.");
+          }
+
+          const parsed = parseJsonSafely(aiResponse.data);
+          solutionInput.value = parsed?.solucao || aiResponse.data;
+        } catch (error) {
+          solutionInput.value = "Erro na IA.";
+          log(`Erro ao gerar solucao: ${error.message}`, "error");
+        }
+
+        if (index < selectedRows.length - 1) {
+          await sleep(waitTime);
+        }
       }
 
-      if (index < selectedRows.length - 1) {
-        await sleep(waitTime);
+      log("Geração de soluções finalizada.");
+    } finally {
+      restoreBtn();
+      if (cancelButton) {
+        cancelButton.classList.add("hidden");
+        cancelButton.disabled = false;
+        cancelButton.innerHTML = "⏹ Cancelar";
+        cancelButton.onclick = null;
       }
     }
-    
-    restoreBtn();
   }
 
   async function handleCloseSelected() {
@@ -278,22 +305,43 @@ export function createManagerController({
       }
     }
 
+    const confirmedClose = await showConfirmDialog({
+      title: "Fechar Chamados Selecionados",
+      message: `Deseja iniciar o fechamento de ${ticketsToClose.length} chamado${ticketsToClose.length > 1 ? "s" : ""}?`,
+      confirmText: "Fechar Chamados",
+      cancelText: "Cancelar",
+      confirmClass: "danger",
+    });
+    if (!confirmedClose) {
+      return;
+    }
+
     log(`Iniciando fechamento de ${ticketsToClose.length} chamados...`);
 
     const executionSettings = collectExecutionSettings(documentRef);
     
-    const closeBtn = document.getElementById("btnCloseSelected");
+    const closeBtn = documentRef.getElementById("btnCloseSelected");
     const progressHandler = (data) => {
       if (data.action === "close" && closeBtn) {
         closeBtn.innerHTML = `<span class="spinner"></span> Fechando (${data.current}/${data.total})...`;
       }
     };
-    electronAPI.tickets.onProgress(progressHandler);
+    const ipcHandler = electronAPI.tickets.onProgress(progressHandler);
 
     const restoreBtn = setButtonBusy(
       closeBtn,
       '<span class="spinner"></span> Iniciando...'
     );
+
+    const cancelButton = documentRef.getElementById("btnCancelManager");
+    if (cancelButton) {
+      cancelButton.classList.remove("hidden");
+      cancelButton.onclick = () => {
+        electronAPI.tickets.cancel();
+        cancelButton.innerHTML = `<span class="spinner"></span> Cancelando...`;
+        cancelButton.disabled = true;
+      };
+    }
 
     try {
       const result = await electronAPI.tickets.close(
@@ -326,23 +374,32 @@ export function createManagerController({
         if (item.status === RESULT_STATUS.SUCCESS || item.status === "Success") {
           row.classList.add("row-status-success");
           row.classList.remove("row-status-error", "row-status-partial");
+          row.removeAttribute("title");
           $$("input:not([type='checkbox']), textarea", row).forEach((input) => {
             input.disabled = true;
           });
         } else if (isPartialStatus(item.status)) {
           row.classList.add("row-status-partial");
           row.classList.remove("row-status-success", "row-status-error");
+          row.title = item.message || "Erro parcial";
         } else {
           row.classList.add("row-status-error");
           row.classList.remove("row-status-success", "row-status-partial");
+          row.title = item.message || "Erro no fechamento";
         }
       });
 
     } catch (error) {
       log(`Falha no fechamento: ${error.message}`, "error");
     } finally {
-      electronAPI.tickets.removeProgressListener();
+      electronAPI.tickets.removeProgressListener(ipcHandler);
       restoreBtn();
+      if (cancelButton) {
+        cancelButton.classList.add("hidden");
+        cancelButton.disabled = false;
+        cancelButton.innerHTML = "⏹ Cancelar";
+        cancelButton.onclick = null;
+      }
     }
   }
 

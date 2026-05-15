@@ -13,8 +13,6 @@
  */
 
 /* SYNC: Must match RESULT_STATUS in operation-result.js */
-/* SYNC: Notice! This code duplicates parts of shared/domain.js. Any changes here MUST be replicated there to prevent drift! */
-
 export const RESULT_STATUS = Object.freeze({
   SUCCESS: "success",
   PARTIAL: "partial",
@@ -22,11 +20,21 @@ export const RESULT_STATUS = Object.freeze({
   FATAL_ERROR: "fatal_error",
 });
 
-// ─── String helpers ───────────────────────────────────────────────────────────
+// window.sharedDomain is injected by preload.js in Electron, or mocked in Node tests.
+const getShared = () => typeof window !== "undefined" ? window.sharedDomain : {};
 
-function normalizeString(value) {
-  return String(value ?? "").trim();
-}
+export const normalizeString = (value) => getShared().normalizeString(value);
+export const computeWaitTime = (options) => getShared().computeWaitTime(options);
+export const findCustomerIdentifier = (customers, clientName) => getShared().findCustomerIdentifier(customers, clientName);
+export const findCategoryId = (categories, departmentId, categoryName) => getShared().findCategoryId(categories, departmentId, categoryName);
+export const extractCreatedTicketId = (responseData) => getShared().extractCreatedTicketId(responseData);
+export const isPendingGeneratedMessage = (message) => getShared().isPendingGeneratedMessage(message);
+export const isPendingSolution = (message) => getShared().isPendingSolution(message);
+export const dedupeById = (items) => getShared().dedupeById(items);
+export const hasIncompleteQueueData = (row) => getShared().hasIncompleteQueueData(row);
+
+
+// ─── Status sentinels ─────────────────────────────────────────────────────────
 
 // ─── Department / category metadata helpers ───────────────────────────────────
 
@@ -139,151 +147,11 @@ export function filterCategoriesByDepartment(
   return filteredNames.length > 0 ? filteredNames : allCategoryNames;
 }
 
-// ─── Customer / category lookup (renderer-side, for UI validation) ────────────
+// ─── Shared functions are now imported at the top ────────────────────────────────
 
-export function findCustomerIdentifier(customers, clientName) {
-  const normalizedClient = normalizeString(clientName).toLowerCase();
-  if (!normalizedClient) {
-    return null;
-  }
 
-  const customer = (customers || []).find((item) => {
-    return normalizeString(item?.name).toLowerCase() === normalizedClient;
-  });
 
-  if (!customer) {
-    return null;
-  }
 
-  const identifier =
-    customer.id ||
-    customer.Id ||
-    customer.customer_id ||
-    customer.key ||
-    customer._id ||
-    null;
-
-  if (identifier) {
-    return { customer, identifier, identifierType: "I" };
-  }
-
-  if (customer.email) {
-    return { customer, identifier: customer.email, identifierType: "E" };
-  }
-
-  return { customer, identifier: null, identifierType: null };
-}
-
-export function findCategoryId(categories, departmentId, categoryName) {
-  const normalizedCategory = normalizeString(categoryName);
-  const normalizedDepartmentId = normalizeString(departmentId);
-  if (!normalizedCategory) {
-    return null;
-  }
-
-  const preferredMatch = (categories || []).find((category) => {
-    return (
-      normalizeString(category?.name) === normalizedCategory &&
-      getDepartmentIdLike(category) === normalizedDepartmentId
-    );
-  });
-
-  if (preferredMatch?.id) {
-    return preferredMatch.id;
-  }
-
-  const fallbackMatch = (categories || []).find((category) => {
-    return normalizeString(category?.name) === normalizedCategory;
-  });
-
-  return fallbackMatch?.id ?? null;
-}
-
-export function buildCreateTicketPayload({
-  // Note: shared/domain.js has a similar function but with positional arguments.
-  departmentId,
-  subject,
-  message,
-  categoryId,
-  customerIdentifier,
-}) {
-  const payload = {
-    department_id: normalizeString(departmentId),
-    subject: normalizeString(subject),
-    message: normalizeString(message) || normalizeString(subject),
-    priority: "2",
-    customer_id: customerIdentifier?.identifier,
-  };
-
-  if (categoryId) {
-    payload.category_id = categoryId;
-  }
-
-  if (customerIdentifier?.identifierType === "E") {
-    payload.customer_id_type = "E";
-  }
-
-  return payload;
-}
-
-export function extractCreatedTicketId(responseData) {
-  return (
-    responseData?.ticket_id ||
-    responseData?.id ||
-    responseData?.data?.id ||
-    null
-  );
-}
-
-// ─── Status sentinels ─────────────────────────────────────────────────────────
-
-const PENDING_MESSAGES = new Set([
-  "",
-  "Gerando...",
-  "Erro na IA",
-  "Falha (Limite)",
-]);
-
-const PENDING_SOLUTIONS = new Set(["", "Gerando...", "Erro na IA."]);
-
-export function isPendingGeneratedMessage(message) {
-  return PENDING_MESSAGES.has(normalizeString(message));
-}
-
-export function isPendingSolution(message) {
-  return PENDING_SOLUTIONS.has(normalizeString(message));
-}
-
-// ─── Wait time ────────────────────────────────────────────────────────────────
-
-export function computeWaitTime({ turbo, delaySeconds }) {
-  if (turbo) {
-    return 100;
-  }
-
-  const parsed = Number.parseInt(delaySeconds, 10);
-  const seconds = Number.isFinite(parsed) ? Math.max(parsed, 0) : 2;
-  return seconds * 1000;
-}
-
-// ─── Deduplication ────────────────────────────────────────────────────────────
-
-export function dedupeById(items) {
-  const seen = new Set();
-  const deduped = [];
-
-  for (const item of items || []) {
-    const id = item?.id;
-    if (!id || seen.has(id)) {
-      continue;
-    }
-
-    seen.add(id);
-    deduped.push(item);
-  }
-
-  return deduped;
-}
 
 // ─── JSON parsing ─────────────────────────────────────────────────────────────
 
@@ -299,17 +167,7 @@ export function parseJsonSafely(value) {
   }
 }
 
-// ─── Validation ───────────────────────────────────────────────────────────────
 
-export function hasIncompleteQueueData(row) {
-  const missingFields = [];
-
-  if (!normalizeString(row?.clientName)) missingFields.push("Cliente");
-  if (!normalizeString(row?.departmentId)) missingFields.push("Departamento");
-  if (!normalizeString(row?.subject)) missingFields.push("Resumo");
-
-  return missingFields;
-}
 
 // ─── Result helpers ───────────────────────────────────────────────────────────
 

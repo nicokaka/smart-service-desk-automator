@@ -21,6 +21,7 @@ import {
   saveQueueState,
 } from "./runtime-settings.mjs";
 import { toast } from "./toast.mjs";
+import { showConfirmDialog } from "./confirm-modal.mjs";
 
 export function createQueueController({
   electronAPI,
@@ -242,8 +243,46 @@ export function createQueueController({
     });
 
     $$("input, select, textarea", row).forEach((input) => {
-      input.addEventListener("change", saveCurrentQueueState);
-      input.addEventListener("input", saveCurrentQueueState);
+      input.addEventListener("change", () => {
+        validateRowFields(row);
+        saveCurrentQueueState();
+      });
+      input.addEventListener("input", () => {
+        validateRowFields(row);
+        saveCurrentQueueState();
+      });
+    });
+
+    // Only run initial validation for new rows (not on localStorage restore)
+    // to avoid false-positive red borders before catalog loads.
+    if (!data || (!data.clientName && !data.departmentId && !data.subject)) {
+      return;
+    }
+    validateRowFields(row);
+  }
+
+  function validateRowFields(row) {
+    if (
+      row.dataset.status === "success" ||
+      row.dataset.status === "partial" ||
+      row.dataset.status === "error"
+    ) {
+      return;
+    }
+
+    const clientSelect = $(".input-client", row);
+    const deptSelect = $(".input-dept", row);
+    const summaryInput = $(".input-summary", row);
+    
+    [clientSelect, deptSelect, summaryInput].forEach(el => {
+      if (!el) return;
+      if (!el.value || el.value.trim() === "") {
+        el.style.border = "1px solid var(--danger-color, #ff3b30)";
+        el.style.backgroundColor = "rgba(255, 59, 48, 0.05)";
+      } else {
+        el.style.border = "";
+        el.style.backgroundColor = "";
+      }
     });
   }
 
@@ -403,13 +442,33 @@ export function createQueueController({
       return;
     }
 
+    const confirmed = await showConfirmDialog({
+      title: "Iniciar Criação em Lote",
+      message: `Deseja criar ${rowsPayload.length} chamado${rowsPayload.length > 1 ? "s" : ""}?`,
+      confirmText: "Criar Chamados",
+      cancelText: "Cancelar",
+    });
+    if (!confirmed) {
+      return;
+    }
+
     log(
       executionSettings.token
         ? `Iniciando criacao via API (${rowsPayload.length} chamados)...`
         : "Token nao encontrado. Usando modo Navegador (Bot)..."
     );
 
-    const startButton = document.getElementById("btn-start-bot");
+    const startButton = documentRef.getElementById("btn-start-bot");
+    const cancelButton = documentRef.getElementById("btn-cancel-bot");
+    
+    if (cancelButton) {
+      cancelButton.classList.remove("hidden");
+      cancelButton.onclick = () => {
+        electronAPI.tickets.cancel();
+        cancelButton.innerHTML = `<span class="spinner"></span> Cancelando...`;
+        cancelButton.disabled = true;
+      };
+    }
     
     const progressHandler = (data) => {
       if (data.action === "create" && startButton) {
@@ -417,7 +476,7 @@ export function createQueueController({
       }
     };
     
-    electronAPI.tickets.onProgress(progressHandler);
+    const ipcHandler = electronAPI.tickets.onProgress(progressHandler);
 
     const restoreButton = setButtonBusy(
       startButton,
@@ -459,14 +518,20 @@ export function createQueueController({
         if (item.status === RESULT_STATUS.SUCCESS || item.status === "Success") {
           markRowAsSuccess(row);
         } else if (isPartialStatus(item.status)) {
-          markRowAsPartial(row);
+          markRowAsPartial(row, item.message || "Erro parcial");
         } else {
-          markRowAsError(row);
+          markRowAsError(row, item.message || "Falha na criação");
         }
       });
     } finally {
-      electronAPI.tickets.removeProgressListener();
+      electronAPI.tickets.removeProgressListener(ipcHandler);
       restoreButton();
+      if (cancelButton) {
+        cancelButton.classList.add("hidden");
+        cancelButton.disabled = false;
+        cancelButton.innerHTML = "⏹ Cancelar";
+        cancelButton.onclick = null;
+      }
     }
     
     saveCurrentQueueState();
@@ -497,7 +562,22 @@ export function createQueueController({
       return;
     }
 
+    const confirmedAi = await showConfirmDialog({
+      title: "Gerar Mensagens com IA",
+      message: `Deseja gerar mensagens para ${rowsToProcess.length} chamado${rowsToProcess.length > 1 ? "s" : ""}?`,
+      confirmText: "Gerar com IA",
+      cancelText: "Cancelar",
+    });
+    if (!confirmedAi) {
+      return;
+    }
+
     log(`Processando ${rowsToProcess.length} linhas com IA...`);
+
+    const restoreBtn = setButtonBusy(
+      elements.generateAiButton,
+      '<span class="spinner"></span> Iniciando...'
+    );
 
     const aiSettings = collectAiSettings(documentRef);
     const executionSettings = collectExecutionSettings(documentRef);
@@ -512,94 +592,123 @@ export function createQueueController({
       );
     }
 
-    for (let index = 0; index < rowsToProcess.length; index += 1) {
-      const row = rowsToProcess[index];
-      const summary = $(".input-summary", row)?.value || "";
-      const messageInput = $(".input-message", row);
+    let aiCancelRequested = false;
+    const cancelButton = documentRef.getElementById("btn-cancel-bot");
+    
+    if (cancelButton) {
+      cancelButton.classList.remove("hidden");
+      cancelButton.onclick = () => {
+        aiCancelRequested = true;
+        cancelButton.innerHTML = `<span class="spinner"></span> Cancelando...`;
+        cancelButton.disabled = true;
+      };
+    }
 
-      if (!summary || !messageInput) {
-        continue;
-      }
+    try {
+      for (let index = 0; index < rowsToProcess.length; index += 1) {
+        if (aiCancelRequested) {
+          log("Geração de IA cancelada pelo usuário.");
+          break;
+        }
+        elements.generateAiButton.innerHTML = `<span class="spinner"></span> Gerando IA (${index + 1}/${rowsToProcess.length})...`;
+        
+        const row = rowsToProcess[index];
+        const summary = $(".input-summary", row)?.value || "";
+        const messageInput = $(".input-message", row);
 
-      messageInput.value = "Gerando...";
-      messageInput.readOnly = true;
+        if (!summary || !messageInput) {
+          continue;
+        }
 
-      let attempt = 0;
-      let completed = false;
+        messageInput.value = "Gerando...";
+        messageInput.readOnly = true;
 
-      while (attempt < 3 && !completed) {
-        try {
-          const clientName = $(".input-client", row)?.value || "Cliente";
+        let attempt = 0;
+        let completed = false;
 
-          if (aiSettings.debugMode) {
-            log(
-              `[DEBUG] Enviando para IA: Model=${aiSettings.model}, Client=${clientName}, PromptCustomizado=${aiSettings.customPrompt ? "Sim" : "Nao"}`,
-            );
-          }
+        while (attempt < 3 && !completed) {
+          try {
+            const clientName = $(".input-client", row)?.value || "Cliente";
 
-          const aiResponse = await electronAPI.ai.generateTicket({
-            summary,
-            clientName,
-            settings: aiSettings,
-          });
+            if (aiSettings.debugMode) {
+              log(
+                `[DEBUG] Enviando para IA: Model=${aiSettings.model}, Client=${clientName}, PromptCustomizado=${aiSettings.customPrompt ? "Sim" : "Nao"}`,
+              );
+            }
 
-          if (!aiResponse.success) {
-            throw new Error(aiResponse.message || "Falha ao gerar texto com IA.");
-          }
+            const aiResponse = await electronAPI.ai.generateTicket({
+              summary,
+              clientName,
+              settings: aiSettings,
+            });
 
-          if (aiSettings.debugMode) {
-            log(`[DEBUG] Resposta Bruta: ${aiResponse.data}`);
-          }
+            if (!aiResponse.success) {
+              throw new Error(aiResponse.message || "Falha ao gerar texto com IA.");
+            }
 
-          const parsed = parseJsonSafely(aiResponse.data);
-          messageInput.value = parsed?.descricao || aiResponse.data;
-          messageInput.readOnly = false;
-          completed = true;
-          saveCurrentQueueState();
+            if (aiSettings.debugMode) {
+              log(`[DEBUG] Resposta Bruta: ${aiResponse.data}`);
+            }
 
-          log(`IA gerou texto para linha ${row.dataset.id}`);
-        } catch (error) {
-          const errorText = String(error);
-          if (
-            errorText.includes("429") ||
-            errorText.includes("Too Many Requests") ||
-            errorText.includes("Quota exceeded")
-          ) {
-            attempt += 1;
-            const delayInSeconds = attempt === 1 ? 30 : attempt === 2 ? 60 : 120;
-            messageInput.value = `Aguardando (429)... ${attempt}/3`;
-            log(
-              `Limite da API atingido (429). Aguardando ${delayInSeconds}s antes de tentar novamente (Tentativa ${attempt}/3)...`,
-              "error",
-            );
-            await sleep(delayInSeconds * 1000);
-          } else {
-            messageInput.value = "Erro na IA";
+            const parsed = parseJsonSafely(aiResponse.data);
+            messageInput.value = parsed?.descricao || aiResponse.data;
             messageInput.readOnly = false;
-            log(`Erro na IA linha ${row.dataset.id}: ${error.message}`, "error");
-            break;
+            completed = true;
+            saveCurrentQueueState();
+
+            log(`IA gerou texto para linha ${row.dataset.id}`);
+          } catch (error) {
+            const errorText = String(error);
+            if (
+              errorText.includes("429") ||
+              errorText.includes("Too Many Requests") ||
+              errorText.includes("Quota exceeded")
+            ) {
+              attempt += 1;
+              const delayInSeconds = attempt === 1 ? 30 : attempt === 2 ? 60 : 120;
+              messageInput.value = `Aguardando (429)... ${attempt}/3`;
+              log(
+                `Limite da API atingido (429). Aguardando ${delayInSeconds}s antes de tentar novamente (Tentativa ${attempt}/3)...`,
+                "error",
+              );
+              await sleep(delayInSeconds * 1000);
+            } else {
+              messageInput.value = "Erro na IA";
+              messageInput.readOnly = false;
+              log(`Erro na IA linha ${row.dataset.id}: ${error.message}`, "error");
+              break;
+            }
           }
+        }
+
+        if (!completed && attempt >= 3) {
+          messageInput.value = "Falha (Limite)";
+          messageInput.readOnly = false;
+          log(`Falha na linha ${row.dataset.id} apos 3 tentativas.`, "error");
+        }
+
+        if (index < rowsToProcess.length - 1) {
+          await sleep(waitTime);
         }
       }
 
-      if (!completed && attempt >= 3) {
-        messageInput.value = "Falha (Limite)";
-        messageInput.readOnly = false;
-        log(`Falha na linha ${row.dataset.id} apos 3 tentativas.`, "error");
-      }
-
-      if (index < rowsToProcess.length - 1) {
-        await sleep(waitTime);
+      log("Processamento de IA finalizado.");
+    } finally {
+      restoreBtn();
+      if (cancelButton) {
+        cancelButton.classList.add("hidden");
+        cancelButton.disabled = false;
+        cancelButton.innerHTML = "⏹ Cancelar";
+        cancelButton.onclick = null;
       }
     }
-
-    log("Processamento de IA finalizado.");
   }
 
   function markRowAsSuccess(row) {
     row.dataset.status = "success";
     row.classList.add("row-status-success");
     row.classList.remove("row-status-error", "row-status-partial");
+    row.removeAttribute("title");
     $$("input, select, textarea", row).forEach((element) => {
       if (!element.classList.contains("row-select")) {
         element.disabled = true;
@@ -607,16 +716,18 @@ export function createQueueController({
     });
   }
 
-  function markRowAsError(row) {
+  function markRowAsError(row, message = "") {
     row.dataset.status = "error";
     row.classList.add("row-status-error");
     row.classList.remove("row-status-success", "row-status-partial");
+    if (message) row.title = message;
   }
 
-  function markRowAsPartial(row) {
+  function markRowAsPartial(row, message = "") {
     row.dataset.status = "partial";
     row.classList.add("row-status-partial");
     row.classList.remove("row-status-success", "row-status-error");
+    if (message) row.title = message;
   }
 
   return {

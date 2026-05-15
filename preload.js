@@ -1,4 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
+const sharedDomain = require("./shared/domain.js");
+
+contextBridge.exposeInMainWorld("sharedDomain", sharedDomain);
 
 contextBridge.exposeInMainWorld("electronAPI", {
   settings: {
@@ -13,10 +16,19 @@ contextBridge.exposeInMainWorld("electronAPI", {
     create: (rows, context) => ipcRenderer.invoke("tickets:create", rows, context),
     close: (tickets, overrides) =>
       ipcRenderer.invoke("tickets:close", tickets, overrides),
-    onProgress: (callback) =>
-      ipcRenderer.on("tickets:progress", (_event, data) => callback(data)),
-    removeProgressListener: () =>
-      ipcRenderer.removeAllListeners("tickets:progress"),
+    cancel: () => ipcRenderer.invoke("tickets:cancel"),
+    onProgress: (callback) => {
+      const handler = (_event, data) => callback(data);
+      ipcRenderer.on("tickets:progress", handler);
+      return handler;
+    },
+    removeProgressListener: (handler) => {
+      if (handler) {
+        ipcRenderer.removeListener("tickets:progress", handler);
+      } else {
+        ipcRenderer.removeAllListeners("tickets:progress");
+      }
+    },
   },
   ai: {
     generateTicket: (payload) => ipcRenderer.invoke("ai:generate-ticket", payload),

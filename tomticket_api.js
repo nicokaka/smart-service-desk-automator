@@ -244,19 +244,76 @@ function ensureArray(operation, result) {
 
 async function getTickets(token, filters = {}) {
   const operation = "tickets:list";
-  const result = await requestWithRetry({
-    operation,
-    endpoint: "/ticket/list",
-    token,
-    method: "GET",
-    params: {
-      page: 1,
-      situation: "0,1,2,3,6,7,8,9,10,11",
-      ...filters,
-    },
-  });
+  const tickets = [];
+  let page = 1;
 
-  return ensureArray(operation, result);
+  while (page <= 1000) {
+    const pageResult = await requestWithRetry({
+      operation: `${operation}:page:${page}`,
+      endpoint: "/ticket/list",
+      token,
+      method: "GET",
+      params: {
+        page,
+        situation: "0,1,2,3,6,7,8,9,10,11",
+        ...filters,
+      },
+    });
+
+    if (pageResult.status !== RESULT_STATUS.SUCCESS) {
+      if (tickets.length > 0) {
+        return partialResult(
+          operation,
+          `[${operation}] Ticket list stopped on page ${page}.`,
+          tickets,
+          pageResult.errors,
+          pageResult.warnings,
+          { failedPage: page, partialCount: tickets.length },
+        );
+      }
+
+      return pageResult.status === RESULT_STATUS.RETRYABLE_ERROR
+        ? retryableErrorResult(
+            operation,
+            createApiError(`[${operation}] Failed before any ticket page was loaded.`, {
+              details: pageResult.errors,
+            }),
+            { failedPage: page },
+          )
+        : fatalErrorResult(
+            operation,
+            createApiError(`[${operation}] Failed before any ticket page was loaded.`, {
+              details: pageResult.errors,
+            }),
+            { failedPage: page },
+          );
+    }
+
+    if (!Array.isArray(pageResult.data)) {
+      return fatalErrorResult(
+        operation,
+        createApiError(`[${operation}] Ticket page ${page} did not return an array.`, {
+          details: pageResult.data,
+        }),
+        { failedPage: page },
+      );
+    }
+
+    tickets.push(...pageResult.data);
+
+    if (
+      pageResult.data.length === 0 ||
+      pageResult.meta?.payload?.next_page === null ||
+      pageResult.meta?.payload?.next_page === undefined
+    ) {
+      break;
+    }
+
+    page += 1;
+    await sleep(200);
+  }
+
+  return successResult(operation, tickets, { totalPages: page - 1 });
 }
 
 async function getDepartments(token) {

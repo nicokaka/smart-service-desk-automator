@@ -144,6 +144,7 @@ export function createSettingsController({
         syncButton.innerText = "Salvo! OK";
         syncButton.classList.add("btn-sync-success");
         syncButton.classList.remove("btn-sync-partial");
+        toast.success("Catálogo sincronizado com sucesso!");
       }
     } catch (error) {
       log(`Falha na sincronizacao: ${error.message}`, "error");
@@ -189,8 +190,10 @@ export function createSettingsController({
     }
     const departmentNames = uniqueSortedNames(departments);
 
-    syncButton.innerHTML =
-      '<span class="spinner"></span> Sincronizando Atendentes...';
+    if (syncButton) {
+      syncButton.innerHTML =
+        '<span class="spinner"></span> Sincronizando Atendentes...';
+    }
 
     const operatorsSection = sections.operators;
     const operators = isSuccessStatus(operatorsSection?.status) &&
@@ -200,8 +203,10 @@ export function createSettingsController({
           )
         : previousCatalog.operators;
 
-    syncButton.innerHTML =
-      '<span class="spinner"></span> Sincronizando Categorias...';
+    if (syncButton) {
+      syncButton.innerHTML =
+        '<span class="spinner"></span> Sincronizando Categorias...';
+    }
 
     await sleep(200);
     const categoriesSection = sections.categories;
@@ -220,8 +225,10 @@ export function createSettingsController({
       log("Aviso: nenhuma categoria nova retornou. Mantendo cache anterior.");
     }
 
-    syncButton.innerHTML =
-      '<span class="spinner"></span> Sincronizando Clientes...';
+    if (syncButton) {
+      syncButton.innerHTML =
+        '<span class="spinner"></span> Sincronizando Clientes...';
+    }
 
     await sleep(200);
     const customersSection = sections.customers;
@@ -259,7 +266,8 @@ export function createSettingsController({
       log(msg, "warning");
     }
 
-    renderSyncTime(new Date().toISOString());
+    const lastSynced = syncResponse.data?.lastSynced || new Date().toISOString();
+    renderSyncTime(lastSynced);
 
     return syncResponse;
   }

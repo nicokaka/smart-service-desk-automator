@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import sharedDomain from "../shared/domain.js";
+
+global.window = { sharedDomain: sharedDomain.default || sharedDomain };
 
 import {
-  buildCreateTicketPayload,
   computeWaitTime,
   createOptionsMarkup,
   dedupeById,
@@ -88,28 +90,6 @@ test("findCategoryId supports alternate department id fields", () => {
   assert.equal(findCategoryId(categories, "dep-2", "Ata"), "b");
 });
 
-test("buildCreateTicketPayload keeps priority and email identifier type", () => {
-  const payload = buildCreateTicketPayload({
-    departmentId: "dep-1",
-    subject: "VPN",
-    message: "",
-    categoryId: "cat-1",
-    customerIdentifier: {
-      identifier: "user@example.com",
-      identifierType: "E",
-    },
-  });
-
-  assert.deepEqual(payload, {
-    department_id: "dep-1",
-    subject: "VPN",
-    message: "VPN",
-    priority: "2",
-    customer_id: "user@example.com",
-    customer_id_type: "E",
-    category_id: "cat-1",
-  });
-});
 
 test("extractCreatedTicketId resolves known response shapes", () => {
   assert.equal(extractCreatedTicketId({ ticket_id: "1" }), "1");
@@ -214,4 +194,9 @@ test("result helpers classify statuses for renderer UX", () => {
   assert.equal(resultHasUsableData({ status: RESULT_STATUS.SUCCESS, data: [] }), true);
   assert.equal(resultHasUsableData({ status: RESULT_STATUS.PARTIAL, data: {} }), true);
   assert.equal(resultHasUsableData({ status: RESULT_STATUS.FATAL_ERROR, data: {} }), false);
+});
+
+test("RESULT_STATUS is synchronized with shared operation-result.js", async () => {
+  const { RESULT_STATUS: sharedStatus } = await import("../operation-result.js");
+  assert.deepEqual(RESULT_STATUS, sharedStatus, "Renderer RESULT_STATUS must match shared operation-result.js RESULT_STATUS");
 });

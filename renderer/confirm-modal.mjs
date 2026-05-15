@@ -1,13 +1,22 @@
 /**
  * Confirm Dialog Controller using HTML5 <dialog>
+ * Accepts an optional documentRef for testability (defaults to global document).
  */
 
 let confirmDialog = null;
+let _docRef = null;
 
-function initConfirmDialog() {
-  if (confirmDialog) return;
+function getDoc() {
+  return _docRef || (typeof document !== "undefined" ? document : null);
+}
 
-  confirmDialog = document.createElement("dialog");
+function initConfirmDialog(documentRef) {
+  _docRef = documentRef || _docRef;
+  const doc = getDoc();
+
+  if (confirmDialog || !doc) return;
+
+  confirmDialog = doc.createElement("dialog");
   confirmDialog.id = "confirm-dialog";
   confirmDialog.className = "confirm-modal";
 
@@ -22,46 +31,52 @@ function initConfirmDialog() {
     </div>
   `;
 
-  document.body.appendChild(confirmDialog);
+  doc.body.appendChild(confirmDialog);
 
   // Close on overlay click
   confirmDialog.addEventListener("click", (e) => {
     if (e.target === confirmDialog) {
-      // confirmDialog.close() passes empty string by default
       confirmDialog.close("cancel");
     }
   });
 }
 
 /**
- * 
- * @param {object} options 
- * @param {string} options.title 
- * @param {string} options.message 
- * @param {string} [options.confirmText="Confirmar"] 
- * @param {string} [options.cancelText="Cancelar"] 
- * @param {string} [options.confirmClass="primary"] - Option to use "danger" for destructive actions
+ * @param {object} options
+ * @param {string} options.title
+ * @param {string} options.message
+ * @param {string} [options.confirmText="Confirmar"]
+ * @param {string} [options.cancelText="Cancelar"]
+ * @param {string} [options.confirmClass="primary"] - Use "danger" for destructive actions
+ * @param {Document} [options.documentRef] - Optional document reference for testability
  * @returns {Promise<boolean>}
  */
-export function showConfirmDialog({ 
-  title, 
-  message, 
-  confirmText = "Confirmar", 
+export function showConfirmDialog({
+  title,
+  message,
+  confirmText = "Confirmar",
   cancelText = "Cancelar",
-  confirmClass = "primary"
-}) {
-  initConfirmDialog();
+  confirmClass = "primary",
+  documentRef,
+} = {}) {
+  initConfirmDialog(documentRef);
+
+  const doc = getDoc();
+  if (!doc || !confirmDialog) {
+    console.warn("[confirm-modal] dialog not available — defaulting to true");
+    return Promise.resolve(true);
+  }
 
   return new Promise((resolve) => {
-    document.getElementById("confirm-title").innerText = title;
-    document.getElementById("confirm-message").innerText = message;
-    
-    const btnCancel = document.getElementById("btn-confirm-cancel");
-    const btnOk = document.getElementById("btn-confirm-ok");
+    doc.getElementById("confirm-title").innerText = title;
+    doc.getElementById("confirm-message").innerText = message;
+
+    const btnCancel = doc.getElementById("btn-confirm-cancel");
+    const btnOk = doc.getElementById("btn-confirm-ok");
 
     btnCancel.innerText = cancelText;
     btnOk.innerText = confirmText;
-    
+
     // Reset classes
     btnOk.className = `btn ${confirmClass}`;
 

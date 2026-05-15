@@ -13,7 +13,10 @@ const MAX_TOASTS = 3;
  */
 export function showToast({ message, type = "info", duration }) {
   const container = document.getElementById("toast-container");
-  if (!container) return;
+  if (!container) {
+    console.warn(`[toast] container #toast-container not found — message: ${message}`);
+    return;
+  }
 
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;

@@ -1,16 +1,13 @@
-/* SYNC: Notice! This code duplicates parts of renderer/domain.mjs. Any changes here MUST be replicated there to prevent drift! */
 "use strict";
 
 /**
  * Shared domain utilities — usable in both the main process (CommonJS)
- * and re-exported by the renderer's domain.mjs (ES module wrapper).
+ * and re-exported by the renderer's domain.mjs.
  *
  * Keep this file free of any Electron, Node.js, or browser-only APIs.
- *
- * SYNC NOTICE: Several pure functions here are duplicated in renderer/domain.mjs
- * due to Electron's contextIsolation. If you update a function here (like
- * dedupeById, isPendingSolution, etc), you MUST update it there as well.
  */
+
+const { RESULT_STATUS } = require("../operation-result.js");
 
 // ─── String and metadata helpers ─────────────────────────────────────────────
 
@@ -58,13 +55,13 @@ function computeWaitTime(settings) {
  * @returns {{ customer?: object, identifier: string, identifierType: "I"|"E" } | null}
  */
 function findCustomerIdentifier(customers, clientName) {
-  const normalizedClient = normalizeString(clientName).toLowerCase();
+  const normalizedClient = normalizeString(clientName);
   if (!normalizedClient) {
     return null;
   }
 
   const customer = (customers || []).find((item) => {
-    return normalizeString(item?.name).toLowerCase() === normalizedClient;
+    return normalizeString(item?.name).localeCompare(normalizedClient, undefined, { sensitivity: 'base' }) === 0;
   });
 
   if (!customer) {
@@ -230,6 +227,7 @@ function hasIncompleteQueueData(row) {
 // ─── Exports ─────────────────────────────────────────────────────────────────
 
 module.exports = {
+  RESULT_STATUS,
   normalizeString,
   computeWaitTime,
   findCustomerIdentifier,
