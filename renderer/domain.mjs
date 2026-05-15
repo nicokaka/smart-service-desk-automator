@@ -23,15 +23,34 @@ export const RESULT_STATUS = Object.freeze({
 // window.sharedDomain is injected by preload.js in Electron, or mocked in Node tests.
 const getShared = () => typeof window !== "undefined" ? window.sharedDomain : {};
 
-export const normalizeString = (value) => getShared().normalizeString(value);
-export const computeWaitTime = (options) => getShared().computeWaitTime(options);
-export const findCustomerIdentifier = (customers, clientName) => getShared().findCustomerIdentifier(customers, clientName);
-export const findCategoryId = (categories, departmentId, categoryName) => getShared().findCategoryId(categories, departmentId, categoryName);
-export const extractCreatedTicketId = (responseData) => getShared().extractCreatedTicketId(responseData);
-export const isPendingGeneratedMessage = (message) => getShared().isPendingGeneratedMessage(message);
-export const isPendingSolution = (message) => getShared().isPendingSolution(message);
-export const dedupeById = (items) => getShared().dedupeById(items);
-export const hasIncompleteQueueData = (row) => getShared().hasIncompleteQueueData(row);
+/**
+ * BUG-F: Safe delegate wrapper.
+ * If window.sharedDomain hasn't been injected yet (timing race on init),
+ * calling getShared().someFunction() would throw "undefined is not a function"
+ * with no useful context. This wrapper surfaces a clear error.
+ */
+function safeDelegate(name) {
+  return (...args) => {
+    const shared = getShared();
+    if (typeof shared[name] !== "function") {
+      const msg = `[domain.mjs] window.sharedDomain.${name} not available yet. Ensure preload.js loaded before calling renderer domain functions.`;
+      console.error(msg);
+      throw new Error(msg);
+    }
+    return shared[name](...args);
+  };
+}
+
+export const normalizeString = safeDelegate("normalizeString");
+export const computeWaitTime = safeDelegate("computeWaitTime");
+export const findCustomerIdentifier = safeDelegate("findCustomerIdentifier");
+export const findCategoryId = safeDelegate("findCategoryId");
+export const extractCreatedTicketId = safeDelegate("extractCreatedTicketId");
+export const isPendingGeneratedMessage = safeDelegate("isPendingGeneratedMessage");
+export const isPendingSolution = safeDelegate("isPendingSolution");
+export const dedupeById = safeDelegate("dedupeById");
+export const hasIncompleteQueueData = safeDelegate("hasIncompleteQueueData");
+
 
 
 // ─── Status sentinels ─────────────────────────────────────────────────────────

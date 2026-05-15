@@ -119,10 +119,10 @@ export function createSettingsController({
       return;
     }
 
-    const restoreButton = setButtonBusy(
-      syncButton,
-      '<span class="spinner"></span> Sincronizando...',
-    );
+    // BUG-G: Guard — setButtonBusy crashes if syncButton is null
+    const restoreButton = syncButton
+      ? setButtonBusy(syncButton, '<span class="spinner"></span> Sincronizando...')
+      : () => {};
 
     const tableBody = documentRef.getElementById("ticket-queue-body");
     if (tableBody) {

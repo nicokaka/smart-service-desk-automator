@@ -404,14 +404,24 @@ app.on("window-all-closed", () => {
   }
 });
 
-// Per-operation cancel token. Each batch op creates its own token object
-// so concurrent calls never share cancellation state.
-let activeCancelToken = null;
+// BUG-E: Use a Set of tokens instead of a single global variable.
+// If the user triggers create and close concurrently (two tabs), the second
+// operation used to overwrite the first's cancel token, making it uninterruptible.
+const activeOperations = new Set();
+
+function createCancelToken(operationId) {
+  const token = { requested: false, id: operationId };
+  activeOperations.add(token);
+  return token;
+}
+
+function releaseCancelToken(token) {
+  activeOperations.delete(token);
+}
 
 ipcMain.handle("tickets:cancel", async () => {
-  if (activeCancelToken) {
-    activeCancelToken.requested = true;
-  }
+  // Signal ALL active operations to cancel — handles concurrent ops safely
+  activeOperations.forEach(token => { token.requested = true; });
   return successResult("tickets:cancel", null, "Sinal de cancelamento enviado.");
 });
 
@@ -587,106 +597,109 @@ ipcMain.handle("tickets:create", async (event, rows = [], context = {}) => {
     }
 
     const details = [];
-    const cancelToken = { requested: false };
-    activeCancelToken = cancelToken;
+    const cancelToken = createCancelToken("tickets:create");
 
-    for (let index = 0; index < rows.length; index += 1) {
-      if (cancelToken.requested) {
-        logOperation("tickets:create", { status: RESULT_STATUS.PARTIAL, message: "Cancelado pelo usuário." });
-        break;
-      }
-
-      const row = rows[index];
-      event.sender.send("tickets:progress", {
-        current: index + 1,
-        total: rows.length,
-        action: "create",
-      });
-
-      try {
-        const customerIdentifier = findCustomerIdentifier(
-          fullCustomers,
-          row.clientName,
-        );
-
-        if (!customerIdentifier) {
-          throw new Error(`Cliente "${row.clientName}" nao encontrado.`);
+    try {
+      for (let index = 0; index < rows.length; index += 1) {
+        if (cancelToken.requested) {
+          logOperation("tickets:create", { status: RESULT_STATUS.PARTIAL, message: "Cancelado pelo usuário." });
+          break;
         }
 
-        const categoryId = findCategoryId(
-          fullCategories,
-          row.departmentId,
-          row.categoryName,
-        );
+        const row = rows[index];
+        event.sender.send("tickets:progress", {
+          current: index + 1,
+          total: rows.length,
+          action: "create",
+        });
 
-        if (row.categoryName && !categoryId) {
-          throw new Error(
-            `Categoria "${row.categoryName}" nao encontrada para o departamento selecionado.`,
+        try {
+          const customerIdentifier = findCustomerIdentifier(
+            fullCustomers,
+            row.clientName,
           );
-        }
 
-        const createResult = await createTicket(
-          settings.token,
-          buildCreatePayload(row, customerIdentifier, categoryId),
-        );
-        logOperation(`tickets:create:${row.id}`, createResult);
+          if (!customerIdentifier) {
+            throw new Error(`Cliente "${row.clientName}" nao encontrado.`);
+          }
 
-        if (createResult.status !== RESULT_STATUS.SUCCESS) {
-          details.push({
-            id: row.id,
-            status: createResult.status,
-            message: createResult.message,
-            errors: createResult.errors,
-          });
-          continue;
-        }
+          const categoryId = findCategoryId(
+            fullCategories,
+            row.departmentId,
+            row.categoryName,
+          );
 
-        const createdTicketId = extractCreatedTicketId(createResult.data);
-        if (!createdTicketId) {
-          details.push({
-            id: row.id,
-            status: RESULT_STATUS.FATAL_ERROR,
-            message: "Chamado criado sem ticket_id identificavel.",
-          });
-          continue;
-        }
+          if (row.categoryName && !categoryId) {
+            throw new Error(
+              `Categoria "${row.categoryName}" nao encontrada para o departamento selecionado.`,
+            );
+          }
 
-        if (row.attendantId) {
-          const linkResult = await linkAttendant(
+          const createResult = await createTicket(
             settings.token,
-            createdTicketId,
-            row.attendantId,
+            buildCreatePayload(row, customerIdentifier, categoryId),
           );
-          logOperation(`tickets:link-operator:${row.id}`, linkResult);
+          logOperation(`tickets:create:${row.id}`, createResult);
 
-          if (linkResult.status !== RESULT_STATUS.SUCCESS) {
+          if (createResult.status !== RESULT_STATUS.SUCCESS) {
             details.push({
               id: row.id,
-              status: RESULT_STATUS.PARTIAL,
-              message:
-                "Chamado criado, mas o vinculo de atendente nao foi concluido.",
-              warnings: [linkResult.message],
+              status: createResult.status,
+              message: createResult.message,
+              errors: createResult.errors,
             });
             continue;
           }
+
+          const createdTicketId = extractCreatedTicketId(createResult.data);
+          if (!createdTicketId) {
+            details.push({
+              id: row.id,
+              status: RESULT_STATUS.FATAL_ERROR,
+              message: "Chamado criado sem ticket_id identificavel.",
+            });
+            continue;
+          }
+
+          if (row.attendantId) {
+            const linkResult = await linkAttendant(
+              settings.token,
+              createdTicketId,
+              row.attendantId,
+            );
+            logOperation(`tickets:link-operator:${row.id}`, linkResult);
+
+            if (linkResult.status !== RESULT_STATUS.SUCCESS) {
+              details.push({
+                id: row.id,
+                status: RESULT_STATUS.PARTIAL,
+                message:
+                  "Chamado criado, mas o vinculo de atendente nao foi concluido.",
+                warnings: [linkResult.message],
+              });
+              continue;
+            }
+          }
+
+          details.push({
+            id: row.id,
+            status: RESULT_STATUS.SUCCESS,
+            message: "Chamado criado.",
+          });
+        } catch (error) {
+          details.push({
+            id: row.id,
+            status: RESULT_STATUS.FATAL_ERROR,
+            message: error.message,
+          });
         }
 
-        details.push({
-          id: row.id,
-          status: RESULT_STATUS.SUCCESS,
-          message: "Chamado criado.",
-        });
-      } catch (error) {
-        details.push({
-          id: row.id,
-          status: RESULT_STATUS.FATAL_ERROR,
-          message: error.message,
-        });
+        if (index < rows.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
+        }
       }
-
-      if (index < rows.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, waitTime));
-      }
+    } finally {
+      releaseCancelToken(cancelToken);
     }
 
     const result = buildBatchResult(
@@ -696,7 +709,6 @@ ipcMain.handle("tickets:create", async (event, rows = [], context = {}) => {
       "Lote de criacao concluido com falhas parciais.",
     );
     logOperation("tickets:create", result);
-    activeCancelToken = null;
     return { ...result, details };
   } catch (error) {
     const result = fatalErrorResult("tickets:create", error, {
@@ -737,41 +749,44 @@ ipcMain.handle("tickets:close", async (event, tickets = [], overrides = {}) => {
     }
 
     const details = [];
-    const cancelToken = { requested: false };
-    activeCancelToken = cancelToken;
+    const cancelToken = createCancelToken("tickets:close");
 
-    for (let index = 0; index < tickets.length; index += 1) {
-      if (cancelToken.requested) {
-        logOperation("tickets:close", { status: RESULT_STATUS.PARTIAL, message: "Fechamento cancelado pelo usuário." });
-        break;
+    try {
+      for (let index = 0; index < tickets.length; index += 1) {
+        if (cancelToken.requested) {
+          logOperation("tickets:close", { status: RESULT_STATUS.PARTIAL, message: "Fechamento cancelado pelo usuário." });
+          break;
+        }
+
+        const ticket = tickets[index];
+        event.sender.send("tickets:progress", {
+          current: index + 1,
+          total: tickets.length,
+          action: "close",
+        });
+        const closeResult = await finalizeTicket(
+          settings.token,
+          ticket.id,
+          ticket.solution,
+        );
+        logOperation(`tickets:close:${ticket.id}`, closeResult);
+
+        details.push({
+          id: ticket.id,
+          status: closeResult.status,
+          message:
+            closeResult.status === RESULT_STATUS.SUCCESS
+              ? "Chamado finalizado via API."
+              : closeResult.message,
+          errors: closeResult.errors,
+        });
+
+        if (index < tickets.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
+        }
       }
-
-      const ticket = tickets[index];
-      event.sender.send("tickets:progress", {
-        current: index + 1,
-        total: tickets.length,
-        action: "close",
-      });
-      const closeResult = await finalizeTicket(
-        settings.token,
-        ticket.id,
-        ticket.solution,
-      );
-      logOperation(`tickets:close:${ticket.id}`, closeResult);
-
-      details.push({
-        id: ticket.id,
-        status: closeResult.status,
-        message:
-          closeResult.status === RESULT_STATUS.SUCCESS
-            ? "Chamado finalizado via API."
-            : closeResult.message,
-        errors: closeResult.errors,
-      });
-
-      if (index < tickets.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, waitTime));
-      }
+    } finally {
+      releaseCancelToken(cancelToken);
     }
 
     const result = buildBatchResult(
@@ -781,7 +796,6 @@ ipcMain.handle("tickets:close", async (event, tickets = [], overrides = {}) => {
       "Lote de fechamento concluido com falhas parciais.",
     );
     logOperation("tickets:close", result);
-    activeCancelToken = null;
     return { ...result, details };
   } catch (error) {
     const result = fatalErrorResult("tickets:close", error, {

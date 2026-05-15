@@ -253,15 +253,11 @@ export function createQueueController({
       });
     });
 
-    // Only run initial validation for new rows (not on localStorage restore)
-    // to avoid false-positive red borders before catalog loads.
-    if (!data || (!data.clientName && !data.departmentId && !data.subject)) {
-      return;
-    }
-    validateRowFields(row);
+    // We no longer eagerly validate on row creation to avoid 
+    // false-positive red borders when adding empty rows.
   }
 
-  function validateRowFields(row) {
+  function validateRowFields(row, forceHighlight = false) {
     if (
       row.dataset.status === "success" ||
       row.dataset.status === "partial" ||
@@ -273,15 +269,14 @@ export function createQueueController({
     const clientSelect = $(".input-client", row);
     const deptSelect = $(".input-dept", row);
     const summaryInput = $(".input-summary", row);
-    
     [clientSelect, deptSelect, summaryInput].forEach(el => {
       if (!el) return;
-      if (!el.value || el.value.trim() === "") {
+      const isEmpty = !el.value || el.value.trim() === "";
+      
+      if (isEmpty && forceHighlight) {
         el.style.border = "1px solid var(--danger-color, #ff3b30)";
-        el.style.backgroundColor = "rgba(255, 59, 48, 0.05)";
-      } else {
+      } else if (!isEmpty) {
         el.style.border = "";
-        el.style.backgroundColor = "";
       }
     });
   }
@@ -431,11 +426,9 @@ export function createQueueController({
     const executionSettings = collectExecutionSettings(documentRef);
     const rowsPayload = serializeRowsForActions(rowsToProcess);
 
-    if (
-      rowsPayload.some(
-        (row) => hasIncompleteQueueData(row).length > 0,
-      )
-    ) {
+    const hasIncomplete = rowsPayload.some((row) => hasIncompleteQueueData(row).length > 0);
+    if (hasIncomplete) {
+      rowsToProcess.forEach(row => validateRowFields(row, true));
       toast.warning(
         "Por favor, preencha Cliente, Departamento e Resumo para todas as linhas."
       );
@@ -532,9 +525,10 @@ export function createQueueController({
         cancelButton.innerHTML = "⏹ Cancelar";
         cancelButton.onclick = null;
       }
+      // BUG-C: saveCurrentQueueState must run even if an error is thrown,
+      // to persist any row statuses that were already marked before the failure.
+      saveCurrentQueueState();
     }
-    
-    saveCurrentQueueState();
   }
 
   async function handleGenerateAi() {
@@ -559,6 +553,20 @@ export function createQueueController({
 
     if (rowsToProcess.length === 0) {
       log("Nenhuma linha para processar.");
+      return;
+    }
+
+    const hasIncomplete = rowsToProcess.some(row => {
+      const summary = $(".input-summary", row)?.value || "";
+      const client = $(".input-client", row)?.value || "";
+      return !summary.trim() || !client.trim();
+    });
+
+    if (hasIncomplete) {
+      rowsToProcess.forEach(row => validateRowFields(row, true));
+      toast.warning(
+        "Por favor, preencha Cliente e Resumo nas linhas selecionadas para a IA."
+      );
       return;
     }
 
@@ -694,6 +702,13 @@ export function createQueueController({
 
       log("Processamento de IA finalizado.");
     } finally {
+      // BUG-D: Ensure all readOnly fields are restored even on cancel/error
+      rowsToProcess.forEach(row => {
+        const messageInput = $(".input-message", row);
+        if (messageInput && messageInput.readOnly) {
+          messageInput.readOnly = false;
+        }
+      });
       restoreBtn();
       if (cancelButton) {
         cancelButton.classList.add("hidden");

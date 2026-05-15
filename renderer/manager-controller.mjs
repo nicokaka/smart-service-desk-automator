@@ -59,7 +59,15 @@ export function createManagerController({
   async function handleLoadTickets() {
     const executionSettings = collectExecutionSettings(documentRef);
     if (!executionSettings.token) {
-      elements.apiStatus.innerText = "Token nao configurado nas Configuracoes.";
+      if (elements.apiStatus) {
+        elements.apiStatus.innerText = "Token nao configurado nas Configuracoes.";
+      }
+      return;
+    }
+
+    // BUG-A: Guard mandatory — accessing these outside try would crash if null
+    if (!elements.loadTicketsButton || !elements.apiStatus) {
+      log("[manager] Elementos da UI nao encontrados. Abortando busca.", "error");
       return;
     }
 
@@ -237,6 +245,8 @@ export function createManagerController({
         const row = selectedRows[index];
         const solutionInput = $(".input-solution", row);
         if (!solutionInput) {
+          // BUG-H: Log warning so user/dev knows the row was skipped
+          log(`[manager] Linha ${row.dataset.id || "?"}  sem campo .input-solution — pulada.`, "warning");
           continue;
         }
 
@@ -328,10 +338,10 @@ export function createManagerController({
     };
     const ipcHandler = electronAPI.tickets.onProgress(progressHandler);
 
-    const restoreBtn = setButtonBusy(
-      closeBtn,
-      '<span class="spinner"></span> Iniciando...'
-    );
+    // BUG-B: Guard — setButtonBusy crashes if closeBtn is null
+    const restoreBtn = closeBtn
+      ? setButtonBusy(closeBtn, '<span class="spinner"></span> Iniciando...')
+      : () => {};
 
     const cancelButton = documentRef.getElementById("btnCancelManager");
     if (cancelButton) {
