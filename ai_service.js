@@ -145,6 +145,10 @@ ${context}
 # Formato
   "O usuário [Nome] solicita/relata [Problema]. [Ação técnica sugerida]."
 
+# Diretrizes de Escrita (Humanizada):
+  - Tom: Direto, natural e profissional em português do Brasil, como redigido por um analista humano experiente.
+  - Sem Clichês de IA: Nunca use introduções teatrais, dramatizações ou frases vazias.
+
 # Saída (JSON)
   { "descricao": "Texto da descrição" }`;
 
@@ -201,6 +205,7 @@ ${context}
   - Anonimato do Solicitante: Use APENAS "o cliente" ou "o usuário". NUNCA o nome da pessoa.
   - Palavras Proibidas: NUNCA inclua "Chamado finalizado." (é status do sistema).
   - Tom: Direto, técnico, português do Brasil.
+  - Estilo Humanizado: Escreva de forma autêntica e natural. Evite clichês de IA (ex: "esperamos ter ajudado", "não apenas X mas Y", "estamos à disposição para qualquer eventualidade"). Relate a ação técnica resolutiva com clareza.
 
 # Saída (JSON)
   { "solucao": "Texto da solução" }`;
