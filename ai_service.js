@@ -41,7 +41,11 @@ function getModel(apiKey, modelName = "gemini-2.5-flash", useFallback = false) {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: targetModel,
-    generationConfig: { responseMimeType: "application/json" },
+    generationConfig: {
+      responseMimeType: "application/json",
+      temperature: 0.2,
+      maxOutputTokens: 600,
+    },
   });
 
   _modelCache.set(cacheKey, model);
@@ -57,7 +61,20 @@ function _clearModelCache() {
 // ─── Response cleanup ─────────────────────────────────────────────────────────
 
 function cleanResponse(text) {
-  return text.replace(/```json/g, "").replace(/```/g, "").trim();
+  if (typeof text !== "string") {
+    return "";
+  }
+  const trimmed = text.trim();
+  // Strip enclosing markdown code block if present
+  if (trimmed.startsWith("```")) {
+    return trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  }
+  // If wrapped in conversational text, extract the outermost JSON object
+  const jsonMatch = trimmed.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    return jsonMatch[0].trim();
+  }
+  return trimmed;
 }
 
 function sleep(ms) {

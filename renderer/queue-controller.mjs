@@ -11,6 +11,7 @@ import {
   RESULT_STATUS,
   parseJsonSafely,
   getResultTone,
+  parseSpreadsheetText,
 } from "./domain.mjs";
 import {
   loadCatalogSnapshot,
@@ -38,6 +39,16 @@ export function createQueueController({
     startBotButton: documentRef.getElementById("btn-start-bot"),
     emptyState: documentRef.getElementById("queue-empty-state"),
     clientsList: documentRef.getElementById("clients-list"),
+    retryFailedButton: documentRef.getElementById("btn-retry-failed"),
+    importSpreadsheetButton: documentRef.getElementById("btn-import-spreadsheet"),
+    importModal: documentRef.getElementById("import-modal"),
+    closeImportButton: documentRef.getElementById("btn-close-import"),
+    cancelImportButton: documentRef.getElementById("btn-cancel-import"),
+    confirmImportButton: documentRef.getElementById("btn-confirm-import"),
+    importTextarea: documentRef.getElementById("txt-import-content"),
+    readClipboardButton: documentRef.getElementById("btn-read-clipboard"),
+    importBadge: documentRef.getElementById("import-count-badge"),
+    importFeedback: documentRef.getElementById("import-feedback"),
   };
 
   let rowCount = 0;
@@ -55,6 +66,21 @@ export function createQueueController({
     bindEvents();
     toggleQueueEmptyState();
     toggleRemoveButton();
+    updateRetryFailedButton();
+    updateCatalogHeaderStatus();
+
+    if (electronAPI?.catalog?.loadCache) {
+      electronAPI.catalog
+        .loadCache()
+        .then((res) => {
+          if (res?.status === "success" && res.data && res.data.timestamp) {
+            replaceCatalog(res.data, { persist: false });
+          }
+        })
+        .catch((err) => {
+          console.warn("[QueueController] Falha ao carregar cache em disco:", err);
+        });
+    }
   }
 
   function bindEvents() {
@@ -72,11 +98,34 @@ export function createQueueController({
       saveCurrentQueueState();
       toggleRemoveButton();
       toggleQueueEmptyState();
+      updateRetryFailedButton();
     });
 
     elements.addRowButton?.addEventListener("click", () => {
       addRow();
     });
+
+    elements.retryFailedButton?.addEventListener("click", handleRetryFailedRows);
+    elements.importSpreadsheetButton?.addEventListener("click", () => openImportModal());
+    elements.closeImportButton?.addEventListener("click", closeImportModal);
+    elements.cancelImportButton?.addEventListener("click", closeImportModal);
+    elements.confirmImportButton?.addEventListener("click", handleConfirmImport);
+    elements.importTextarea?.addEventListener("input", updateImportPreview);
+    elements.readClipboardButton?.addEventListener("click", handleReadClipboard);
+
+    documentRef.getElementById("queue")?.addEventListener("paste", (e) => {
+      const target = e.target;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+        return;
+      }
+      e.preventDefault();
+      const pasted = e.clipboardData?.getData("text") || "";
+      if (pasted.trim()) {
+        openImportModal(pasted);
+      }
+    });
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
 
     elements.generateAiButton?.addEventListener("click", handleGenerateAi);
     elements.startBotButton?.addEventListener("click", handleCreateTickets);
@@ -90,10 +139,57 @@ export function createQueueController({
 
     if (persist) {
       saveCatalogSnapshot(catalog, storage);
+      if (electronAPI?.catalog?.saveCache) {
+        electronAPI.catalog.saveCache(catalog).catch(() => {});
+      }
     }
 
     renderClientDatalist();
     refreshExistingRows();
+    updateCatalogHeaderStatus();
+  }
+
+  function updateCatalogHeaderStatus() {
+    const statusEl = documentRef.getElementById("queue-catalog-status");
+    if (!statusEl) {
+      return;
+    }
+
+    const deptCount = catalog.fullDepartments?.length || 0;
+    const clientCount = catalog.customers?.length || 0;
+    const opCount = catalog.operators?.length || 0;
+
+    if (deptCount > 0 || clientCount > 0) {
+      statusEl.className = "catalog-status-indicator connected";
+      statusEl.innerHTML = `<span class="status-dot">●</span> Catálogo conectado: <strong>${deptCount}</strong> depts • <strong>${clientCount}</strong> clientes • <strong>${opCount}</strong> atendentes`;
+    } else {
+      statusEl.className = "catalog-status-indicator warning";
+      statusEl.innerHTML = `<span class="status-dot">●</span> Catálogo não sincronizado. Acesse <strong>Credenciais</strong> para sincronizar.`;
+    }
+  }
+
+  function getCustomerPlaceholder() {
+    const count = catalog.customers?.length || 0;
+    return count > 0 ? `Selecione o Cliente (${count})...` : "Selecione o Cliente...";
+  }
+
+  function getDeptPlaceholder() {
+    const count = catalog.fullDepartments?.length || 0;
+    return count > 0 ? `Selecione o Depto (${count})...` : "Selecione o Depto...";
+  }
+
+  function getOperatorPlaceholder() {
+    const count = catalog.operators?.length || 0;
+    return count > 0 ? `Selecione o Atendente (${count})...` : "Selecione o Atendente...";
+  }
+
+  function getCategoryPlaceholder(departmentId, categoryCount = 0) {
+    if (!departmentId) {
+      return "Selecione primeiro o Depto...";
+    }
+    return categoryCount > 0
+      ? `Selecione a Categoria (${categoryCount})...`
+      : "Nenhuma categoria cadastrada";
   }
 
   function getCatalog() {
@@ -141,27 +237,36 @@ export function createQueueController({
   function createRowMarkup(data = {}) {
     const departmentOptions = createOptionsMarkup(catalog.fullDepartments, {
       selectedValue: data.departmentId,
+      placeholder: getDeptPlaceholder(),
       getValue: (department) => department.id,
       getLabel: (department) => department.name,
     });
 
+    const filteredCategories = filterCategoriesByDepartment(
+      catalog.fullCategories,
+      data.departmentId || "",
+      catalog.fullDepartments,
+    );
+
     const categoryOptions = createOptionsMarkup(
-      filterCategoriesByDepartment(
-        catalog.fullCategories,
-        data.departmentId || "",
-        catalog.fullDepartments,
-      ),
+      filteredCategories,
       {
         selectedValue: data.categoryName,
+        placeholder: getCategoryPlaceholder(
+          data.departmentId,
+          filteredCategories.length,
+        ),
       },
     );
 
     const customerOptions = createOptionsMarkup(catalog.customers, {
       selectedValue: data.clientName,
+      placeholder: getCustomerPlaceholder(),
     });
 
     const operatorOptions = createOptionsMarkup(catalog.operators, {
       selectedValue: data.attendantId,
+      placeholder: getOperatorPlaceholder(),
       getValue: (operator) => operator.id,
       getLabel: (operator) => operator.name,
     });
@@ -235,7 +340,7 @@ export function createQueueController({
       updateCategoryOptions(row, {
         selectedCategoryName: "",
       });
-      saveCurrentQueueState();
+      debouncedSaveQueueState(50);
     });
 
     updateCategoryOptions(row, {
@@ -245,11 +350,11 @@ export function createQueueController({
     $$("input, select, textarea", row).forEach((input) => {
       input.addEventListener("change", () => {
         validateRowFields(row);
-        saveCurrentQueueState();
+        debouncedSaveQueueState(50);
       });
       input.addEventListener("input", () => {
         validateRowFields(row);
-        saveCurrentQueueState();
+        debouncedSaveQueueState(300);
       });
     });
 
@@ -297,14 +402,20 @@ export function createQueueController({
         ? selectedCategoryName
         : categorySelect.value;
 
+    const filtered = filterCategoriesByDepartment(
+      catalog.fullCategories,
+      departmentSelect.value,
+      catalog.fullDepartments,
+    );
+
     categorySelect.innerHTML = createOptionsMarkup(
-      filterCategoriesByDepartment(
-        catalog.fullCategories,
-        departmentSelect.value,
-        catalog.fullDepartments,
-      ),
+      filtered,
       {
         selectedValue: currentValue,
+        placeholder: getCategoryPlaceholder(
+          departmentSelect.value,
+          filtered.length,
+        ),
       },
     );
   }
@@ -322,7 +433,33 @@ export function createQueueController({
     };
   }
 
+  let saveDebounceTimer = null;
+  function debouncedSaveQueueState(delay = 300) {
+    if (saveDebounceTimer) {
+      clearTimeout(saveDebounceTimer);
+    }
+    saveDebounceTimer = setTimeout(() => {
+      saveCurrentQueueState();
+      saveDebounceTimer = null;
+    }, delay);
+  }
+
+  function setQueueControlsDisabled(disabled) {
+    if (elements.addRowButton) elements.addRowButton.disabled = disabled;
+    if (elements.importSpreadsheetButton) elements.importSpreadsheetButton.disabled = disabled;
+    if (elements.retryFailedButton) elements.retryFailedButton.disabled = disabled;
+    if (elements.removeSelectedButton) elements.removeSelectedButton.disabled = disabled;
+    if (elements.selectAllCheckbox) elements.selectAllCheckbox.disabled = disabled;
+    if (elements.generateAiButton) elements.generateAiButton.disabled = disabled;
+    if (elements.startBotButton) elements.startBotButton.disabled = disabled;
+    $$(".row-select", elements.tableBody).forEach((cb) => { cb.disabled = disabled; });
+  }
+
   function saveCurrentQueueState() {
+    if (saveDebounceTimer) {
+      clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = null;
+    }
     const rows = $$("tr", elements.tableBody).map(serializeRow);
     saveQueueState(rows, storage);
   }
@@ -337,6 +474,7 @@ export function createQueueController({
     } else {
       addRow();
     }
+    updateRetryFailedButton();
   }
 
   function normalizeSavedRow(rowData) {
@@ -362,12 +500,14 @@ export function createQueueController({
       if (customerSelect) {
         customerSelect.innerHTML = createOptionsMarkup(catalog.customers, {
           selectedValue: serialized.clientName,
+          placeholder: getCustomerPlaceholder(),
         });
       }
 
       if (departmentSelect) {
         departmentSelect.innerHTML = createOptionsMarkup(catalog.fullDepartments, {
           selectedValue: serialized.departmentId,
+          placeholder: getDeptPlaceholder(),
           getValue: (department) => department.id,
           getLabel: (department) => department.name,
         });
@@ -380,6 +520,7 @@ export function createQueueController({
       if (operatorSelect) {
         operatorSelect.innerHTML = createOptionsMarkup(catalog.operators, {
           selectedValue: serialized.attendantId,
+          placeholder: getOperatorPlaceholder(),
           getValue: (operator) => operator.id,
           getLabel: (operator) => operator.name,
         });
@@ -475,6 +616,7 @@ export function createQueueController({
       startButton,
       '<span class="spinner"></span> Iniciando...',
     );
+    setQueueControlsDisabled(true);
 
     try {
       const result = await electronAPI.tickets.create(rowsPayload, {
@@ -519,6 +661,7 @@ export function createQueueController({
     } finally {
       electronAPI.tickets.removeProgressListener(ipcHandler);
       restoreButton();
+      setQueueControlsDisabled(false);
       if (cancelButton) {
         cancelButton.classList.add("hidden");
         cancelButton.disabled = false;
@@ -528,6 +671,7 @@ export function createQueueController({
       // BUG-C: saveCurrentQueueState must run even if an error is thrown,
       // to persist any row statuses that were already marked before the failure.
       saveCurrentQueueState();
+      updateRetryFailedButton();
     }
   }
 
@@ -586,6 +730,7 @@ export function createQueueController({
       elements.generateAiButton,
       '<span class="spinner"></span> Iniciando...'
     );
+    setQueueControlsDisabled(true);
 
     const aiSettings = collectAiSettings(documentRef);
     const executionSettings = collectExecutionSettings(documentRef);
@@ -631,71 +776,55 @@ export function createQueueController({
         messageInput.value = "Gerando...";
         messageInput.readOnly = true;
 
-        let attempt = 0;
-        let completed = false;
+        try {
+          const clientName = $(".input-client", row)?.value || "Cliente";
 
-        while (attempt < 3 && !completed) {
-          try {
-            const clientName = $(".input-client", row)?.value || "Cliente";
+          if (aiSettings.debugMode) {
+            log(
+              `[DEBUG] Enviando para IA: Model=${aiSettings.model}, Client=${clientName}, PromptCustomizado=${aiSettings.customPrompt ? "Sim" : "Nao"}`,
+            );
+          }
 
-            if (aiSettings.debugMode) {
-              log(
-                `[DEBUG] Enviando para IA: Model=${aiSettings.model}, Client=${clientName}, PromptCustomizado=${aiSettings.customPrompt ? "Sim" : "Nao"}`,
-              );
-            }
+          const aiResponse = await electronAPI.ai.generateTicket({
+            summary,
+            clientName,
+            settings: aiSettings,
+          });
 
-            const aiResponse = await electronAPI.ai.generateTicket({
-              summary,
-              clientName,
-              settings: aiSettings,
-            });
+          if (!aiResponse.success) {
+            throw new Error(aiResponse.message || "Falha ao gerar texto com IA.");
+          }
 
-            if (!aiResponse.success) {
-              throw new Error(aiResponse.message || "Falha ao gerar texto com IA.");
-            }
+          if (aiSettings.debugMode) {
+            log(`[DEBUG] Resposta Bruta: ${aiResponse.data}`);
+          }
 
-            if (aiSettings.debugMode) {
-              log(`[DEBUG] Resposta Bruta: ${aiResponse.data}`);
-            }
+          const parsed = parseJsonSafely(aiResponse.data);
+          messageInput.value = parsed?.descricao || aiResponse.data;
+          messageInput.readOnly = false;
+          saveCurrentQueueState();
 
-            const parsed = parseJsonSafely(aiResponse.data);
-            messageInput.value = parsed?.descricao || aiResponse.data;
-            messageInput.readOnly = false;
-            completed = true;
-            saveCurrentQueueState();
+          log(`IA gerou texto para linha ${row.dataset.id}`);
+        } catch (error) {
+          const errorText = String(error?.message || error);
+          messageInput.readOnly = false;
 
-            log(`IA gerou texto para linha ${row.dataset.id}`);
-          } catch (error) {
-            const errorText = String(error);
-            if (
-              errorText.includes("429") ||
-              errorText.includes("Too Many Requests") ||
-              errorText.includes("Quota exceeded")
-            ) {
-              attempt += 1;
-              const delayInSeconds = attempt === 1 ? 30 : attempt === 2 ? 60 : 120;
-              messageInput.value = `Aguardando (429)... ${attempt}/3`;
-              log(
-                `Limite da API atingido (429). Aguardando ${delayInSeconds}s antes de tentar novamente (Tentativa ${attempt}/3)...`,
-                "error",
-              );
-              await sleep(delayInSeconds * 1000);
-            } else {
-              messageInput.value = "Erro na IA";
-              messageInput.readOnly = false;
-              log(`Erro na IA linha ${row.dataset.id}: ${error.message}`, "error");
-              break;
-            }
+          if (
+            errorText.includes("429") ||
+            errorText.includes("Too Many Requests") ||
+            errorText.includes("Quota exceeded")
+          ) {
+            messageInput.value = "Falha (Limite)";
+            log(`Limite de IA atingido na linha ${row.dataset.id}: ${error.message}`, "error");
+            toast.warning("Limite de requisições da IA atingido. Aguarde alguns minutos ou reduza o ritmo.");
+            break; // Interrompe o lote para não consumir tempo inútil se a cota acabou
+          } else {
+            messageInput.value = "Erro na IA";
+            log(`Erro na IA linha ${row.dataset.id}: ${error.message}`, "error");
           }
         }
 
-        if (!completed && attempt >= 3) {
-          messageInput.value = "Falha (Limite)";
-          messageInput.readOnly = false;
-          log(`Falha na linha ${row.dataset.id} apos 3 tentativas.`, "error");
-        }
-
-        if (index < rowsToProcess.length - 1) {
+        if (index < rowsToProcess.length - 1 && !aiCancelRequested) {
           await sleep(waitTime);
         }
       }
@@ -710,6 +839,7 @@ export function createQueueController({
         }
       });
       restoreBtn();
+      setQueueControlsDisabled(false);
       if (cancelButton) {
         cancelButton.classList.add("hidden");
         cancelButton.disabled = false;
@@ -729,6 +859,7 @@ export function createQueueController({
         element.disabled = true;
       }
     });
+    updateRetryFailedButton();
   }
 
   function markRowAsError(row, message = "") {
@@ -736,6 +867,7 @@ export function createQueueController({
     row.classList.add("row-status-error");
     row.classList.remove("row-status-success", "row-status-partial");
     if (message) row.title = message;
+    updateRetryFailedButton();
   }
 
   function markRowAsPartial(row, message = "") {
@@ -743,6 +875,180 @@ export function createQueueController({
     row.classList.add("row-status-partial");
     row.classList.remove("row-status-success", "row-status-error");
     if (message) row.title = message;
+    updateRetryFailedButton();
+  }
+
+  function updateRetryFailedButton() {
+    if (!elements.retryFailedButton) return;
+    const failedRows = $$("tr", elements.tableBody).filter(
+      (r) => r.dataset.status === "error" || r.dataset.status === "partial",
+    );
+    if (failedRows.length > 0) {
+      elements.retryFailedButton.classList.remove("hidden");
+      elements.retryFailedButton.textContent = `🔄 Reprocessar Falhas (${failedRows.length})`;
+    } else {
+      elements.retryFailedButton.classList.add("hidden");
+    }
+  }
+
+  async function handleRetryFailedRows() {
+    const allRows = $$("tr", elements.tableBody);
+    const failedRows = allRows.filter(
+      (r) => r.dataset.status === "error" || r.dataset.status === "partial",
+    );
+    if (failedRows.length === 0) {
+      toast.info("Nenhum chamado com falha para reprocessar.");
+      return;
+    }
+
+    allRows.forEach((row) => {
+      const cb = $(".row-select", row);
+      if (row.dataset.status === "error" || row.dataset.status === "partial") {
+        if (cb) cb.checked = true;
+        delete row.dataset.status;
+        row.classList.remove("row-status-error", "row-status-partial");
+        row.removeAttribute("title");
+        $$("input, select, textarea", row).forEach((el) => {
+          el.disabled = false;
+        });
+      } else {
+        if (cb) cb.checked = false;
+      }
+    });
+
+    toggleRemoveButton();
+    updateRetryFailedButton();
+    saveCurrentQueueState();
+
+    toast.info(`Selecionadas ${failedRows.length} linhas com falha para reprocessamento.`);
+    await handleCreateTickets();
+  }
+
+  let pendingImportResult = null;
+
+  function openImportModal(initialText = "") {
+    if (!elements.importModal) return;
+    elements.importModal.classList.remove("hidden");
+    if (elements.importTextarea) {
+      elements.importTextarea.value = initialText;
+      updateImportPreview();
+      setTimeout(() => elements.importTextarea.focus(), 50);
+    }
+  }
+
+  function closeImportModal() {
+    if (!elements.importModal) return;
+    elements.importModal.classList.add("hidden");
+    if (elements.importTextarea) elements.importTextarea.value = "";
+    if (elements.importBadge) elements.importBadge.classList.add("hidden");
+    if (elements.importFeedback) {
+      elements.importFeedback.classList.add("hidden");
+      elements.importFeedback.innerHTML = "";
+    }
+    if (elements.confirmImportButton) elements.confirmImportButton.disabled = true;
+    pendingImportResult = null;
+  }
+
+  function updateImportPreview() {
+    const text = elements.importTextarea?.value || "";
+    pendingImportResult = parseSpreadsheetText(text, catalog);
+    const count = pendingImportResult.totalParsed;
+    if (count > 0) {
+      if (elements.confirmImportButton) elements.confirmImportButton.disabled = false;
+      if (elements.importBadge) {
+        elements.importBadge.classList.remove("hidden");
+        elements.importBadge.textContent = `${count} chamado${count > 1 ? "s" : ""} detectado${count > 1 ? "s" : ""}`;
+        elements.importBadge.classList.toggle(
+          "has-warnings",
+          pendingImportResult.warnings.length > 0,
+        );
+      }
+      if (elements.importFeedback) {
+        if (pendingImportResult.warnings.length > 0) {
+          elements.importFeedback.classList.remove("hidden");
+          elements.importFeedback.innerHTML = `<strong>Avisos (${pendingImportResult.warnings.length}):</strong><br>${pendingImportResult.warnings.slice(0, 5).join("<br>")}${pendingImportResult.warnings.length > 5 ? "<br>..." : ""}`;
+        } else {
+          elements.importFeedback.classList.add("hidden");
+          elements.importFeedback.innerHTML = "";
+        }
+      }
+    } else {
+      if (elements.confirmImportButton) elements.confirmImportButton.disabled = true;
+      if (elements.importBadge) elements.importBadge.classList.add("hidden");
+      if (elements.importFeedback) {
+        elements.importFeedback.classList.add("hidden");
+        elements.importFeedback.innerHTML = "";
+      }
+    }
+  }
+
+  async function handleReadClipboard() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text && text.trim()) {
+        if (elements.importTextarea) {
+          elements.importTextarea.value = text;
+          updateImportPreview();
+        }
+      } else {
+        toast.info("A área de transferência não contém texto.");
+      }
+    } catch (err) {
+      toast.warning("Não foi possível acessar a área de transferência. Use Ctrl+V dentro da caixa.");
+    }
+  }
+
+  function handleConfirmImport() {
+    if (!pendingImportResult || pendingImportResult.rows.length === 0) return;
+
+    const existingRows = $$("tr", elements.tableBody);
+    if (
+      existingRows.length === 1 &&
+      !$(".input-client", existingRows[0])?.value &&
+      !$(".input-summary", existingRows[0])?.value
+    ) {
+      elements.tableBody.innerHTML = "";
+    }
+
+    let count = 0;
+    pendingImportResult.rows.forEach((rowData) => {
+      const row = addRow(rowData);
+      if (row && rowData.hasWarnings) {
+        validateRowFields(row, true);
+      }
+      count++;
+    });
+
+    saveCurrentQueueState();
+    toggleRemoveButton();
+    toggleQueueEmptyState();
+    updateRetryFailedButton();
+    closeImportModal();
+
+    toast.success(`${count} chamado${count > 1 ? "s" : ""} importado${count > 1 ? "s" : ""} da planilha com sucesso!`);
+  }
+
+  function handleGlobalKeyDown(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
+      const queueTab = documentRef.getElementById("queue");
+      if (queueTab && queueTab.classList.contains("active")) {
+        e.preventDefault();
+        addRow();
+        toast.info("Nova linha adicionada (Ctrl+N)");
+      }
+    } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      const queueTab = documentRef.getElementById("queue");
+      if (queueTab && queueTab.classList.contains("active")) {
+        e.preventDefault();
+        if (elements.startBotButton && !elements.startBotButton.disabled) {
+          handleCreateTickets();
+        }
+      }
+    } else if (e.key === "Escape") {
+      if (elements.importModal && !elements.importModal.classList.contains("hidden")) {
+        closeImportModal();
+      }
+    }
   }
 
   return {
@@ -750,5 +1056,7 @@ export function createQueueController({
     getCatalog,
     replaceCatalog,
     refreshExistingRows,
+    updateRetryFailedButton,
+    handleRetryFailedRows,
   };
 }

@@ -1137,3 +1137,32 @@ dialog.confirm-modal::backdrop {
   100% { background-position: 1000px 0; }
 }
 
+
+
+/* Catalog Status Indicator */
+.header-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.catalog-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #a6adc8;
+  transition: all 0.3s ease;
+}
+
+.catalog-status-indicator .status-dot {
+  font-size: 0.7rem;
+}
+
+.catalog-status-indicator.connected {
+  color: var(--success-color);
+}
+
+.catalog-status-indicator.warning {
+  color: var(--warning-color);
+}

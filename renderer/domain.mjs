@@ -50,6 +50,7 @@ export const isPendingGeneratedMessage = safeDelegate("isPendingGeneratedMessage
 export const isPendingSolution = safeDelegate("isPendingSolution");
 export const dedupeById = safeDelegate("dedupeById");
 export const hasIncompleteQueueData = safeDelegate("hasIncompleteQueueData");
+export const parseSpreadsheetText = safeDelegate("parseSpreadsheetText");
 
 
 
@@ -99,7 +100,8 @@ export function createOptionsMarkup(
   } = {},
 ) {
   const normalizedSelected = String(selectedValue ?? "");
-  const options = items.map((item) => {
+  const list = Array.isArray(items) ? items : [];
+  const options = list.map((item) => {
     const value = String(getValue(item) ?? "");
     const label = String(getLabel(item) ?? "");
     const selected = value === normalizedSelected ? " selected" : "";

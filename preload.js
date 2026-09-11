@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   catalog: {
     sync: (overrides) => ipcRenderer.invoke("catalog:sync", overrides),
+    loadCache: () => ipcRenderer.invoke("catalog:load-cache"),
+    saveCache: (catalogData) => ipcRenderer.invoke("catalog:save-cache", catalogData),
   },
   tickets: {
     list: (overrides) => ipcRenderer.invoke("tickets:list", overrides),

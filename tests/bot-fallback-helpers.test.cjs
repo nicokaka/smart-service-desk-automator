@@ -131,3 +131,37 @@ test("summarizeBatchResults reports partial browser batches clearly", () => {
   assert.match(message, /falhas parciais/i);
   assert.match(message, /1 ok, 1 erro/i);
 });
+
+test("runBot stops execution when cancelToken is requested", async () => {
+  const processed = [];
+  const fakeSession = {
+    page: { close: async () => {} },
+    context: { close: async () => {} },
+    browser: { close: async () => {} },
+  };
+  const cancelToken = { requested: false };
+
+  const result = await runBot(
+    [
+      { id: "1", client: "ACME", dept: "TI", summary: "T1" },
+      { id: "2", client: "BETA", dept: "TI", summary: "T2" },
+    ],
+    {},
+    {
+      logger: { log() {}, warn() {}, error() {} },
+      session: fakeSession,
+      createTicketInBrowser: async (_page, ticket) => {
+        processed.push(ticket.id);
+        // User triggers cancel after first ticket
+        cancelToken.requested = true;
+      },
+    },
+    cancelToken,
+  );
+
+  assert.equal(result.success, true);
+  assert.equal(processed.length, 1);
+  assert.equal(processed[0], "1");
+  assert.equal(result.details.length, 1);
+});
+

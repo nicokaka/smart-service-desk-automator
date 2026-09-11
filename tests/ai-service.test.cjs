@@ -103,6 +103,12 @@ describe("generateTicketMessage", () => {
     assert.equal(result.trim(), '{"descricao":"ok"}');
   });
 
+  test("extracts JSON object when surrounded by conversational text", async () => {
+    mockResponse = "Com certeza! Aqui está a descrição:\n{\"descricao\":\"Texto limpo\"}\nEspero ter ajudado!";
+    const result = await generateTicketMessage("x", "A", "key", "", "flash");
+    assert.equal(result.trim(), '{"descricao":"Texto limpo"}');
+  });
+
   test("retries with fallback model on 404 error", async () => {
     let callCount = 0;
     const err404 = new Error("404 model not found Not Found");

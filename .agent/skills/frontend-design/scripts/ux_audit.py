@@ -111,16 +111,23 @@ class UXAuditor:
         self.files_checked += 1
         filename = os.path.basename(filepath)
 
+        is_markup = filename.lower().endswith(('.html', '.htm', '.jsx', '.tsx', '.vue', '.svelte', '.php'))
+        is_css = filename.lower().endswith(('.css', '.scss', '.sass', '.less'))
+
         # Pre-calculate common flags
-        has_long_text = bool(re.search(r'<p|<div.*class=.*text|article|<span.*text', content, re.IGNORECASE))
-        has_form = bool(re.search(r'<form|<input|password|credit|card|payment', content, re.IGNORECASE))
-        complex_elements = len(re.findall(r'<input|<select|<textarea|<option', content, re.IGNORECASE))
+        has_long_text = is_markup and bool(re.search(r'<p|<div.*class=.*text|article|<span.*text', content, re.IGNORECASE))
+        has_form = is_markup and bool(re.search(r'<form|<input|password|credit|card|payment', content, re.IGNORECASE))
+        complex_elements = len(re.findall(r'<input|<select|<textarea|<option', content, re.IGNORECASE)) if is_markup else 0
 
         # --- 1. PSYCHOLOGY LAWS ---
         # Hick's Law
-        nav_items = len(re.findall(r'<NavLink|<Link|<a\s+href|nav-item', content, re.IGNORECASE))
-        if nav_items > 7:
-            self.issues.append(f"[Hick's Law] {filename}: {nav_items} nav items (Max 7)")
+        nav_items = 0
+        if is_markup:
+            nav_blocks = re.findall(r'<nav[^>]*>(.*?)</nav>', content, re.DOTALL | re.IGNORECASE)
+            nav_content = " ".join(nav_blocks) if nav_blocks else content
+            nav_items = len(re.findall(r'<NavLink|<Link|<a\s+href|nav-item', nav_content, re.IGNORECASE))
+            if nav_items > 7:
+                self.issues.append(f"[Hick's Law] {filename}: {nav_items} nav items (Max 7)")
         
         # Fitts' Law
         if re.search(r'height:\s*([0-3]\d)px', content) or re.search(r'h-[1-9]\b|h-10\b', content):

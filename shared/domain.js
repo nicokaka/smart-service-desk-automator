@@ -224,6 +224,186 @@ function hasIncompleteQueueData(row) {
   return missing;
 }
 
+// ─── Spreadsheet / Clipboard Parsing ─────────────────────────────────────────
+
+const HEADER_ALIASES = {
+  client: ["cliente", "empresa", "client", "customer", "razao social", "razão social", "nome"],
+  department: ["departamento", "depto", "dept", "setor", "área", "area"],
+  category: ["categoria", "cat", "tipo", "subcategoria"],
+  attendant: ["atendente", "operador", "responsavel", "responsável", "operator"],
+  subject: ["resumo", "assunto", "titulo", "título", "subject", "problema", "o que aconteceu"],
+  message: ["mensagem", "descricao", "descrição", "message", "detalhes", "corpo"],
+};
+
+function matchHeaderField(headerText) {
+  const normalized = normalizeString(headerText).toLowerCase();
+  if (!normalized) return null;
+  for (const [field, aliases] of Object.entries(HEADER_ALIASES)) {
+    if (aliases.some((alias) => normalized === alias || normalized === `${alias}:`)) {
+      return field;
+    }
+  }
+  return null;
+}
+
+function parseSpreadsheetText(rawText, catalog = {}) {
+  if (!rawText || typeof rawText !== "string") {
+    return { rows: [], warnings: [], totalParsed: 0 };
+  }
+
+  const lines = rawText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  if (lines.length === 0) {
+    return { rows: [], warnings: [], totalParsed: 0 };
+  }
+
+  // Detect delimiter: tab takes precedence for spreadsheet copies
+  const firstLine = lines[0];
+  let delimiter = "\t";
+  if (!firstLine.includes("\t")) {
+    if (firstLine.includes(";")) {
+      delimiter = ";";
+    } else if (firstLine.includes(",")) {
+      delimiter = ",";
+    }
+  }
+
+  const splitRow = (line) => line.split(delimiter).map((cell) => normalizeString(cell));
+
+  // Determine if first row is a header (require at least 2 matched headers, or 1 if multi-line)
+  const firstRowCells = splitRow(firstLine);
+  const matchedHeaders = firstRowCells.map(matchHeaderField);
+  const validHeaderCount = matchedHeaders.filter((h) => h !== null).length;
+  const isHeaderRow = validHeaderCount >= 2 || (lines.length > 1 && validHeaderCount >= 1);
+
+  const columnMap = {};
+  let dataLines = lines;
+
+  if (isHeaderRow) {
+    matchedHeaders.forEach((field, index) => {
+      if (field && columnMap[field] === undefined) {
+        columnMap[field] = index;
+      }
+    });
+    dataLines = lines.slice(1);
+  } else {
+    // Default standard order: Cliente, Departamento, Categoria, Atendente, Resumo, Mensagem
+    columnMap.client = 0;
+    columnMap.department = 1;
+    columnMap.category = 2;
+    columnMap.attendant = 3;
+    columnMap.subject = 4;
+    columnMap.message = 5;
+  }
+
+  const fullDepts = Array.isArray(catalog.fullDepartments) ? catalog.fullDepartments : [];
+  const fullCats = Array.isArray(catalog.fullCategories) ? catalog.fullCategories : [];
+  const fullCusts = Array.isArray(catalog.fullCustomers) ? catalog.fullCustomers : [];
+  const simpleCusts = Array.isArray(catalog.customers) ? catalog.customers : [];
+  const allCusts = fullCusts.length > 0 ? fullCusts : simpleCusts;
+  const operators = Array.isArray(catalog.operators) ? catalog.operators : [];
+
+  const rows = [];
+  const warnings = [];
+
+  dataLines.forEach((line, lineIndex) => {
+    const cells = splitRow(line);
+    // Ignore rows that are completely empty cells
+    if (cells.every((c) => c === "")) {
+      return;
+    }
+
+    const rawClient = columnMap.client !== undefined ? (cells[columnMap.client] || "") : "";
+    const rawDept = columnMap.department !== undefined ? (cells[columnMap.department] || "") : "";
+    const rawCat = columnMap.category !== undefined ? (cells[columnMap.category] || "") : "";
+    const rawAttendant = columnMap.attendant !== undefined ? (cells[columnMap.attendant] || "") : "";
+    const rawSubject = columnMap.subject !== undefined ? (cells[columnMap.subject] || "") : "";
+    const rawMessage = columnMap.message !== undefined ? (cells[columnMap.message] || "") : "";
+
+    // 1. Resolve client
+    let resolvedClient = rawClient;
+    if (rawClient) {
+      const match = allCusts.find((c) => {
+        const name = typeof c === "string" ? c : (c.name || c.nome || "");
+        return normalizeString(name).localeCompare(rawClient, undefined, { sensitivity: "base" }) === 0;
+      });
+      if (match) {
+        resolvedClient = typeof match === "string" ? match : (match.name || match.nome || rawClient);
+      }
+    }
+
+    // 2. Resolve department
+    let resolvedDeptId = "";
+    if (rawDept) {
+      const match = fullDepts.find((d) => {
+        const deptId = String(d.id || d.department_id || "");
+        const deptName = String(d.name || d.nome || "");
+        return (
+          deptId === rawDept ||
+          normalizeString(deptName).localeCompare(rawDept, undefined, { sensitivity: "base" }) === 0
+        );
+      });
+      resolvedDeptId = match ? String(match.id || match.department_id) : rawDept;
+    }
+
+    // 3. Resolve category
+    let resolvedCatName = rawCat;
+    if (rawCat) {
+      const match = fullCats.find((c) => {
+        const catName = String(c.name || c.nome || "");
+        return normalizeString(catName).localeCompare(rawCat, undefined, { sensitivity: "base" }) === 0;
+      });
+      if (match) {
+        resolvedCatName = match.name || match.nome || rawCat;
+      }
+    }
+
+    // 4. Resolve attendant
+    let resolvedAttendantId = "";
+    if (rawAttendant) {
+      const match = operators.find((op) => {
+        const opId = String(op.id || op.operator_id || "");
+        const opName = String(op.name || op.nome || "");
+        return (
+          opId === rawAttendant ||
+          normalizeString(opName).localeCompare(rawAttendant, undefined, { sensitivity: "base" }) === 0
+        );
+      });
+      resolvedAttendantId = match ? String(match.id || match.operator_id) : rawAttendant;
+    }
+
+    const rowWarnings = [];
+    if (!resolvedClient) rowWarnings.push("Cliente ausente");
+    if (!resolvedDeptId) rowWarnings.push("Departamento ausente");
+    if (!rawSubject) rowWarnings.push("Resumo ausente");
+
+    if (rowWarnings.length > 0) {
+      warnings.push(`Linha ${lineIndex + 1}: ${rowWarnings.join(", ")}`);
+    }
+
+    rows.push({
+      clientName: resolvedClient,
+      departmentId: resolvedDeptId,
+      categoryName: resolvedCatName,
+      attendantId: resolvedAttendantId,
+      subject: rawSubject,
+      message: rawMessage,
+      selected: true,
+      hasWarnings: rowWarnings.length > 0,
+      warningDetails: rowWarnings,
+    });
+  });
+
+  return {
+    rows,
+    warnings,
+    totalParsed: rows.length,
+  };
+}
+
 // ─── Exports ─────────────────────────────────────────────────────────────────
 
 module.exports = {
@@ -238,4 +418,5 @@ module.exports = {
   isPendingSolution,
   dedupeById,
   hasIncompleteQueueData,
+  parseSpreadsheetText,
 };

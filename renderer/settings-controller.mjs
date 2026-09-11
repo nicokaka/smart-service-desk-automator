@@ -124,15 +124,6 @@ export function createSettingsController({
       ? setButtonBusy(syncButton, '<span class="spinner"></span> Sincronizando...')
       : () => {};
 
-    const tableBody = documentRef.getElementById("ticket-queue-body");
-    if (tableBody) {
-      tableBody.innerHTML = `
-        <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr class="skeleton-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      `;
-    }
-
     try {
       const syncResult = await syncCatalog(settings.token);
       if (isPartialStatus(syncResult.status)) {

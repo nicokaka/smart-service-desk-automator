@@ -166,14 +166,26 @@ export function createManagerController({
       const client = escapeHtml(ticket.customer?.name || "Desconhecido");
       const attendant = escapeHtml(ticket.operator?.name || "Sem Atendente");
 
+      const existingSolution = ticket.solution || "";
+      const isClosed = Boolean(ticket.closed);
+
       row.innerHTML = `
-        <td><input type="checkbox" class="manager-check"></td>
+        <td><input type="checkbox" class="manager-check"${isClosed ? " disabled" : ""}></td>
         <td>${protocol}</td>
         <td>${subject}</td>
         <td>${client}</td>
         <td>${attendant}</td>
-        <td><textarea class="input-solution" rows="3" placeholder="Mensagem de encerramento..."></textarea></td>
+        <td><textarea class="input-solution" rows="3" placeholder="Mensagem de encerramento..."${isClosed ? " disabled" : ""}>${escapeHtml(existingSolution)}</textarea></td>
       `;
+
+      if (isClosed) {
+        row.classList.add("row-status-success");
+      }
+
+      const solutionInput = $(".input-solution", row);
+      solutionInput?.addEventListener("input", () => {
+        ticket.solution = solutionInput.value;
+      });
 
       elements.tableBody.appendChild(row);
     });
@@ -215,6 +227,10 @@ export function createManagerController({
       elements.generateSolutionButton, 
       '<span class="spinner"></span> Iniciando...'
     );
+
+    if (elements.loadTicketsButton) elements.loadTicketsButton.disabled = true;
+    if (elements.closeSelectedButton) elements.closeSelectedButton.disabled = true;
+    if (elements.operatorFilter) elements.operatorFilter.disabled = true;
 
     const aiSettings = collectAiSettings(documentRef);
     const executionSettings = collectExecutionSettings(documentRef);
@@ -266,7 +282,14 @@ export function createManagerController({
           }
 
           const parsed = parseJsonSafely(aiResponse.data);
-          solutionInput.value = parsed?.solucao || aiResponse.data;
+          const generatedSolution = parsed?.solucao || aiResponse.data;
+          solutionInput.value = generatedSolution;
+
+          // BUG-1.1 FIX: Persist generated solution in the ticket model so re-rendering/filtering retains it
+          const ticketModel = allTickets.find((t) => String(t.id) === String(row.dataset.id));
+          if (ticketModel) {
+            ticketModel.solution = generatedSolution;
+          }
         } catch (error) {
           solutionInput.value = "Erro na IA.";
           log(`Erro ao gerar solucao: ${error.message}`, "error");
@@ -280,6 +303,9 @@ export function createManagerController({
       log("Geração de soluções finalizada.");
     } finally {
       restoreBtn();
+      if (elements.loadTicketsButton) elements.loadTicketsButton.disabled = false;
+      if (elements.closeSelectedButton) elements.closeSelectedButton.disabled = false;
+      if (elements.operatorFilter) elements.operatorFilter.disabled = false;
       if (cancelButton) {
         cancelButton.classList.add("hidden");
         cancelButton.disabled = false;
@@ -343,6 +369,10 @@ export function createManagerController({
       ? setButtonBusy(closeBtn, '<span class="spinner"></span> Iniciando...')
       : () => {};
 
+    if (elements.loadTicketsButton) elements.loadTicketsButton.disabled = true;
+    if (elements.generateSolutionButton) elements.generateSolutionButton.disabled = true;
+    if (elements.operatorFilter) elements.operatorFilter.disabled = true;
+
     const cancelButton = documentRef.getElementById("btnCancelManager");
     if (cancelButton) {
       cancelButton.classList.remove("hidden");
@@ -385,6 +415,19 @@ export function createManagerController({
           row.classList.add("row-status-success");
           row.classList.remove("row-status-error", "row-status-partial");
           row.removeAttribute("title");
+
+          // BUG-1.3 FIX: Mark ticket as closed in model and disable its checkbox to prevent duplicate re-closing
+          const ticketModel = allTickets.find((t) => String(t.id) === String(item.id));
+          if (ticketModel) {
+            ticketModel.closed = true;
+          }
+
+          const checkbox = $(".manager-check", row);
+          if (checkbox) {
+            checkbox.checked = false;
+            checkbox.disabled = true;
+          }
+
           $$("input:not([type='checkbox']), textarea", row).forEach((input) => {
             input.disabled = true;
           });
@@ -404,6 +447,9 @@ export function createManagerController({
     } finally {
       electronAPI.tickets.removeProgressListener(ipcHandler);
       restoreBtn();
+      if (elements.loadTicketsButton) elements.loadTicketsButton.disabled = false;
+      if (elements.generateSolutionButton) elements.generateSolutionButton.disabled = false;
+      if (elements.operatorFilter) elements.operatorFilter.disabled = false;
       if (cancelButton) {
         cancelButton.classList.add("hidden");
         cancelButton.disabled = false;

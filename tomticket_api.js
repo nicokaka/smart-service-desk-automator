@@ -162,6 +162,7 @@ function normalizeResponse(operation, rawResponse) {
       statusCode: rawResponse.statusCode,
       responseBody: parsedBody ?? rawResponse.body,
       code: `HTTP_${rawResponse.statusCode}`,
+      headers: rawResponse.headers,
     },
   );
 
@@ -207,7 +208,16 @@ async function requestWithRetry({
         break;
       }
 
-      const delay = backoffMs * attempt;
+      // Respect Retry-After header if provided by server
+      let delay = backoffMs * attempt;
+      const retryAfter = error.headers?.["retry-after"] || error.headers?.["Retry-After"];
+      if (retryAfter) {
+        const parsedSeconds = parseInt(retryAfter, 10);
+        if (!isNaN(parsedSeconds) && parsedSeconds > 0) {
+          delay = Math.min(parsedSeconds * 1000, 30000);
+        }
+      }
+
       console.warn(`[${operation}] Retryable error (attempt ${attempt}/${maxAttempts}), waiting ${delay}ms: ${error.message}`);
       await sleep(delay);
     }
@@ -301,10 +311,11 @@ async function getTickets(token, filters = {}) {
 
     tickets.push(...pageResult.data);
 
+    // Stop if page is empty or next_page explicitly indicates end
     if (
       pageResult.data.length === 0 ||
       pageResult.meta?.payload?.next_page === null ||
-      pageResult.meta?.payload?.next_page === undefined
+      pageResult.meta?.payload?.next_page === false
     ) {
       break;
     }

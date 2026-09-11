@@ -21,10 +21,18 @@ Priority Order:
 """
 
 import sys
+import os
+import json
 import subprocess
 import argparse
 from pathlib import Path
 from typing import List, Tuple, Optional
+
+# Fix Windows console encoding
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+except:
+    pass
 
 # ANSI colors for terminal output
 class Colors:
@@ -43,7 +51,7 @@ def print_header(text: str):
     print(f"{Colors.BOLD}{Colors.CYAN}{'='*60}{Colors.ENDC}\n")
 
 def print_step(text: str):
-    print(f"{Colors.BOLD}{Colors.BLUE}🔄 {text}{Colors.ENDC}")
+    print(f"{Colors.BLUE}🔄 {text}{Colors.ENDC}")
 
 def print_success(text: str):
     print(f"{Colors.GREEN}✅ {text}{Colors.ENDC}")
@@ -73,6 +81,18 @@ def check_script_exists(script_path: Path) -> bool:
     """Check if script file exists"""
     return script_path.exists() and script_path.is_file()
 
+def is_desktop_app(project_path: str) -> bool:
+    pkg_file = Path(project_path) / "package.json"
+    if pkg_file.exists():
+        try:
+            with open(pkg_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                deps = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
+                return "electron" in deps or "tauri" in deps
+        except:
+            pass
+    return False
+
 def run_script(name: str, script_path: Path, project_path: str, url: Optional[str] = None) -> dict:
     """
     Run a validation script and capture results
@@ -83,11 +103,15 @@ def run_script(name: str, script_path: Path, project_path: str, url: Optional[st
     if not check_script_exists(script_path):
         print_warning(f"{name}: Script not found, skipping")
         return {"name": name, "passed": True, "output": "", "skipped": True}
+
+    if name == "SEO Check" and is_desktop_app(project_path):
+        print_warning(f"{name}: Not applicable for desktop Electron app, skipping")
+        return {"name": name, "passed": True, "output": "Desktop app", "skipped": True}
     
     print_step(f"Running: {name}")
     
     # Build command
-    cmd = ["python", str(script_path), project_path]
+    cmd = [sys.executable, "-X", "utf8", str(script_path), project_path]
     if url and ("lighthouse" in script_path.name.lower() or "playwright" in script_path.name.lower()):
         cmd.append(url)
     
@@ -97,6 +121,8 @@ def run_script(name: str, script_path: Path, project_path: str, url: Optional[st
             cmd,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=300  # 5 minute timeout
         )
         

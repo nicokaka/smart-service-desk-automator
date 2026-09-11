@@ -289,7 +289,12 @@ async function launchBrowserSession(credentials, runtime = {}) {
         { phase: "bootstrap" },
       );
     }
-    browser = await engines.chromium.launch(launchOptions);
+    // Attempt launching installed system Google Chrome first, fallback to standard Playwright Chromium
+    try {
+      browser = await engines.chromium.launch({ ...launchOptions, channel: "chrome" });
+    } catch {
+      browser = await engines.chromium.launch(launchOptions);
+    }
   } else if (browserType === "firefox") {
     if (!engines.firefox) {
       throw createBotError(
@@ -599,7 +604,7 @@ function normalizeTicketError(error, ticket, mode) {
   };
 }
 
-async function processTickets(page, tickets, credentials, runtime = {}) {
+async function processTickets(page, tickets, credentials, runtime = {}, cancelToken = null) {
   const logger = getLogger(runtime);
   const mode = credentials.mode === "close" ? "close" : "create";
   const actionHandler =
@@ -611,6 +616,10 @@ async function processTickets(page, tickets, credentials, runtime = {}) {
 
   const results = [];
   for (const ticket of tickets) {
+    if (cancelToken?.requested) {
+      logger.log(`[BOT][${mode}] Operação cancelada pelo usuário.`);
+      break;
+    }
     try {
       await actionHandler(page, ticket, logger);
       results.push({
@@ -630,7 +639,7 @@ async function processTickets(page, tickets, credentials, runtime = {}) {
   return results;
 }
 
-async function runBot(tickets, credentials = {}, runtime = {}) {
+async function runBot(tickets, credentials = {}, runtime = {}, cancelToken = null) {
   const logger = getLogger(runtime);
   let session = {};
 
@@ -641,6 +650,7 @@ async function runBot(tickets, credentials = {}, runtime = {}) {
       tickets,
       credentials,
       runtime,
+      cancelToken,
     );
 
     return {

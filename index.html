@@ -45,10 +45,19 @@
       <!-- Aba: Fila de Chamados -->
       <div id="queue" class="tab-content active">
         <header class="tab-header">
-          <h1>Fila de Processamento</h1>
+          <div class="header-title-group">
+            <h1>Fila de Processamento</h1>
+            <div id="queue-catalog-status" class="catalog-status-indicator"></div>
+          </div>
           <div class="actions">
             <button id="btn-add-row" class="btn secondary">
               + Adicionar Linha
+            </button>
+            <button id="btn-import-spreadsheet" class="btn secondary" title="Importar ou colar dados do Excel">
+              📋 Colar do Excel
+            </button>
+            <button id="btn-retry-failed" class="btn warning hidden" title="Reprocessar apenas os chamados que falharam">
+              🔄 Reprocessar Falhas
             </button>
             <button id="btn-remove-selected" class="btn danger hidden">
               Excluir Selecionados
@@ -169,21 +178,21 @@
             <input type="text" value="https://console.tomticket.com" disabled class="input-field" />
           </div>
           <div class="form-group">
-            <label>Conta (Empresa)</label>
+            <label for="settings-account">Conta (Empresa)</label>
             <input type="text" id="settings-account" placeholder="Ex: Hebron" class="input-field" />
           </div>
           <div class="form-group">
-            <label>Email de Acesso</label>
+            <label for="settings-email">Email de Acesso</label>
             <input type="email" id="settings-email" placeholder="seu.email@empresa.com" class="input-field" />
           </div>
           <div class="form-group">
-            <label>Senha</label>
+            <label for="settings-password">Senha</label>
             <input type="password" id="settings-password" placeholder="********" class="input-field"
               autocomplete="off" />
           </div>
 
           <div class="form-group">
-            <label>
+            <label for="apiToken">
               Token API TomTicket (Beta)
               <span class="tooltip-container">?
                 <span class="tooltip-text">Este token de segurança conecta o aplicativo aos seus
@@ -197,7 +206,7 @@
           </div>
 
           <div class="form-group">
-            <label>Chave API Gemini (IA)</label>
+            <label for="geminiApiKey">Chave API Gemini (IA)</label>
             <input type="password" id="geminiApiKey" placeholder="Cole sua API Key do Google Gemini..."
               class="input-field" autocomplete="off" />
             <small class="text-muted">Necessário para gerar textos com IA.
@@ -206,7 +215,7 @@
           </div>
 
           <div class="form-group">
-            <label>
+            <label for="customAIPrompt">
               Instruções Customizadas para IA (Opcional)
               <span class="tooltip-container">?
                 <span class="tooltip-text">Escreva o contexto da sua empresa para a inteligência
@@ -228,7 +237,7 @@
             </div>
             <div class="accordion-body">
               <div class="form-group">
-                <label>
+                <label for="settings-gemini-model">
                   Modelo de Inteligência Artificial
                   <span class="tooltip-container">?
                     <span class="tooltip-text">Escolha o motor da IA. O Flash é extremamente rápido e
@@ -237,8 +246,11 @@
                   </span>
                 </label>
                 <select id="settings-gemini-model" class="input-field">
+                  <option value="gemini-2.0-flash">
+                    Gemini 2.0 Flash (Mais Recente e Rápido)
+                  </option>
                   <option value="gemini-2.5-flash">
-                    Gemini 2.5 Flash (Padrão e Rápido)
+                    Gemini 2.5 Flash (Padrão)
                   </option>
                   <option value="gemini-1.5-pro">
                     Gemini 1.5 Pro (Avançado e Lento)
@@ -247,12 +259,12 @@
               </div>
 
               <div class="form-group">
-                <label>
+                <label for="settings-delay">
                   Pausa Anti-Spam (Segundos)
                   <span class="tooltip-container">?
                     <span class="tooltip-text">Tempo de espera entre o envio de cada chamado. Evita
-                      que a rede bloqueie o robô por mandar requisições rápido
-                      demais (Erro 429). Padrão = 2.</span>
+                    que a rede bloqueie o robô por mandar requisições rápido
+                    demais (Erro 429). Padrão = 2.</span>
                   </span>
                 </label>
                 <input type="number" id="settings-delay" class="input-field" value="2" min="0" max="10" />
@@ -260,7 +272,7 @@
 
               <!-- Legacy Fallback -->
               <div class="form-group">
-                <label>
+                <label for="settings-browser">
                   Navegador Interno (Fallback RPA)
                   <span class="tooltip-container">?
                     <span class="tooltip-text">Utilizado apenas se o sistema falhar em conectar via
@@ -337,6 +349,34 @@
         <a href="https://github.com/nicokaka/smart-service-desk-automator" class="about-link" id="about-github-link">⭐
           Ver no GitHub</a>
         <p class="about-credits">Feito com ❤️ por <strong>Nicolas</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Importar / Colar Planilha -->
+  <div id="import-modal" class="modal-overlay hidden">
+    <div class="modal-content import-modal-content">
+      <button class="modal-close" id="btn-close-import">&times;</button>
+      <div class="import-modal-header">
+        <h3>📋 Colar do Excel / Importar Planilha</h3>
+        <p class="modal-subtitle">Cole linhas copiadas do Excel (Ctrl+V) ou clique para colar da área de transferência.</p>
+      </div>
+      <div class="import-modal-body">
+        <div class="import-toolbar">
+          <button id="btn-read-clipboard" class="btn secondary btn-sm" type="button">📋 Ler da Área de Transferência</button>
+          <span id="import-count-badge" class="import-badge hidden">0 linhas</span>
+        </div>
+        <textarea
+          id="txt-import-content"
+          class="import-textarea"
+          rows="7"
+          placeholder="Cole aqui as linhas copiadas da sua planilha...&#10;Exemplo:&#10;Padaria Real	Suporte	Dúvidas	Carlos	Internet lenta	Cliente informou lentidão"
+        ></textarea>
+        <div id="import-feedback" class="import-feedback hidden"></div>
+      </div>
+      <div class="import-modal-footer">
+        <button id="btn-cancel-import" class="btn secondary" type="button">Cancelar</button>
+        <button id="btn-confirm-import" class="btn primary" type="button" disabled>Inserir na Fila</button>
       </div>
     </div>
   </div>

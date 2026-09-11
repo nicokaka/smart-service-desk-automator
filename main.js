@@ -17,6 +17,7 @@ const {
   linkAttendant,
 } = require("./tomticket_api");
 const configStore = require("./config-store");
+const catalogStore = require("./catalog-store");
 const {
   RESULT_STATUS,
   combineStatuses,
@@ -35,7 +36,8 @@ const {
   extractCreatedTicketId,
 } = require("./shared/domain");
 
-app.disableHardwareAcceleration();
+// Hardware acceleration enabled for proper Windows DWM presentation
+// app.disableHardwareAcceleration();
 
 function normalizeBoolean(value) {
   return value === true || value === "true";
@@ -360,6 +362,12 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    minWidth: 960,
+    minHeight: 600,
+    center: true,
+    show: true,
+    title: "Smart Service Desk Automator",
+    backgroundColor: "#1e1e2e",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
@@ -369,8 +377,29 @@ function createWindow() {
   });
 
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  win.webContents.on("will-navigate", (event) => {
+    event.preventDefault();
+  });
+
+  win.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
+    console.error("[MAIN] Falha ao carregar interface:", errorCode, errorDescription);
+  });
+
+  win.webContents.on("console-message", (event, level, message, line, sourceId) => {
+    if (level >= 2) {
+      console.warn(`[RENDERER-CONSOLE-${level}] ${message} (${sourceId}:${line})`);
+    }
+  });
+
+  win.once("ready-to-show", () => {
+    win.show();
+    win.focus();
+    win.moveTop();
+  });
 
   win.loadFile("index.html");
+  win.show();
+  win.focus();
 
   win.webContents.on("before-input-event", (event, input) => {
     if (input.control && !input.alt) {
@@ -479,7 +508,7 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
     const customersResult = await getCustomers(settings.token);
     logOperation("catalog:customers", customersResult);
 
-    // Step 3: Fetch department categories sequentially to avoid API Rate Limits
+    // Step 3: Fetch department categories sequentially with 100ms safety throttle
     const categoryResults = [];
     for (const department of departmentsResult.data) {
       const result = await getCategories(settings.token, department.id);
@@ -488,6 +517,7 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
           : result;
       logOperation(normalized.operation, normalized);
       categoryResults.push(normalized);
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Safety delay against 429 bursts
     }
 
 
@@ -511,6 +541,22 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
       sections,
       lastSynced: new Date().toISOString()
     };
+
+    // Automatically persist snapshot to disk cache for offline/instant launch
+    catalogStore
+      .saveCatalog({
+        departments: departmentsResult.data?.map((d) => d.name) || [],
+        categories: categoriesResult.data?.map((c) => c.name) || [],
+        customers: customersResult.data?.map((c) => c.name) || [],
+        operators: Array.isArray(operatorsResult.data) ? operatorsResult.data : [],
+        fullDepartments: departmentsResult.data || [],
+        fullCategories: categoriesResult.data || [],
+        fullCustomers: customersResult.data || [],
+        timestamp: catalogData.lastSynced,
+      })
+      .catch((err) => {
+        console.warn("[main.js] Falha ao persistir cache de catalogo:", err.message);
+      });
 
     if (
       overallStatus === RESULT_STATUS.SUCCESS &&
@@ -540,6 +586,40 @@ ipcMain.handle("catalog:sync", async (event, overrides = {}) => {
   }
 });
 
+ipcMain.handle("catalog:load-cache", async () => {
+  try {
+    const data = await catalogStore.loadCatalog();
+    const result = successResult(
+      "catalog:load-cache",
+      data,
+      "Catalogo carregado do cache em disco.",
+    );
+    logOperation("catalog:load-cache", result);
+    return result;
+  } catch (error) {
+    const result = fatalErrorResult("catalog:load-cache", error);
+    logOperation("catalog:load-cache", result);
+    return result;
+  }
+});
+
+ipcMain.handle("catalog:save-cache", async (event, catalogData) => {
+  try {
+    const saveResult = await catalogStore.saveCatalog(catalogData);
+    const result = successResult(
+      "catalog:save-cache",
+      saveResult,
+      "Catalogo salvo em disco com sucesso.",
+    );
+    logOperation("catalog:save-cache", result);
+    return result;
+  } catch (error) {
+    const result = fatalErrorResult("catalog:save-cache", error);
+    logOperation("catalog:save-cache", result);
+    return result;
+  }
+});
+
 ipcMain.handle("tickets:list", async (event, overrides = {}) => {
   try {
     validateSettingsOverrides(overrides);
@@ -564,42 +644,47 @@ ipcMain.handle("tickets:create", async (event, rows = [], context = {}) => {
     const settings = mergeSettings(context.settings || {});
     const waitTime = computeWaitTime(settings);
 
-    if (!settings.token) {
-      if (!hasBrowserCredentials(settings)) {
-        throw createValidationError(
-          "Token ausente e credenciais do navegador incompletas para fallback.",
-        );
-      }
-
-      const botResult = await runBot(createBrowserTicketRows(rows), settings);
-      const normalizedDetails = normalizeBotBatchDetails(botResult.details || []);
-      return botResult.success
-        ? { ...buildBatchResult(
-            "tickets:create",
-            normalizedDetails,
-            botResult.message || "Criacao concluida via navegador.",
-            botResult.message || "Criacao via navegador concluiu com falhas parciais.",
-          ), details: normalizedDetails }
-        : fatalErrorResult(
-            "tickets:create",
-            new Error(botResult.message || "Falha no fallback via navegador."),
-            { botCode: botResult.code || null },
-          );
-    }
-
-    const fullCustomers = context.catalog.fullCustomers;
-    const fullCategories = context.catalog.fullCategories;
-
-    if (fullCustomers.length === 0) {
-      throw createValidationError(
-        "Catalogo de clientes indisponivel. Sincronize novamente.",
-      );
-    }
-
     const details = [];
     const cancelToken = createCancelToken("tickets:create");
 
     try {
+      if (!settings.token) {
+        if (!hasBrowserCredentials(settings)) {
+          throw createValidationError(
+            "Token ausente e credenciais do navegador incompletas para fallback.",
+          );
+        }
+
+        const botResult = await runBot(
+          createBrowserTicketRows(rows),
+          settings,
+          {},
+          cancelToken,
+        );
+        const normalizedDetails = normalizeBotBatchDetails(botResult.details || []);
+        return botResult.success
+          ? { ...buildBatchResult(
+              "tickets:create",
+              normalizedDetails,
+              botResult.message || "Criacao concluida via navegador.",
+              botResult.message || "Criacao via navegador concluiu com falhas parciais.",
+            ), details: normalizedDetails }
+          : fatalErrorResult(
+              "tickets:create",
+              new Error(botResult.message || "Falha no fallback via navegador."),
+              { botCode: botResult.code || null },
+            );
+      }
+
+      const fullCustomers = context.catalog.fullCustomers;
+      const fullCategories = context.catalog.fullCategories;
+
+      if (fullCustomers.length === 0) {
+        throw createValidationError(
+          "Catalogo de clientes indisponivel. Sincronize novamente.",
+        );
+      }
+
       for (let index = 0; index < rows.length; index += 1) {
         if (cancelToken.requested) {
           logOperation("tickets:create", { status: RESULT_STATUS.PARTIAL, message: "Cancelado pelo usuário." });
@@ -725,33 +810,38 @@ ipcMain.handle("tickets:close", async (event, tickets = [], overrides = {}) => {
     const settings = mergeSettings(overrides);
     const waitTime = computeWaitTime(settings);
 
-    if (!settings.token) {
-      if (!hasBrowserCredentials(settings)) {
-        throw createValidationError(
-          "Token ausente e credenciais do navegador incompletas para fallback.",
-        );
-      }
-
-      const botResult = await runBot(tickets, { ...settings, mode: "close" });
-      const normalizedDetails = normalizeBotBatchDetails(botResult.details || []);
-      return botResult.success
-        ? { ...buildBatchResult(
-            "tickets:close",
-            normalizedDetails,
-            botResult.message || "Fechamento concluido via navegador.",
-            botResult.message || "Fechamento via navegador concluiu com falhas parciais.",
-          ), details: normalizedDetails }
-        : fatalErrorResult(
-            "tickets:close",
-            new Error(botResult.message || "Falha no fechamento via navegador."),
-            { botCode: botResult.code || null },
-          );
-    }
-
     const details = [];
     const cancelToken = createCancelToken("tickets:close");
 
     try {
+      if (!settings.token) {
+        if (!hasBrowserCredentials(settings)) {
+          throw createValidationError(
+            "Token ausente e credenciais do navegador incompletas para fallback.",
+          );
+        }
+
+        const botResult = await runBot(
+          tickets,
+          { ...settings, mode: "close" },
+          {},
+          cancelToken,
+        );
+        const normalizedDetails = normalizeBotBatchDetails(botResult.details || []);
+        return botResult.success
+          ? { ...buildBatchResult(
+              "tickets:close",
+              normalizedDetails,
+              botResult.message || "Fechamento concluido via navegador.",
+              botResult.message || "Fechamento via navegador concluiu com falhas parciais.",
+            ), details: normalizedDetails }
+          : fatalErrorResult(
+              "tickets:close",
+              new Error(botResult.message || "Falha no fechamento via navegador."),
+              { botCode: botResult.code || null },
+            );
+      }
+
       for (let index = 0; index < tickets.length; index += 1) {
         if (cancelToken.requested) {
           logOperation("tickets:close", { status: RESULT_STATUS.PARTIAL, message: "Fechamento cancelado pelo usuário." });
