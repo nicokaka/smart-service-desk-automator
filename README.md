@@ -8,6 +8,7 @@
 
 > **Electron desktop application** that automates TomTicket service desk operations — from ticket creation and cataloging to AI-assisted batch resolution — boosting operator productivity and reducing manual effort.
 
+[![CI](https://github.com/nicokaka/smart-service-desk-automator/actions/workflows/ci.yml/badge.svg)](https://github.com/nicokaka/smart-service-desk-automator/actions/workflows/ci.yml)
 [![Electron](https://img.shields.io/badge/Electron-40.x-47848F?logo=electron&logoColor=white)](https://www.electronjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-CommonJS-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Gemini AI](https://img.shields.io/badge/Gemini-2.5_Flash-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
@@ -237,6 +238,7 @@ npm run manual:tickets:create
 
 > **Aplicativo desktop Electron** que automatiza as operações de service desk no TomTicket — desde a criação de chamados e sincronização de catálogos até o encerramento em lote assistido por IA — aumentando a produtividade dos atendentes e reduzindo o esforço manual.
 
+[![CI](https://github.com/nicokaka/smart-service-desk-automator/actions/workflows/ci.yml/badge.svg)](https://github.com/nicokaka/smart-service-desk-automator/actions/workflows/ci.yml)
 [![Electron](https://img.shields.io/badge/Electron-40.x-47848F?logo=electron&logoColor=white)](https://www.electronjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-CommonJS-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Gemini AI](https://img.shields.io/badge/Gemini-2.5_Flash-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)

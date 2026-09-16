@@ -12,6 +12,7 @@
     "dist:win": "electron-builder --win",
     "dist:dir": "electron-builder --dir",
     "test": "node --test",
+    "lint:syntax": "node --check main.js tomticket_api.js ai_service.js bot-fallback-helpers.js config-store.js operation-result.js preload.js renderer.js",
     "manual:customers": "node scripts/manual/test_customers.js",
     "manual:tickets:list": "node scripts/manual/test_token.js",
     "manual:tickets:create": "node scripts/manual/test_create_ticket.js"
