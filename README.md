@@ -454,9 +454,17 @@ npm run manual:tickets:create
 
 ---
 
+## Documentação e Base de Conhecimento
+
+- 📘 [Manual de Operação e Diretrizes de Engenharia](MANUAL_DE_OPERACAO_E_REGRAS.md): Diretrizes mandatórias de negócio (departamento Comercial, operador Nicolas, organização HEBRON), padrão de finalização por IA e arquitetura dos fluxos de atendimento.
+- 🛠️ [Diagnóstico e Melhorias Sênior](DIAGNOSTICO_E_MELHORIAS_SENIOR.md): Auditoria técnica de arquitetura, segurança e confiabilidade do sistema.
+
+---
+
 ## Autor
 
 **Nicolas** — Desenvolvendo ferramentas de automação que conectam fluxos de service desk legados com capacidades modernas de IA.
 
 [![GitHub](https://img.shields.io/badge/GitHub-nicokaka-181717?logo=github&logoColor=white)](https://github.com/nicokaka)
+
 

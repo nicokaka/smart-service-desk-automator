@@ -44,7 +44,7 @@ function getModel(apiKey, modelName = "gemini-2.5-flash", useFallback = false) {
     generationConfig: {
       responseMimeType: "application/json",
       temperature: 0.2,
-      maxOutputTokens: 600,
+      maxOutputTokens: 2048,
     },
   });
 
